@@ -49,6 +49,8 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
 
 8. 2018-05-03/04 add Template Syntax : `es-repeat="let x in this.state.xxx"`
 
+9. 2018-05-11 strengthen `es-repeat` and function in Template Syntax
+
 ## Basic Usage
 
 1. Create a root DOM for route which id is root:
@@ -95,7 +97,9 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
     constructor(name, props) {
       super(name, props);
       this.declareTemplate = `
-        <p es-on:click="this.componentClick()">被替换的组件</p>
+        <p es-repeat="let a in this.state.d"  es-on:click="this.componentClick($event, this.state.b, '111', 1, false, true, a, this.aaa)" es-class="this.state.a">{{a.z}}</p>
+        <p es-on:click="this.componentClick($event, '111', this.state.b, 111, false, true)">{{this.state.b}}</p>
+        <input es-repeat="let a in this.state.d" es-model="a.z" />
       `;
       this.state = {b: 100};
     }
@@ -175,7 +179,7 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
   ```
 
 5. Template Syntax
-  - 规定：指令以 esxxx 命名
+  - 规定：指令以 es-xxx 命名
   - estext eshtml esmodel esclass esbind
   - 事件指令, 如 eson:click
     - Text1: `this.declareTemplate = '<p es-text="this.state.b"></p>';`
@@ -185,7 +189,15 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
     - Class: `this.declareTemplate = '<p  class="b" es-class="this.state.a"></p>';`
     - Directives: ues `es-on:event`
       - `this.declareTemplate = '<p es-on:click="this.componentClick()"></p>';`
-    - Repeat: `es-repeat="let a in this.state.d"` **can't use es-model in Component which has `es-repeat`**
+    - Repeat: `es-repeat="let a in this.state.d"`
+  - about function in Template Syntax
+    - now you can send arguments in Function
+    - arguments include:
+      1. Event: `$event`
+      2. String: `'xxx'`
+      3. Number: `123`
+      4. Variable: `this.state.xxx` `this.props.xxx` `this.xxx`
+      5. Boolean: `true` `false` 
 
 6. Data monitor: this.state && this.setState
   - use `this.state: Object` and `this.setState(parmars: Function || Object)`

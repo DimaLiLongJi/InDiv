@@ -74,13 +74,15 @@ class CompileUtilForRepeat {
   modelUpdater(node, value, exp, key, index, watchValue, watchData, vm) {
     node.value = typeof value === 'undefined' ? '' : value;
     const val = exp.replace(`${key}.`, '');
-    const fn = function () {
-      watchValue[index][val] = node.value;
+    const fn = function (event) {
+      event.preventDefault();
+      if (event.target.value === watchValue[index][val]) return;
+      watchValue[index][val] = event.target.value;
     };
     node.addEventListener('change', fn, false);
   }
 
-  eventHandler(node, vm, exp, event) {
+  eventHandler(node, vm, exp, event, key, val) {
     const eventType = event.split(':')[1];
     const fnList = exp.replace(/\(.*\)/, '').split('.');
     const args = exp.match(/\((.*)\)/)[1].replace(/ /g, '').split(',');
@@ -89,7 +91,20 @@ class CompileUtilForRepeat {
       if (f === 'this') return;
       fn = fn[f];
     });
-    if (eventType && fn) node.addEventListener(eventType, () => { fn.call(vm); }, false);
+    const func = (event) => {
+      let argsList = [];
+      args.forEach(arg => {
+        if (arg === '') return false;
+        if (arg === '$event') argsList.push(event);
+        if (/(this.).*/g.test(arg) || /(this.state.).*/g.test(arg) || /(this.props.).*/g.test(arg)) argsList.push(this._getVMVal(vm, arg));
+        if (/\'.*\'/g.test(arg)) argsList.push(arg.match(/\'(.*)\'/)[1]);
+        if (!/\'.*\'/g.test(arg) && /^[0-9]*$/g.test(arg)) argsList.push(Number(arg));
+        if (arg === 'true' || arg === 'false') argsList.push(arg === 'true');
+        if (arg.indexOf(key) === 0 || arg.indexOf(`${key}.`) === 0) argsList.push(this._getVMRepeatVal(val, arg, key));
+      });
+      fn.apply(vm, argsList);
+    };
+    if (eventType && fn) node.addEventListener(eventType, func, false);
   }
 }
 
@@ -163,9 +178,10 @@ class CompileUtil {
   modelUpdater(node, value, exp, vm) {
     node.value = typeof value === 'undefined' ? '' : value;
     const val = exp.replace(/(this.state.)|(this.props)/, '');
-    const fn = function () {
-      if (/(this.state.).*/.test(exp)) vm.state[val] = node.value;
-      if (/(this.props.).*/.test(exp)) vm.props[val] = node.value;
+    const fn = function (event) {
+      event.preventDefault();
+      if (/(this.state.).*/.test(exp)) vm.state[val] = event.target.value;
+      if (/(this.props.).*/.test(exp)) vm.props[val] = event.target.value;
     };
     node.addEventListener('change', fn, false);
   }
@@ -183,7 +199,7 @@ class CompileUtil {
             const dir = attrName.substring(3);
             const exp = attr.value;
             if (this.isEventDirective(dir)) {
-              new CompileUtilForRepeat().eventHandler(newElement, vm, exp, dir);
+              new CompileUtilForRepeat().eventHandler(newElement, vm, exp, dir, key, val);
             } else {
               new CompileUtilForRepeat().bind(newElement, val, key, dir, exp, index, vm, watchData);
             }
@@ -239,7 +255,14 @@ class Compile {
     const elementCreated = document.createElement('div');
     elementCreated.innerHTML = this.$vm.declareTemplate;
     let childNodes = elementCreated.childNodes;
+    this.domRecursion(childNodes, fragment);
+  }
+
+  domRecursion(childNodes, fragment) {
     Array.from(childNodes).forEach(node => {
+      if (node.hasChildNodes()) {
+        this.domRecursion(node.childNodes, node);
+      }
       const text = node.textContent;
       const reg = /\{\{(.*)\}\}/g;
       if (this.isElementNode(node)) {
@@ -299,7 +322,7 @@ class Compile {
       args.forEach(arg => {
         if (arg === '') return false;
         if (arg === '$event') argsList.push(event);
-        if (/(this.state.).*/g.test(arg) || /(this.props.).*/g.test(arg)) argsList.push(compileUtil._getVMVal(vm, arg));
+        if (/(this.).*/g.test(arg) || /(this.state.).*/g.test(arg) || /(this.props.).*/g.test(arg)) argsList.push(compileUtil._getVMVal(vm, arg));
         if (/\'.*\'/g.test(arg)) argsList.push(arg.match(/\'(.*)\'/)[1]);
         if (!/\'.*\'/g.test(arg) && /^[0-9]*$/g.test(arg)) argsList.push(Number(arg));
         if (arg === 'true' || arg === 'false') argsList.push(arg === 'true');
