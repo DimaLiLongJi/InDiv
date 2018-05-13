@@ -207,7 +207,7 @@ class CompileUtil {
           }
         });
       }
-      console.log(' this.$fragment',  this.$fragment);
+      console.log(' this.$fragment111',  this.$fragment);
       this.$fragment.appendChild(newElement);
     });
   }
