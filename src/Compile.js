@@ -267,8 +267,8 @@ class Compile {
       const text = node.textContent;
       const reg = /\{\{(.*)\}\}/g;
       if (this.isElementNode(node)) {
-        this.compile(node);
-        if (reg.test(text)) this.compileText(node, RegExp.$1);
+        this.compile(node, fragment);
+        if (reg.test(text)) this.compileText(node, RegExp.$1, fragment);
       }
       if (!this.isRepeatNode(node)) {
         fragment.appendChild(node);
@@ -276,7 +276,7 @@ class Compile {
     });
   }
 
-  compile(node) {
+  compile(node, fragment) {
     const nodeAttrs = node.attributes;
     if (nodeAttrs) {
       Array.from(nodeAttrs).forEach(attr => {
@@ -287,7 +287,7 @@ class Compile {
           if (this.isEventDirective(dir)) {
             this.eventHandler(node, this.$vm, exp, dir);
           } else {
-            new CompileUtil(this.$fragment).bind(node, this.$vm, exp, dir);
+            new CompileUtil(fragment).bind(node, this.$vm, exp, dir);
           }
           // node.removeAttribute(attrName);
         }
@@ -304,8 +304,8 @@ class Compile {
     return fragment;
   }
 
-  compileText(node, exp) {
-    new CompileUtil(this.$fragment).text(node, this.$vm, exp);
+  compileText(node, exp, fragment) {
+    new CompileUtil(fragment).text(node, this.$vm, exp);
   }
 
   eventHandler(node, vm, exp, event) {

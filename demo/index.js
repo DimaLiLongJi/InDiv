@@ -56,12 +56,14 @@ class R1 extends Controller {
       ],
     };
     // <pComponent2/>
+    // <input es-repeat="let a in this.state.d" es-model="a.z" />
     // <p es-on:click="this.showAlert()">R1 点我然后打开控制台看看</p>
     //   <pComponent1/>
     //   <pComponent2/>
     //   <p>{{this.state.b}}</p>
     this.declareTemplate = (`
       <div es-class="this.state.a">
+       <input es-repeat="let a in this.state.d" es-model="a.z" />
        <p es-on:click="this.showAlert()">{{this.state.b}}</p>
       </div>
     `);
