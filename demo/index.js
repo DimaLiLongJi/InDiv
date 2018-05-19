@@ -3,12 +3,12 @@ import { Component, Controller, Router } from '../src';
 class PComponent extends Component {
   constructor(name, props) {
     super(name, props);
-    this.declareTemplate = `
+    this.declareTemplate = (`
       <div>
-        <p es-class="this.state.a" es-repeat="let a in this.state.d"  es-on:click="this.componentClick($event, this.state.b, '111', 1, false, true, a, this.aaa)">{{a.z}}</p>
+        <p es-if="this.state.e" es-class="this.state.a" es-repeat="let a in this.state.d"  es-on:click="this.componentClick($event, this.state.b, '111', 1, false, true, a, this.aaa)">{{a.z}}</p>
         <input es-repeat="let a in this.state.d" es-model="a.z" />
       </div>
-    `;
+    `);
     this.state = {
       a: 'a',
       b: 100,
@@ -23,6 +23,7 @@ class PComponent extends Component {
           b: 'a',
         },
       ],
+      e: false,
     };
   }
   $onInit() {
@@ -49,10 +50,12 @@ class R1 extends Controller {
       d: [{
         z: 111111111111111,
         b: 'a',
+        show: true,
       },
       {
         z: 33333333333333,
         b: 'a',
+        show: true,
       }],
       e: [{
         z: 232323,
@@ -62,6 +65,7 @@ class R1 extends Controller {
         z: 1111,
         b: 'a',
       }],
+      f: true,
     };
     // <pComponent2/>
     // <p es-on:click="this.showAlert()">R1 点我然后打开控制台看看</p>
@@ -74,14 +78,10 @@ class R1 extends Controller {
     // <p es-repeat="let a in this.state.d">{{a.z}}</p>
     this.declareTemplate = (`
       <div>
-        <pComponent1/>
-        <p es-class="this.state.a" es-repeat="let a in this.state.d">{{this.state.b}}</p>
-        <div>
-          <p es-repeat="let a in this.state.e" es-on:click="this.showAlert(a)">{{a.z}}</p>
+        <div es-if="this.state.f">
+          <input es-repeat="let a in this.state.e" es-model="a.b" />
         </div>
-       <div es-class="this.state.a">
-        <p es-on:click="this.showAlert()">{{this.state.b}}</p>
-       </div>
+        <p es-class="this.state.a" es-if="a.show" es-repeat="let a in this.state.d" es-text="a.z" es-on:click="this.showAlert(a.z)"></p>
       </div>
     `);
     this.declareComponents = {
@@ -112,13 +112,15 @@ class R1 extends Controller {
     console.log('newData Controller:', newData);
   }
   showAlert(a) {
-    alert('我错了 点下控制台看看吧');
-    console.log('aa', a);
+    // alert('我错了 点下控制台看看吧');
+    // console.log('aa', a);
+    console.log('!this.state.f', !this.state.f);
     this.setState({
-      a: 'a',
-      b: 100,
+      // a: 'a',
+      // b: 100,
+      f: !this.state.f,
     });
-    console.log('state', this.state);
+    console.log('state', this.state.f);
   }
   getProps(a) {
     alert('里面传出来了');

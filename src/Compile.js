@@ -1,4 +1,8 @@
 class CompileUtilForRepeat {
+  constructor(fragment) {
+    this.$fragment = fragment;
+  }
+
   _getVMVal(vm, exp) {
     const valueList = exp.replace('()', '').split('.');
     let value = vm;
@@ -30,7 +34,7 @@ class CompileUtilForRepeat {
       value = this._getVMVal(vm, exp);
     }
     const watchValue = this._getVMVal(vm, watchData);
-    this.text(node, val, key, vm);
+    this.templateUpdater(node, val, key, vm);
     const updaterFn = this[`${dir}Updater`];
     switch (dir) {
     case 'model':
@@ -41,7 +45,7 @@ class CompileUtilForRepeat {
     }
   }
 
-  text(node, val, key, vm) {
+  templateUpdater(node, val, key, vm) {
     const text = node.textContent;
     const reg = /\{\{(.*)\}\}/g;
     if (reg.test(text)) {
@@ -52,7 +56,7 @@ class CompileUtilForRepeat {
       } else {
         value = this._getVMVal(vm, exp);
       }
-      this.textUpdater(node, value);
+      node.textContent = node.textContent.replace(/(\{\{.*\}\})/g, value);
     }
   }
 
@@ -62,6 +66,10 @@ class CompileUtilForRepeat {
 
   htmlUpdater(node, value) {
     node.innerHTML = typeof value === 'undefined' ? '' : value;
+  }
+
+  ifUpdater(node, value) {
+    if (value) this.$fragment.appendChild(node);
   }
 
   classUpdater(node, value, oldValue) {
@@ -141,26 +149,34 @@ class CompileUtil {
     });
   }
 
-  text(node, vm, exp) {
-    this.bind(node, vm, exp, 'text');
-  }
-
   bind(node, vm, exp, dir) {
     const updaterFn = this[`${dir}Updater`];
     const isRepeatNode = this.isRepeatNode(node);
-    switch (dir) {
-    case 'model':
-      !isRepeatNode && updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp), exp, vm);
-      break;
-    case 'text':
-      updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp), exp, vm);
-      break;
-    case 'repeat':
-      isRepeatNode && updaterFn && updaterFn.call(this, node, this._getVMRepeatVal(vm, exp), exp, vm);
-      break;
-    default:
-      !isRepeatNode && updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp));
+    if (isRepeatNode) {
+      switch (dir) {
+      case 'repeat':
+        updaterFn && updaterFn.call(this, node, this._getVMRepeatVal(vm, exp), exp, vm);
+        break;
+      }
+    } else {
+      switch (dir) {
+      case 'model':
+        updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp), exp, vm);
+        break;
+      case 'text':
+        updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp));
+        break;
+      case 'if':
+        updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp), exp, vm);
+        break;
+      default:
+        updaterFn && updaterFn.call(this, node, this._getVMVal(vm, exp));
+      }
     }
+  }
+
+  templateUpdater(node, vm, exp) {
+    node.textContent = node.textContent.replace(/(\{\{.*\}\})/g, this._getVMVal(vm, exp));
   }
 
   textUpdater(node, value) {
@@ -169,6 +185,14 @@ class CompileUtil {
 
   htmlUpdater(node, value) {
     node.innerHTML = typeof value === 'undefined' ? '' : value;
+  }
+
+  ifUpdater(node, value) {
+    if (!value && this.$fragment.contains(node)) {
+      this.$fragment.removeChild(node);
+    } else {
+      this.$fragment.appendChild(node);
+    }
   }
 
   classUpdater(node, value, oldValue) {
@@ -198,7 +222,7 @@ class CompileUtil {
       const text = newElement.textContent;
       const reg = /\{\{(.*)\}\}/g;
       if (reg.test(text) && text.indexOf(`{{${key}`) >= 0) {
-        new CompileUtilForRepeat().text(newElement, val, key, vm);
+        new CompileUtilForRepeat(this.$fragment).templateUpdater(newElement, val, key, vm);
       }
       if (nodeAttrs) {
         Array.from(nodeAttrs).forEach(attr => {
@@ -207,15 +231,15 @@ class CompileUtil {
             const dir = attrName.substring(3);
             const exp = attr.value;
             if (this.isEventDirective(dir)) {
-              new CompileUtilForRepeat().eventHandler(newElement, vm, exp, dir, key, val);
+              new CompileUtilForRepeat(this.$fragment).eventHandler(newElement, vm, exp, dir, key, val);
             } else {
-              new CompileUtilForRepeat().bind(newElement, val, key, dir, exp, index, vm, watchData);
+              new CompileUtilForRepeat(this.$fragment).bind(newElement, val, key, dir, exp, index, vm, watchData);
             }
             // node.removeAttribute(attrName);
           }
         });
       }
-      this.$fragment.appendChild(newElement);
+      if (!this.isIfNode(node)) this.$fragment.appendChild(newElement);
     });
   }
 
@@ -238,6 +262,18 @@ class CompileUtil {
       Array.from(nodeAttrs).forEach(attr => {
         const attrName = attr.name;
         if (attrName === 'es-repeat') result = true;
+      });
+    }
+    return result;
+  }
+
+  isIfNode(node) {
+    const nodeAttrs = node.attributes;
+    let result = false;
+    if (nodeAttrs) {
+      Array.from(nodeAttrs).forEach(attr => {
+        const attrName = attr.name;
+        if (attrName === 'es-if') result = true;
       });
     }
     return result;
@@ -280,10 +316,10 @@ class Compile {
         }
         this.compile(node, fragment);
       }
-      if (!this.isRepeatNode(node)) {
-        fragment.appendChild(node);
-      } else if (fragment.contains(node)) {
+      if (this.isRepeatNode(node) && fragment.contains(node)) {
         fragment.removeChild(node);
+      } else {
+        if (!this.isIfNode(node)) fragment.appendChild(node);
       }
     });
   }
@@ -298,7 +334,7 @@ class Compile {
           const exp = attr.value;
           if (this.isEventDirective(dir)) {
             this.eventHandler(node, this.$vm, exp, dir);
-          } else {
+          } else { 
             new CompileUtil(fragment).bind(node, this.$vm, exp, dir);
           }
           // node.removeAttribute(attrName);
@@ -317,7 +353,7 @@ class Compile {
   }
 
   compileText(node, exp) {
-    new CompileUtil(this.$fragment).text(node, this.$vm, exp);
+    new CompileUtil(this.$fragment).templateUpdater(node, this.$vm, exp);
   }
 
   eventHandler(node, vm, exp, event) {
@@ -364,6 +400,18 @@ class Compile {
       Array.from(nodeAttrs).forEach(attr => {
         const attrName = attr.name;
         if (attrName === 'es-repeat') result = true;
+      });
+    }
+    return result;
+  }
+
+  isIfNode(node) {
+    const nodeAttrs = node.attributes;
+    let result = false;
+    if (nodeAttrs) {
+      Array.from(nodeAttrs).forEach(attr => {
+        const attrName = attr.name;
+        if (attrName === 'es-if') result = true;
       });
     }
     return result;

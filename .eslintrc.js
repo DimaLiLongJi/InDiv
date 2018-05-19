@@ -21,6 +21,7 @@ module.exports = {
     'jsx-quotes': [2, 'prefer-double'],
     'padded-blocks': ['warn'],
     'no-console': ['off'],
+    'no-lonely-if': 0,
     'no-restricted-syntax': 0,
     'no-useless-escape': 0,
     'import/no-absolute-path': 0,

@@ -71,14 +71,14 @@ class Component extends Lifecycle {
     if (newProps && this.utils.isFunction(newProps)) {
       const _newProps = newProps();
       if (_newProps && _newProps instanceof Object) {
-        for (var key in _newProps) {
-          if (this.props[key] && this.props[key] !== _newProps[key]) this.props[key] = _newProps[key];
+        for (let key in _newProps) {
+          if (this.props.hasOwnProperty(key) && this.props[key] !== _newProps[key]) this.props[key] = _newProps[key];
         }
       }
     }
     if (newProps && newProps instanceof Object) {
       for (let key in newProps) {
-        if (this.props[key] && this.props[key] !== newProps[key]) {
+        if (this.props.hasOwnProperty(key) && this.props[key] !== newProps[key]) {
           this.props[key] = newProps[key];
         }
       }

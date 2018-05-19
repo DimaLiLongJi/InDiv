@@ -6,55 +6,6 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
   - `npm run start`
   - open `http://localhost:1234`
 
-## log
-
-1. 2018-04-28 init program
-  - add route and Life cycle
-
-2. 2018-04-29 add watcher
-  - add new life cycle: `$watchState` and `$beforeInit`
-  - add new class: `Controller`
-  - add watcher for state in `Controller` and `Component`
-
-3. 2018-04-30 separate `Controller` and `Component`
-  - add new class: `Component`
-  - add new life cycle: `$replaceComponent` in class `Controller`
-
-4. 2018-05-01 optimize `Controller` and `Component`
-  - add new class `Lifecycle`
-  - add new life cycle: `$routeChange` in class `Router`
-  - optimize `Controller` and `Component`
-  - fix lifecycle of class `Component`
-
-5. 2018-05-02 optimize `Component` and `Controller`
-  - add `props` in `Component` when new an instance in `Controller`
-  - add two types for `props` for `Component` : value or action
-  - optimize `Controller` and `Component`, update `props` in `Component`
-  - update the declaration of `Component` in `Controller`
-  - add new function `setProps` for update `props` in `Component`
-  - add new lifecycle `$hasRender` for update `props` in `Component` and `Controller`
-
-6. 2018-05-03/04 optimize
-  - add new class `Utils`
-  - add new class `Compile`
-  - change renderComponent and use class `Compile`
-  - add new **Template Syntax**
-
-7. 2018-05-08 add `Watcher`
-  - u can use this class `Watcher` to watch some data `new Watcher(data, func.bind(this))`
-  - `func` must respect two arguments `(oldData, newData)` like
-    ```
-    watchSomething(oldData, newData) {}
-    ```
-
-8. 2018-05-03/04 add Template Syntax : `es-repeat="let x in this.state.xxx"`
-
-9. 2018-05-11 strengthen `es-repeat` and function in Template Syntax
-
-9. 2018-05-18 fix `es-repeat`
-  - declareTemplate must be parceled by a father Dom in class `Controller`
-  - fix es-repeat can't be compiled exactly
-
 ## Basic Usage
 
 1. Create a root DOM for route which id is root:
@@ -100,17 +51,19 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
   class pComponent extends Component {
     constructor(name, props) {
       super(name, props);
-      this.declareTemplate = `
-        <p es-repeat="let a in this.state.d"  es-on:click="this.componentClick($event, this.state.b, '111', 1, false, true, a, this.aaa)" es-class="this.state.a">{{a.z}}</p>
-        <p es-on:click="this.componentClick($event, '111', this.state.b, 111, false, true)">{{this.state.b}}</p>
-        <input es-repeat="let a in this.state.d" es-model="a.z" />
-      `;
+      this.declareTemplate = (`
+        <div>
+          <p es-repeat="let a in this.state.d"  es-on:click="this.componentClick($event, this.state.b, '111', 1, false, true, a, this.aaa)" es-class="this.state.a">{{a.z}}</p>
+          <p es-on:click="this.componentClick($event, '111', this.state.b, 111, false, true)">{{this.state.b}}</p>
+          <input es-repeat="let a in this.state.d" es-model="a.z" />
+        </div>
+      `);
       this.state = {b: 100};
     }
     $onInit() {
       console.log('props', this.props);
     }
-    componentClick() {
+    componentClick(e) {
       alert('点击了组件');
       this.declareTemplate = '<p>我改变了component</>';
       this.setState({b: 2});
@@ -142,9 +95,12 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
       this.state = {a: 1};
       this.declareTemplate = `
         <div>
-          <p es-on:click="this.showAlert()">R1 点我然后打开控制台看看</p>
           <pComponent1/>
           <pComponent2/>
+          <div es-if="this.state.f">
+            <input es-repeat="let a in this.state.e" es-model="a.b" />
+          </div>
+          <p es-class="this.state.a" es-if="a.show" es-repeat="let a in this.state.d" es-text="a.z" es-on:click="this.showAlert(a.z)"></p>
         </div>
       `;
       this.declareComponents = {
@@ -176,7 +132,10 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
     }
     showAlert() {
       alert('我错了 点下控制台看看吧');
-      this.setState({a: 2});
+      this.setState({
+        a: 2,
+        b: !this.state.a
+      });
       console.log('state', this.state);
     }
     getProps(a) {
@@ -188,24 +147,25 @@ A minimal, blazing fast web mvvm framework.一个小而快的Web mvvm库。
 
 5. Template Syntax
   - 规定：指令以 es-xxx 命名
-  - estext eshtml esmodel esclass esbind
-  - 事件指令, 如 eson:click
+  - now: es-text es-html es-model es-class es-repeat es-if
+  - 事件指令, 如 es-on:click
     - Text1: `this.declareTemplate = '<p es-text="this.state.b"></p>';`
-    - Text2: `this.declareTemplate = '<p>{{this.state.b}}</p>';`
+    - Text2: `this.declareTemplate = '<p>this.state.b是：{{this.state.b}}</p>';`
     - HTML: `this.declareTemplate = '<p es-html="this.state.c"></p>';`
-    - Model for input: `this.declareTemplate = '<p es-model="this.state.c"></p>';`
+    - Model for input: `this.declareTemplate = '<input es-model="this.state.c"/>';`
     - Class: `this.declareTemplate = '<p  class="b" es-class="this.state.a"></p>';`
     - Directives: ues `es-on:event`
       - `this.declareTemplate = '<p es-on:click="this.componentClick()"></p>';`
-    - Repeat: `es-repeat="let a in this.state.d"`
+    - Repeat: `this.declareTemplate = '<p  class="b" es-class="this.state.a" es-repeat="let a in this.state.b" es-if="a.f">{{a.z}}</p>';`
   - about function in Template Syntax
     - now you can send arguments in Function
     - arguments include:
       1. Event: `$event`
       2. String: `'xxx'`
       3. Number: `123`
-      4. Variable: `this.state.xxx` `this.props.xxx` `this.xxx`
+      4. Variable: **`this.state.xxx` `this.props.xxx`**
       5. Boolean: `true` `false`
+      6. For es-repeat: items like: `es-repeat="let a in this.state.b" es-if="a.f"`
 
 6. Data monitor: this.state && this.setState
   - use `this.state: Object` and `this.setState(parmars: Function || Object)`
@@ -256,16 +216,16 @@ route => controller => component
 
 ## To do
 - [x] 公共类提取
-- [x] 路由变化渲染dom
-- [x] 数据监听
-- [x] 双向绑定html模板
-- [x] es-repeat (1/3)
-- [x] 组件传入传出props
+- [ ] 子路由
+- [ ] 改用 history的pushState
+- [x] 监听路由变化动态渲染(2/2)
+- [x] 数据劫持
+- [x] 双向绑定模板
+- [x] Template Syntax: es-text es-html es-model es-class es-repeat es-if(6/6)
+- [x] 组件props
 - [x] 组件渲染
 - [X] 组件化(3/3)
-- [ ] 子路由
-- [ ] 模块化
-- [ ] 改用 history 模块的 pushState 方法去触发 url 更新
+- [x] 模块化
 - [X] 双向绑定
-- [X] 动态渲染DOM(1/2)
-- [ ] ts实现 （强类型赛高）
+- [ ] Virtual DOM
+- [ ] ts（强类型赛高）
