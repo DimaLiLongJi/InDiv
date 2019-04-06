@@ -1,3 +1,17 @@
+<a name="2.0.8"></a>
+# [2.0.8](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.0.8) (2019-04-12)
+
+
+### Features
+
+* **package:@indiv/core** support absolute path of `templateUrl` with @indiv/indiv-loader
+* **package:@indiv/core** add method `querySelectorAll` and method `querySelector` in `Renderer`
+* **package:@indiv/platform-server** support absolute path of `templateUrl` with method `renderToString` by `templateRootPath`
+* **package:@indiv/platform-server** add method `querySelectorAll` and method `querySelector` in `Renderer`
+* **package:@indiv/platform-browser** add method `querySelectorAll` and method `querySelector` in `Renderer`
+
+
+
 <a name="2.0.7"></a>
 # [2.0.7](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.0.7) (2019-03-21)
 

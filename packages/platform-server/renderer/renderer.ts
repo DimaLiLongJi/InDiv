@@ -73,8 +73,18 @@ export class PlatfromServerRenderer extends Renderer {
   }
 
   public getElementsByTagName(name: string, master?: any): HTMLCollectionOf<Element> {
-    if (master) return master.getElementsByTagName(name);
+    if (master) return (master as Element).getElementsByTagName(name);
     else return _document.getElementsByTagName(name);
+  }
+
+  public getElementByQuery(name: string, master?: any): Element {
+    if (master) return (master as Element).querySelector(name);
+    else return _document.querySelector(name);
+  }
+
+  public getAllElementsByQuery(name: string, master?: any): NodeListOf<Element>  {
+    if (master) return (master as Element).querySelectorAll(name);
+    else return _document.querySelectorAll(name);
   }
 
   public hasChildNodes(nativeElement: Element): boolean {

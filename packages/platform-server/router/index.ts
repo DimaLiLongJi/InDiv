@@ -160,4 +160,3 @@ export function NvModuleFactoryLoader(loadChild: Function, currentUrlPath: strin
 
   return loadModuleInstance;
 }
-

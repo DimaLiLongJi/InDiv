@@ -34,6 +34,7 @@ export interface IComponent extends IDirective {
   compileInstance?: Compile;
 
   template?: string;
+  templateUrl?: string;
   nvChangeDetection?: ChangeDetectionStrategy;
   viewChildList?: { propertyName: string; selector: string | Function; }[];
   viewChildrenList?: { propertyName: string; selector: string | Function; }[];

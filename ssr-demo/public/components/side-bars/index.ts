@@ -1,3 +1,5 @@
+import './style.less';
+
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestory, Input, ContentChild, ContentChildren, AfterMount, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
 import { RouteChange, NvLocation } from '@indiv/router';
@@ -15,24 +17,8 @@ type nav = {
 
 @Component({
     selector: 'side-bar',
-    template: (`
-        <div class="side-bar-container">
-            <nv-content></nv-content>
-            <div class="nav-wrap" nv-class="_nav.active" nv-repeat="_nav in navs">
-                <a class="nav" nv-on:click="location.set(_nav.to)">{{_nav.name}}</a>
-                <div class="child-wrap" nv-if="_nav.child">
-                    <a class="nav nav-child" nv-repeat="_child in _nav.child" nv-class="_child.active" nv-on:click="location.set(_child.to)">{{_child.name}}</a>
-                </div>
-            </div>
-            <button class="sidebar-toggle" nv-on:click="changeShowSideBar()">
-                <div class="sidebar-toggle-button">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </button>
-        </div>
-    `),
+    // templateUrl: './template.html',
+    templateUrl: '/components/side-bars/template.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
@@ -41,8 +27,8 @@ export default class SideBar implements OnInit, AfterMount, RouteChange, OnDesto
     public num: number = 1;
     public subscribeToken: Subscription;
     @Input() handleSideBar: () => void;
-    @ContentChild('a') htmltemplateA: any;
-    @ContentChildren('a') htmltemplateAs: any[];
+    @ContentChild('a') htmltemplateA: HTMLElement;
+    @ContentChildren('a') htmltemplateAs: HTMLElement[];
     @MarkForCheck() marker: TMarkForCheck;
 
     constructor(

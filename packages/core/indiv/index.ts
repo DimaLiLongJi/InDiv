@@ -28,6 +28,7 @@ export class InDiv {
   private renderer: Renderer;
   private isServerRendering: boolean = false;
   private indivEnv: string = 'browser';
+  private templateRootPath?: string;
 
   /**
    * create an instance of InDiv
@@ -180,6 +181,48 @@ export class InDiv {
    */
   public get getIndivEnv(): { isServerRendering: boolean; indivEnv: string; } {
     return { isServerRendering: this.isServerRendering, indivEnv: this.indivEnv };
+  }
+
+  /**
+   * set templateRootPath for SSR
+   *
+   * @param {string} templateRootPath
+   * @memberof InDiv
+   */
+  public setTemplateRootPath(templateRootPath: string): void {
+    if (!this.isServerRendering) return;
+    this.templateRootPath = templateRootPath;
+  }
+
+  /**
+   * get templateRootPath for SSR
+   *
+   * @readonly
+   * @type {string}
+   * @memberof InDiv
+   */
+  public get getTemplateRootPath(): string {
+    return this.templateRootPath;
+  }
+
+  /**
+   * for SSR to build templateUrl
+   *
+   * @param {IComponent} component
+   * @memberof InDiv
+   */
+  public templateChecker(component: IComponent): void {}
+  
+  /**
+   * set templateChecker
+   * 
+   * used in @Indiv/platform-browser
+   *
+   * @param {(component: IComponent) => void} checker
+   * @memberof InDiv
+   */
+  public setTemplateChecker(checker: (component: IComponent) => void): void {
+    this.templateChecker = checker;
   }
 
   /**

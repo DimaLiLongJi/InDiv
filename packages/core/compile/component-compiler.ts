@@ -7,6 +7,7 @@ import { Vnode, parseTemplateToVnode, isTagName } from '../vnode';
 import { mountDirective } from './directive-compiler';
 import { buildViewChildandChildren, buildContentChildandChildren, ChangeDetectionStrategy } from '../component';
 import { lifecycleCaller } from '../lifecycle';
+import { InDiv } from '../indiv';
 
 /**
  * use lifecycle nvDestory for @Directive
@@ -219,6 +220,8 @@ export async function componentCompiler(nativeElement: any, componentInstance: I
   }
   if (!componentInstance.templateVnode) componentInstance.templateVnode = parseTemplateToVnode(componentInstance.template, componentInstance.parseVnodeOptions);
   if (!componentInstance.compileInstance) componentInstance.compileInstance = new Compile(nativeElement, componentInstance);
+  // call templateChecker,when env is ssr,will render templateUrl to template
+  if (!componentInstance.template) (componentInstance.$indivInstance as InDiv).templateChecker(componentInstance);
 
   let saveVnode: Vnode[] = [];
   try {

@@ -1,6 +1,7 @@
 import IndivPlatformServer = require('@indiv/platform-server');
 import IndivRouter = require('@indiv/router');
 import RootModule = require('./public/modules/index');
+import path = require('path');
 
 const routes: IndivRouter.TRouter[] = [
     {
@@ -83,14 +84,14 @@ const routes: IndivRouter.TRouter[] = [
     },
 ];
 
-async function render(path: string, query: any, rootPath: string): Promise<string> {
+async function render(_path: string, query: any, rootPath: string): Promise<string> {
     const routeConfig = {
-        path,
+        _path,
         query,
         routes,
         rootPath,
     };
-    const _string = await IndivPlatformServer.renderToString(RootModule.default, routeConfig);
+    const _string = await IndivPlatformServer.renderToString(RootModule.default, routeConfig, path.resolve(__dirname, './public'));
     return _string;
 }
 

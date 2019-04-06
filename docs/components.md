@@ -48,8 +48,13 @@ export default class AppComponent {}
 
 * `selector: string;`  作为组件被渲染成 DOM 的标签，类似于 `<div></div>`
 * `template?: string;` 字符串模板，用来声明被渲染的视图
-* `templateUrl?: string;` **V2.0.5新增** HTML模板，用来声明被渲染的视图，`template` 与 `templateUrl` 需要二选一使用，并且需要使用 `@indiv/indiv-loader` 进行编译处理
+* `templateUrl?: string;` **v2.0.5新增** HTML模板，用来声明被渲染的视图，`template` 与 `templateUrl` 需要二选一使用
 * `providers?: (Function | { provide: any; useClass: Function; } | { provide: any; useValue: any; })[];` 声明可以被组件注入的服务，这个我们放到服务再讲
+
+**特别说明：`templateUrl?: string;` 可为相对路径和绝对路径**
+
+1. 相对路径（v2.0.5）：需要使用 `@indiv/indiv-loader` 进行编译处理，并且只能在前端项目中使用
+2. 绝对路径（v2.0.8）：需要使用 `@indiv/indiv-loader` 并配置 options: `templateRootPath: string` 模板根路径进行编译处理，支持前后端同构
 
 现在我们将 `AppComponent` 在 `app.module.ts` 中声明一下并放入引导启动的 `bootstrap`中。启动http服务就可以看到页面上渲染出 `AppComponent` 的模板了。
 
@@ -361,7 +366,8 @@ export default class AppComponent {
 
   1. 当参数为 `string` 时，如果为该组件可以使用的组件或指令的 `selector` ，则属性为匹配到的**组件或指令实例**的第一项或是全部
   2. 当参数为 `string` 时，如果为该组件内部某个元素的 `tag name` ，则属性为匹配到的**ElementRef实例**的第一项或是全部
-  3. 当参数为 `Function` 时，如果为该组件可以使用的组件或指令的 `class` ，则属性为匹配到的**组件或指令实例**的第一项或是全部
+  3. 当参数为 `string` 时，如果为该组件内部某个元素的 **css 标准选择器语法** ，则属性为匹配到的**ElementRef实例**的第一项或是全部（**v2.0.8开始支持**）
+  4. 当参数为 `Function` 时，如果为该组件可以使用的组件或指令的 `class` ，则属性为匹配到的**组件或指令实例**的第一项或是全部
 
 > app.component.ts
 
@@ -509,7 +515,8 @@ export default class ShowAgeComponent implements nvReceiveInputs {
 
   1. 当参数为`string`时，如果为该组件**视图插槽内**的组件或指令的`selector`，则属性为匹配到的**组件或指令实例**的第一项或是全部
   2. 当参数为`string`时，如果为该组件**视图插槽内**的某个元素的`tag name`，则属性为匹配到的**ElementRef实例**的第一项或是全部
-  3. 当参数为`Function`时，如果为该组件**视图插槽内**使用的组件或指令的`class`，则属性为匹配到的**组件或指令实例**的第一项或是全部
+  3. 当参数为 `string` 时，如果为该组件**视图插槽内**的某个元素的 **css 标准选择器语法** ，则属性为匹配到的**ElementRef实例**的第一项或是全部（**v2.0.8开始支持**）
+  4. 当参数为`Function`时，如果为该组件**视图插槽内**使用的组件或指令的`class`，则属性为匹配到的**组件或指令实例**的第一项或是全部
 
 > components/show-age/show-age.component.ts
 

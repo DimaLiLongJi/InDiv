@@ -17,16 +17,17 @@ function buildContentChild(component: IComponent): void {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
         const found = foundMap.find(value => ((value.constructorFunction as any).selector === selector) && value.isFromContent);
-        if (found) (component as any)[propertyName] = found.instanceScope;
+        if (found) component[propertyName] = found.instanceScope;
       } else {
-        const contents: any[] = component.$indivInstance.getRenderer.getElementsByTagName('nv-content', component.nativeElement);
-        const findElementRef = component.$indivInstance.getRenderer.getElementsByTagName(selector, contents[0]);
-        if (findElementRef && findElementRef.length > 0) (component as any)[propertyName] = new ElementRef(findElementRef[0]);
+        const content = component.$indivInstance.getRenderer.getElementByQuery('nv-content', component.nativeElement);
+        if (!content) return; 
+        const findElementRef = component.$indivInstance.getRenderer.getElementByQuery(selector, content);
+        if (findElementRef) component[propertyName] = new ElementRef(findElementRef);
       }
     }
     if (utils.isFunction(selector)) {
       const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
-      if (foundMap) (component as any)[propertyName] = foundMap.find(value => (value.constructorFunction === selector) && value.isFromContent).instanceScope;
+      if (foundMap) component[propertyName] = foundMap.find(value => (value.constructorFunction === selector) && value.isFromContent).instanceScope;
     }
   });
 }
@@ -44,23 +45,23 @@ function buildContentChildren(component: IComponent): void {
       if (component.declarationMap.has(selector)) {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
-        (component as any)[propertyName] = (foundMap as any[]).map(value => {
+        component[propertyName] = (foundMap as any[]).map(value => {
           if (((value.constructorFunction as any).selector === selector) && value.isFromContent) return value.instanceScope;
         });
       } else {
-        const contents: any[] = component.$indivInstance.getRenderer.getElementsByTagName('nv-content', component.nativeElement);
+        const contents: any[] = component.$indivInstance.getRenderer.getAllElementsByQuery('nv-content', component.nativeElement);
         const propertyValues: any[] = [];
         Array.from(contents).forEach(content => {
-          Array.from(component.$indivInstance.getRenderer.getElementsByTagName(selector, content)).forEach((findElementRef: any) => {
+          Array.from(component.$indivInstance.getRenderer.getAllElementsByQuery(selector, content)).forEach((findElementRef: any) => {
             propertyValues.push(new ElementRef(findElementRef));
           });
         });
-        (component as any)[propertyName] = propertyValues;
+        component[propertyName] = propertyValues;
       }
     }
     if (utils.isFunction(selector)) {
       const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
-      if (foundMap) (component as any)[propertyName] = (foundMap as any[]).map(value => {
+      if (foundMap) component[propertyName] = (foundMap as any[]).map(value => {
         if (value.constructorFunction === selector && value.isFromContent) return value.instanceScope;
       });
     }

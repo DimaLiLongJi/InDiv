@@ -17,15 +17,15 @@ function buildViewChild(component: IComponent): void {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
         const found = foundMap.find(value => (value.constructorFunction as any).selector === selector);
-        if (found) (component as any)[propertyName] = found.instanceScope;
+        if (found) component[propertyName] = found.instanceScope;
       } else {
-        const findElementRef = component.$indivInstance.getRenderer.getElementsByTagName(selector, component.nativeElement);
-        if (findElementRef && findElementRef.length > 0) (component as any)[propertyName] = new ElementRef(findElementRef[0]);
+        const findElementRef = component.$indivInstance.getRenderer.getElementByQuery(selector, component.nativeElement);
+        if (findElementRef) component[propertyName] = new ElementRef(findElementRef);
       }
     }
     if (utils.isFunction(selector)) {
       const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
-      if (foundMap) (component as any)[propertyName] = foundMap.find(value => value.constructorFunction === selector).instanceScope;
+      if (foundMap) component[propertyName] = foundMap.find(value => value.constructorFunction === selector).instanceScope;
     }
   });
 }
@@ -43,14 +43,14 @@ function buildViewChildren(component: IComponent): void {
       if (component.declarationMap.has(selector)) {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
-        (component as any)[propertyName] = (foundMap as any[]).map(value => {
+        component[propertyName] = (foundMap as any[]).map(value => {
           if ((value.constructorFunction as any).selector === selector) return value.instanceScope;
         });
-      } else (component as any)[propertyName] = Array.from(component.$indivInstance.getRenderer.getElementsByTagName(selector, component.nativeElement)).map((findElementRef) => new ElementRef(findElementRef));
+      } else component[propertyName] = Array.from(component.$indivInstance.getRenderer.getAllElementsByQuery(selector, component.nativeElement)).map((findElementRef) => new ElementRef(findElementRef));
     }
     if (utils.isFunction(selector)) {
       const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
-      if (foundMap) (component as any)[propertyName] = (foundMap as any[]).map(value => {
+      if (foundMap) component[propertyName] = (foundMap as any[]).map(value => {
         if (value.constructorFunction === selector) return value.instanceScope;
       });
     }
