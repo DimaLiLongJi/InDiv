@@ -36,6 +36,7 @@ export function Component(options: TComponentOptions): (_constructor: Function) 
     (_constructor as any).selector = options.selector;
     const vm: IComponent = _constructor.prototype;
     if (options.template) vm.template = options.template;
+    if (options.templateUrl) vm.templateUrl = options.templateUrl;
     if (options.providers) vm.privateProviders = [...options.providers];
 
     // 变更策略

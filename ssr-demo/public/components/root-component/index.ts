@@ -1,4 +1,4 @@
-import './style.less';
+// import './style.less';
 
 import { Component, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
 

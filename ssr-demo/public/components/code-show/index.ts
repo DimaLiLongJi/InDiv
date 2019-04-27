@@ -1,4 +1,4 @@
-import 'highlight.js/styles/atom-one-dark.css';
+// import 'highlight.js/styles/atom-one-dark.css';
 
 import { Component, OnInit, AfterMount, Input, ChangeDetectionStrategy } from '@indiv/core';
 import hljs from 'highlight.js';

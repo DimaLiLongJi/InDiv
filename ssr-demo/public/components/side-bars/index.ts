@@ -1,4 +1,4 @@
-import './style.less';
+// import './style.less';
 
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestory, Input, ContentChild, ContentChildren, AfterMount, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
@@ -27,8 +27,8 @@ export default class SideBar implements OnInit, AfterMount, RouteChange, OnDesto
     public num: number = 1;
     public subscribeToken: Subscription;
     @Input() handleSideBar: () => void;
-    @ContentChild('a') htmltemplateA: HTMLElement;
-    @ContentChildren('a') htmltemplateAs: HTMLElement[];
+    @ContentChild('a') htmltemplateA: any;
+    @ContentChildren('a') htmltemplateAs: any[];
     @MarkForCheck() marker: TMarkForCheck;
 
     constructor(

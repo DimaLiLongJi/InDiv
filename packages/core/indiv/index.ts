@@ -290,7 +290,7 @@ export class InDiv {
 
     lifecycleCaller(component, 'nvOnInit');
     lifecycleCaller(component, 'watchData');
-    if (!component.template) throw new Error('must set template or templateUrl in bootstrap component');
+    if (!component.template && !component.templateUrl) throw new Error('must set template or templateUrl in bootstrap component');
 
     return component;
   }
@@ -308,8 +308,7 @@ export class InDiv {
    * @memberof InDiv
    */
   public async runComponentRenderer<R = Element>(component: IComponent, nativeElement: R, initVnode?: Vnode[]): Promise<IComponent> {
-    const template = component.template;
-    if (template && typeof template === 'string' && nativeElement) {
+    if ((component.template || component.templateUrl) && nativeElement) {
       lifecycleCaller(component, 'nvBeforeMount');
       await this.render<R>(component, nativeElement, initVnode);
 
@@ -357,7 +356,7 @@ export class InDiv {
   }
 
   /**
-   * render adn replace DOM
+   * render and replace DOM
    *
    * @private
    * @template R

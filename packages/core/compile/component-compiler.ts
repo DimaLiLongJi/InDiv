@@ -218,10 +218,10 @@ export async function componentCompiler(nativeElement: any, componentInstance: I
       if (componentInstance.parseVnodeOptions.directives.indexOf(key) === -1 && (value as any).nvType === 'nvDirective') componentInstance.parseVnodeOptions.directives.push(key);
     });
   }
-  if (!componentInstance.templateVnode) componentInstance.templateVnode = parseTemplateToVnode(componentInstance.template, componentInstance.parseVnodeOptions);
-  if (!componentInstance.compileInstance) componentInstance.compileInstance = new Compile(nativeElement, componentInstance);
   // call templateChecker,when env is ssr,will render templateUrl to template
   if (!componentInstance.template) (componentInstance.$indivInstance as InDiv).templateChecker(componentInstance);
+  if (!componentInstance.templateVnode) componentInstance.templateVnode = parseTemplateToVnode(componentInstance.template, componentInstance.parseVnodeOptions);
+  if (!componentInstance.compileInstance) componentInstance.compileInstance = new Compile(nativeElement, componentInstance);
 
   let saveVnode: Vnode[] = [];
   try {
