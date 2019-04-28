@@ -21,7 +21,7 @@ interface Info {
 @Component({
     selector: 'middleware-container',
     // templateUrl: './template.html',
-    templateUrl: '/pages/middleware/template.html',
+    templateUrl: 'pages/middleware/template.html',
     // template: (`
     //     <div class="page-container">
     //         <div class="info-content" nv-repeat="info in infos">

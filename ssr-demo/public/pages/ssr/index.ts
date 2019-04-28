@@ -21,7 +21,7 @@ interface Info {
 @Component({
     selector: 'ssr-container',
     // templateUrl: './template.html',
-    templateUrl: '/pages/ssr/template.html',
+    templateUrl: 'pages/ssr/template.html',
     // template: (`
     //     <div class="page-container">
     //         <div class="info-content" nv-repeat="info in infos">

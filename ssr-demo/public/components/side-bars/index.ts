@@ -18,7 +18,7 @@ type nav = {
 @Component({
     selector: 'side-bar',
     // templateUrl: './template.html',
-    templateUrl: '/components/side-bars/template.html',
+    templateUrl: 'components/side-bars/template.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

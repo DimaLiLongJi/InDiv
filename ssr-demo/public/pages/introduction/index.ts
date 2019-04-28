@@ -12,7 +12,7 @@ type Info = {
 @Component({
     selector: 'introduction-container',
     // templateUrl: './template.html',
-    templateUrl: '/pages/introduction/template.html',
+    templateUrl: 'pages/introduction/template.html',
     // template: (`
     //     <div class="page-container">
     //         <div class="info-content" nv-repeat="info in infos">

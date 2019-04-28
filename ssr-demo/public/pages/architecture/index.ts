@@ -12,7 +12,7 @@ type Tcontent = {
 @Component({
   selector: 'architecture-container',
   // templateUrl: './template.html',
-  templateUrl: '/pages/architecture/template.html',
+  templateUrl: 'pages/architecture/template.html',
   // template: (`
   //   <div class="page-container">
   //     <div class="info-content" nv-repeat="info in content">

@@ -20,7 +20,7 @@ interface Info {
 @Component({
   selector: 'docs-indiv-container',
   // templateUrl: './template.html',
-  templateUrl: '/pages/docs/indiv/template.html',
+  templateUrl: 'pages/docs/indiv/template.html',
   // template: (`
   //   <div class="child-page-wrapper">
   //     <div class="info-content" nv-repeat="info in content">

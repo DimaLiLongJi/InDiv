@@ -21,7 +21,7 @@ interface Info {
 @Component({
   selector: 'docs-http-container',
   // templateUrl: './template.html',
-  templateUrl: '/pages/docs/http/template.html',
+  templateUrl: 'pages/docs/http/template.html',
   // template: (`
   //   <div class="child-page-wrapper">
   //     <div class="info-content" nv-repeat="info in content">

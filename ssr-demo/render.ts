@@ -86,7 +86,7 @@ const routes: IndivRouter.TRouter[] = [
 
 async function render(_path: string, query: any, rootPath: string): Promise<string> {
     const routeConfig = {
-        _path,
+        path: _path,
         query,
         routes,
         rootPath,

@@ -6,7 +6,7 @@ import hljs from 'highlight.js';
 @Component({
     selector: 'code-shower',
     // templateUrl: './template.html',
-    templateUrl: '/components/code-show/template.html',
+    templateUrl: 'components/code-show/template.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CodeShower implements OnInit, AfterMount {
