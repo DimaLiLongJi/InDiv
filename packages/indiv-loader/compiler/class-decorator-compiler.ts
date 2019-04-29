@@ -26,7 +26,11 @@ export function classDecoratorCompiler(rootPath: string, body: any, parseVnodeOp
             }
             // build template
             if (templateProperty && templateProperty.value && templateProperty.value.value) {
-              const templatePath = path.resolve(rootPath, templateProperty.value.value);
+              let templatePath = templateProperty.value.value;
+              if (rootPath) {
+                if (path.isAbsolute(templateProperty.value.value)) templatePath = `${rootPath}${templateProperty.value.value}`;
+                else templatePath = path.resolve(rootPath, templateProperty.value.value);
+              }
               const templateString = fs.readFileSync(templatePath).toString();
               componentMap.set(selector, {
                 templateUrl: templatePath,

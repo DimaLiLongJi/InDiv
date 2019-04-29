@@ -54,9 +54,9 @@ export default class AppComponent {}
 **特别说明：`templateUrl?: string;` 可为相对路径和绝对路径**
 
 1. 相对路径（v2.0.5）：
-  - 前端使用，如果相对路径的根路径为当前文件路径，则需要使用 `@indiv/indiv-loader` 进行编译处理并无需根路径
-  - 后端使用，需要在 `@indiv/platform-server` 的 `renderToString` 方法中配置统一的模板根路径 `templateRootPath: string` **实际上 SSR 使用 `path.resolve(templateRootPath, templateUrl)` 解析出的模板路径用做组件的模板**
-2. 绝对路径（v2.0.8）：需要使用 `@indiv/indiv-loader` 并配置 options: `templateRootPath: string` 模板根路径进行编译处理，支持前后端同构
+  - 前端使用，如果 `@indiv/indiv-loader` 的 `options` 没有指定 `templateRootPath?: string` 则默认**该文件路径为根路径**
+  - 后端使用，需要在 `@indiv/platform-server` 的 `renderToString` 方法中配置统一的模板根路径 `templateRootPath: string` **`path.resolve(templateRootPath, templateUrl)` 解析出的模板路径即为组件的模板所在路径**
+2. 绝对路径（v2.0.8）：需要使用 `@indiv/indiv-loader` 并配置 options: `templateRootPath: string` 模板根路径进行编译处理，**支持前后端同构** **`${templateRootPath}${templateUrl}` 解析出的模板路径即为组件的模板所在路径**
 TODO
 
 现在我们将 `AppComponent` 在 `app.module.ts` 中声明一下并放入引导启动的 `bootstrap`中。启动http服务就可以看到页面上渲染出 `AppComponent` 的模板了。

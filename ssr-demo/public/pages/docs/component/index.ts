@@ -24,7 +24,7 @@ interface Info {
 @Component({
   selector: 'docs-component-container',
   // templateUrl: './template.html',
-  templateUrl: 'pages/docs/component/template.html',
+  templateUrl: './pages/docs/component/template.html',
   providers: [
     {
       provide: TestService,

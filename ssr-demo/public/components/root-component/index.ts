@@ -5,7 +5,7 @@ import { Component, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from 
 @Component({
     selector: 'root-component',
     // templateUrl: './template.html',
-    templateUrl: 'components/root-component/template.html',
+    templateUrl: '/components/root-component/template.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export default class RootComponent {
