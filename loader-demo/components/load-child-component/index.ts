@@ -6,7 +6,8 @@ import { PrivateService } from '../../services/private.service';
 
 @Component({
   selector: 'test-loadchild-component',
-  templateUrl: './template.html',
+  // templateUrl: './template.html',
+  templateUrl: './load-child-component/template.html',
 })
 export class TestLoadchildComponent implements HasRender {
   public ttt: string[] = [

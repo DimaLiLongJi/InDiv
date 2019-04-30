@@ -23,6 +23,6 @@ app.use('/indiv-doc', async(req, res) => {
 });
 
 app.listen(2234);
-console.log(`listening port 2234`);
+console.log(`listening on http://localhost:2234/indiv-doc`);
 
 module.exports = app;

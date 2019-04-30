@@ -11,7 +11,8 @@ import { TestDirective } from '../../directives/test-directive';
 
 @Component({
   selector: 'container-wrap',
-  templateUrl: './template.html',
+  templateUrl: '/container/template.html',
+  // templateUrl: './template.html',
 })
 export default class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange, BeforeMount {
   @Watch() public aaaaa: number;

@@ -28,6 +28,7 @@ export class InDiv {
   private renderer: Renderer;
   private isServerRendering: boolean = false;
   private indivEnv: string = 'browser';
+  private templateRootPath?: string;
 
   /**
    * create an instance of InDiv
@@ -183,6 +184,48 @@ export class InDiv {
   }
 
   /**
+   * set templateRootPath for SSR
+   *
+   * @param {string} templateRootPath
+   * @memberof InDiv
+   */
+  public setTemplateRootPath(templateRootPath: string): void {
+    if (!this.isServerRendering) return;
+    this.templateRootPath = templateRootPath;
+  }
+
+  /**
+   * get templateRootPath for SSR
+   *
+   * @readonly
+   * @type {string}
+   * @memberof InDiv
+   */
+  public get getTemplateRootPath(): string {
+    return this.templateRootPath;
+  }
+
+  /**
+   * for SSR to build templateUrl
+   *
+   * @param {IComponent} component
+   * @memberof InDiv
+   */
+  public templateChecker(component: IComponent): void {}
+  
+  /**
+   * set templateChecker
+   * 
+   * used in @Indiv/platform-browser
+   *
+   * @param {(component: IComponent) => void} checker
+   * @memberof InDiv
+   */
+  public setTemplateChecker(checker: (component: IComponent) => void): void {
+    this.templateChecker = checker;
+  }
+
+  /**
    * bootstrap NvModule
    * 
    * if not use Route it will be used
@@ -230,7 +273,7 @@ export class InDiv {
     const otherInjector = otherModule ? otherModule.privateInjector : null;
     const component: IComponent = factoryCreator(BootstrapComponent, otherInjector, provideAndInstanceMap);
 
-    component.$indivInstance = this;
+    component.indivInstance = this;
 
     if (otherModule) {
       otherModule.declarations.forEach((findDeclaration: Function) => {
@@ -247,7 +290,7 @@ export class InDiv {
 
     lifecycleCaller(component, 'nvOnInit');
     lifecycleCaller(component, 'watchData');
-    if (!component.template) throw new Error('must set template or templateUrl in bootstrap component');
+    if (!component.template && !component.templateUrl) throw new Error('must set template or templateUrl in bootstrap component');
 
     return component;
   }
@@ -265,8 +308,7 @@ export class InDiv {
    * @memberof InDiv
    */
   public async runComponentRenderer<R = Element>(component: IComponent, nativeElement: R, initVnode?: Vnode[]): Promise<IComponent> {
-    const template = component.template;
-    if (template && typeof template === 'string' && nativeElement) {
+    if ((component.template || component.templateUrl) && nativeElement) {
       lifecycleCaller(component, 'nvBeforeMount');
       await this.render<R>(component, nativeElement, initVnode);
 
@@ -314,7 +356,7 @@ export class InDiv {
   }
 
   /**
-   * render adn replace DOM
+   * render and replace DOM
    *
    * @private
    * @template R

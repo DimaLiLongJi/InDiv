@@ -15,7 +15,7 @@ export interface IDirective {
     [key: string]: any;
     _save_inputs?: any;
     nativeElement?: Element | any;
-    $indivInstance?: InDiv | any;
+    indivInstance?: InDiv;
     declarationMap?: Map<string, Function>;
     inputsList?: { propertyName: string; inputName: string; }[];
     directiveList?: DirectiveList[];

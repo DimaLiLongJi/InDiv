@@ -16,7 +16,7 @@ export type RouteCongfig = {
  * @returns {string[]}
  */
 export function buildPath(url: string): string[] {
-  const renderRouteList = url === '/' ? ['/'] : url.split('/');
+  const renderRouteList = (url === '/') ? ['/'] : url.split('/');
   renderRouteList[0] = '/';
   return renderRouteList;
 }
@@ -160,4 +160,3 @@ export function NvModuleFactoryLoader(loadChild: Function, currentUrlPath: strin
 
   return loadModuleInstance;
 }
-

@@ -1,15 +1,12 @@
+// import 'highlight.js/styles/atom-one-dark.css';
+
 import { Component, OnInit, AfterMount, Input, ChangeDetectionStrategy } from '@indiv/core';
 import hljs from 'highlight.js';
 
 @Component({
     selector: 'code-shower',
-    template: (`
-        <div nv-on:click="show()" class="code-show-container">
-            <blockquote>
-                <pre><code nv-class="type">{{codes}}</code></pre>
-            </blockquote>
-        </div>
-    `),
+    // templateUrl: './template.html',
+    templateUrl: 'components/code-show/template.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CodeShower implements OnInit, AfterMount {

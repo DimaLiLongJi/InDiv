@@ -25,7 +25,7 @@ export abstract class Renderer {
   public abstract nativeElementToVnode(nativeElement: any, parseVnodeOptions?: ParseOptions): Vnode[];
 
   /**
-   * get nativeElement by TagName
+   * get nativeElements by TagName
    *
    * @abstract
    * @param {string} name
@@ -34,6 +34,36 @@ export abstract class Renderer {
    * @memberof Renderer
    */
   public abstract getElementsByTagName(name: string, master?: any): any;
+
+  /**
+   * get nativeElement by cssSelector
+   * 
+   * getElementByQuery(cssSelector, master) as master.querySelector(cssSelector)
+   *
+   * cssSelector is standard css-selectors
+   * 
+   * @abstract
+   * @param {string} query
+   * @param {*} [master]
+   * @returns {*}
+   * @memberof Renderer
+   */
+  public abstract getElementByQuery(cssSelector: string, master?: any): any;
+
+  /**
+   * get nativeElements by cssSelector
+   *
+   * getAllElementsByQuery(cssSelector, master) as master.querySelectorAll(cssSelector)
+   *
+   * cssSelector is standard css-selectors
+   *
+   * @abstract
+   * @param {string} cssSelector
+   * @param {*} [master]
+   * @returns {*}
+   * @memberof Renderer
+   */
+  public abstract getAllElementsByQuery(cssSelector: string, master?: any): any;
 
   /**
    * check nativeElement has childnodes or not

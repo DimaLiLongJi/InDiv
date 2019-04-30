@@ -64,7 +64,7 @@ export function mountDirective(componentInstance: IComponent, componentAndDirect
       directive.instanceScope = buildDirectiveScope(directive.constructorFunction, directive.inputs, directive.nativeElement, componentInstance);
     }
 
-    directive.instanceScope.$indivInstance = componentInstance.$indivInstance;
+    directive.instanceScope.indivInstance = componentInstance.indivInstance;
 
     if (!cacheDirective) lifecycleCaller(directive.instanceScope, 'nvOnInit');
   }

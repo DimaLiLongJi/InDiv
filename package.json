@@ -24,9 +24,9 @@
     "start": "npm run clean && webpack --watch --mode=development & nodemon app.js",
     "start:js": "npm run build && webpack --watch --env=testjs --mode=development & nodemon app.js",
     "start:docs": "docsify serve ./docs --port 2334",
+    "start:indiv-loader": "npm run clean && npm run build:indiv-loader && webpack --config webpack.test-loader.config.js --watch --mode=development & nodemon app.js",
+    "testartst:indiv-loader:js": "npm run build && webpack --config webpack.test-loader.config.js --watch --mode=development --env=testjs & nodemon app.js",
     "test:ssr": "rm -rf ./ssr-demo/node_modules/@indiv && npm run build && cp -r packages ./ssr-demo/node_modules/@indiv && npm run clean",
-    "test:indiv-loader": "npm run clean && npm run build:indiv-loader && webpack --config webpack.test-loader.config.js --watch --mode=development & nodemon app.js",
-    "test:indiv-loader:js": "npm run build && webpack --config webpack.test-loader.config.js --watch --mode=development --env=testjs & nodemon app.js",
     "clean": "rm -rf packages/core/build packages/platform-browser/build packages/common/build packages/router/build packages/platform-server/build packages/indiv-loader/build dist .rpt2_cache",
     "build": "npm run clean && npm run build:core && npm run build:platform-browser && npm run build:common && npm run build:router && npm run build:platform-server && npm run build:indiv-loader",
     "build:core": "rm -rf packages/core/build && rollup --config packages/core/rollup.typescript.config.js && rollup --config packages/core/rollup.config.js && rm -rf packages/core/build/bundle.js",
@@ -57,6 +57,7 @@
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/runtime-corejs2": "^7.2.0",
+    "@types/highlight.js": "^9.12.3",
     "@types/jsdom": "^12.2.1",
     "@types/loader-utils": "^1.1.3",
     "awesome-typescript-loader": "^5.2.1",
@@ -86,8 +87,8 @@
     "style-loader": "^0.23.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.3",
-    "webpack": "^4.26.1",
-    "webpack-cli": "^3.1.2"
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "dependencies": {
     "axios": "^0.18.0",
