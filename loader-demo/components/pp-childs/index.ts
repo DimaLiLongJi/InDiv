@@ -2,7 +2,8 @@ import { Component, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, On
 
 @Component({
   selector: 'pp-childs',
-  templateUrl: './template.html',
+  // templateUrl: './template.html',
+  templateUrl: 'pp-childs/template.html',
 })
 export class PCChild implements OnInit, BeforeMount, AfterMount, ReceiveInputs, OnDestory {
   // public props: any;

@@ -11,7 +11,7 @@ function clearInstanceWhenDestory(vm: IComponent | IDirective): void {
   const type = (vm.constructor as any).nvType;
   vm.nativeElement = null;
   vm._save_inputs = null;
-  vm.$indivInstance = null;
+  vm.indivInstance = null;
   vm.declarationMap = null;
   vm.inputsList = null;
   vm.directiveList = null;

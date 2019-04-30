@@ -4,7 +4,8 @@ import { HeroSearchService, HeroSearchService1 } from '../../services/service';
 
 @Component({
   selector: 'R2',
-  templateUrl: './template.html',
+  // templateUrl: './template.html',
+  templateUrl: 'r2/template.html',
 })
 export class R2 implements OnInit, BeforeMount, AfterMount, DoCheck, RouteChange, OnDestory {
   public state: any;

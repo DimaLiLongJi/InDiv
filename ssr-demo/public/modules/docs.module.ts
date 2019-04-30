@@ -1,5 +1,5 @@
 import { NvModule } from '@indiv/core';
-
+import ShareModule from './share.module';
 import DocsContainer from '../pages/docs';
 import DocsComponentContainer from '../pages/docs/component';
 import DocsTemplateContainer from '../pages/docs/template';
@@ -13,6 +13,9 @@ import DocsHttpContainer from '../pages/docs/http';
 import TestService from '../service/test.service';
 
 @NvModule({
+    imports: [
+        ShareModule
+    ],
     declarations: [
         DocsContainer,
         DocsComponentContainer,

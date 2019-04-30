@@ -1,5 +1,6 @@
 import { InDiv, IPlugin } from '@indiv/core';
 import { _document, PlatfromServerRenderer } from '../renderer';
+import { templateChecker } from './template-checker';
 
 /**
  * indiv plugin for platform server
@@ -18,5 +19,7 @@ export class PlatformServer implements IPlugin {
     indivInstance.setIndivEnv('server', true);
     indivInstance.setRootElement(_document.getElementById('root'));
     indivInstance.setRenderer(PlatfromServerRenderer);
+    // 设置服务端模板编译检查，用于编译HTML
+    indivInstance.setTemplateChecker(templateChecker);
   }
 }

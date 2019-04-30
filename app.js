@@ -23,18 +23,18 @@ app.use('/demo_js', (req, res, next) => {
 app.get('/success', (req, res, next) => {
   setTimeout(() => {
     res.send({
-      message: 1
+      message: 1,
     });
   }, 2000);
 });
 
 app.get('/error', (req, res, next) => {
   res.send({
-    message: 1
+    message: 1,
   });
 });
 
 app.listen(1234);
-console.log(`listening port 1234`);
+console.log(`listening port http://localhost:1234/demo`);
 
 module.exports = app;

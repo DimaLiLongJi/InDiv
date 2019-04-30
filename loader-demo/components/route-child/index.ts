@@ -3,7 +3,8 @@ import { HeroSearchService2 } from '../../services/service';
 
 @Component({
   selector: 'route-child',
-  templateUrl: './template.html',
+  // templateUrl: './template.html',
+  templateUrl: 'route-child/template.html',
 })
 export class RouteChild implements OnInit, HasRender, ReceiveInputs, OnDestory {
   @StateSetter() public setState: SetState;

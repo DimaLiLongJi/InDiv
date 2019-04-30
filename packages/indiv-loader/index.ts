@@ -13,14 +13,18 @@ import { classDecoratorCompiler, classPropertyCompiler } from './compiler';
 export default function indivLoader(source: string): string {
   const that: loader.LoaderContext = this;
 
-  const rootPath: string = that.context;
-  const options: { useTypeScript?: boolean } = getOptions(that);
+  let rootPath: string = that.context;
+  const options: {
+    useTypeScript?: boolean,
+    templateRootPath?: string,
+  } = getOptions(that);
 
   // use typeScript compiler
   let useTypeScript = false;
   if (/\.ts$/.test(that.resourcePath) || /\.tsx$/.test(that.resourcePath)) useTypeScript = true;
   if (/\.js$/.test(that.resourcePath) || /\.jsx$/.test(that.resourcePath)) useTypeScript = false;
   if (options && options.useTypeScript) useTypeScript = true;
+  if (options && options.templateRootPath) rootPath = options.templateRootPath;
 
   const parseVnodeOptions: {
     components: string[],

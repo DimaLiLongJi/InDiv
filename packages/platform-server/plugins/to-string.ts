@@ -12,13 +12,16 @@ import { buildPath, generalDistributeRoutes, RouteCongfig } from '../router';
  * @export
  * @param {Function} rootModule
  * @param {RouteCongfig} [routeConfig]
+ * @param {string} [templateRootPath]
  * @returns {Promise<string>}
  */
-export async function renderToString(rootModule: Function, routeConfig?: RouteCongfig): Promise<string> {
+export async function renderToString(rootModule: Function, routeConfig?: RouteCongfig, templateRootPath?: string): Promise<string> {
   if (_document.getElementById('root')) _document.getElementById('root').innerHTML = '';
   const inDiv = new InDiv();
   inDiv.bootstrapModule(rootModule);
   inDiv.use(PlatformServer);
+  // 设置 SSR 编译的模板根路径
+  if (templateRootPath) inDiv.setTemplateRootPath(templateRootPath);
   await inDiv.init();
   if (routeConfig) {
     const nvLocatiton = new NvLocation(inDiv);

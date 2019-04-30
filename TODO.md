@@ -44,7 +44,9 @@
 - [x] @ContentChild @ContentChildren
 - [x] 检查变更 onPush
 - [x] force render api
-- [x] comment vnode
+- [x] comment vnod
+- [x] support absolute path of `templateUrl`e
+- [x] 前后端因为 `templateUrl` 导致的无法同构
 - [ ] AOT compiler with babylon and traversal
 - [ ] support Pipe
 - [ ] @indiv/cli

@@ -18,6 +18,8 @@ DOM 是复杂的，因此使组件与它分离，会让我们的应用程序，�
 export abstract class Renderer {
   public abstract nativeElementToVnode(nativeElement: any, parseVnodeOptions?: ParseOptions): Vnode[];
   public abstract getElementsByTagName(name: string): any;
+  public abstract getElementByQuery(cssSelector: string, master?: any): any; // v2.1.0新增，支持css选择器查找
+  public abstract getAllElementsByQuery(cssSelector: string, master?: any): any; // v2.1.0新增，支持css选择器查找
   public abstract hasChildNodes(nativeElement: any): boolean;
   public abstract getChildNodes(nativeElement: any): any[];
   public abstract removeChild(parent: any, child: any): void;

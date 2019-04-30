@@ -1,8 +1,7 @@
 import { NvModule } from '@indiv/core';
-
+import ShareModule from './share.module';
 import RootComponent from '../components/root-component';
 import SideBar from '../components/side-bars';
-import CodeShower from '../components/code-show';
 import RouterModule from '../routes';
 
 import TestService from '../service/test.service';
@@ -10,11 +9,11 @@ import TestService from '../service/test.service';
 @NvModule({
   imports: [
     RouterModule,
+    ShareModule
   ],
   declarations: [
     SideBar,
     RootComponent,
-    CodeShower,
   ],
   providers: [
     TestService,

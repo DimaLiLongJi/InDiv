@@ -6,7 +6,8 @@ import { TestDirective } from '../../directives/test-directive';
 
 @Component({
   selector: 'test-component',
-  templateUrl: './template.html',
+  // templateUrl: './template.html',
+  templateUrl: './test-component/template.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasRender {

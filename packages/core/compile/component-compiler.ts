@@ -77,7 +77,7 @@ export async function mountComponent(componentInstance: IComponent, componentAnd
       component.instanceScope = buildComponentScope(component.constructorFunction, component.inputs, component.nativeElement, componentInstance);
     }
 
-    component.instanceScope.$indivInstance = componentInstance.$indivInstance;
+    component.instanceScope.indivInstance = componentInstance.indivInstance;
     // 赋值 <nv-content>的 Vnode[] 给组件实例nvContent
     component.instanceScope.nvContent = component.nvContent;
 
@@ -103,7 +103,7 @@ export async function mountComponent(componentInstance: IComponent, componentAnd
     if (!foundCacheComponentList.find(cache => cache.nativeElement === component.nativeElement)) {
       await component.instanceScope.render();
       // in ssr env indiv won't call nvAfterMount
-      if (!component.instanceScope.$indivInstance.getIndivEnv.isServerRendering) lifecycleCaller(component.instanceScope, 'nvAfterMount');
+      if (!component.instanceScope.indivInstance.getIndivEnv.isServerRendering) lifecycleCaller(component.instanceScope, 'nvAfterMount');
     } else {
       // 如果找到该组件 并且为脏组件
       if (component.isDirty) {

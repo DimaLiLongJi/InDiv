@@ -159,18 +159,59 @@ module.exports = {
 
 直接访问`http://localhost:2234/demo/a` 就可以访问到由`dev.html`已经渲染出了路由配置中的`/a`的组件了。
 
-**如果组件使用了 `templateUrl`，应该先使用 webpack 先编译一遍再引入到后端渲染方法中**
+
+## 核心方法 renderToString
+
+服务端渲染的核心方法便是 `renderToString(rootModule: Function, routeConfig?: RouteCongfig, templateRootPath?: string): Promise<string>`。
+
+`renderToString` 通过在内部配置了 `inDiv.use(PlatformServer);` 获得服务端平台编译的能力，并将整个应用 **异步地**输出为字符串。
+
+`renderToString` 共接收三个参数：
+
+1. `rootModule: Function` 应用的根模块
+2. `routeConfig?: RouteCongfig` 路由的配置项
+3. `templateRootPath?: string` 模板的根路径**v2.1.0新增，用于同构**
 
 
 ## 同构
 
 **注意**
 
-现阶段（v2.0.7）如果组件使用了 HTML 模板的话，则无法使用同构。
+**v2.1.0开始，如果组件使用了 `templateUrl`，推荐使用绝对路径并配合设置 `renderToString` 的第三个参数 `templateRootPath?: string` 完成前后端同构**
 
-因为 `templateUrl` 读取模板暂时还未实现。（先立个flag）
+> render.ts
 
-因此 只有使用 `template` 的组件才可以同构！
+```typescript
+import IndivPlatformServer = require('@indiv/platform-server');
+import IndivRouter = require('@indiv/router');
+import RootModule = require('./public/app.module');
+
+const routes: IndivRouter.TRouter[] = [
+  {
+    path: '/',
+    redirectTo: '/a',
+    children: [
+      path: '/a',
+      loadChild: require('./public/components/page-a/page-a.component').default,
+    ]
+  },
+];
+
+async function render(path: string, query: any, rootPath: string): Promise<string> {
+    const routeConfig = {
+        path,
+        query,
+        routes,
+        rootPath,
+    };
+    const _string = await IndivPlatformServer.renderToString(RootModule.default, routeConfig, './public');
+    return _string;
+}
+
+module.exports = {
+    render,
+};
+```
 
 
 ## 原理

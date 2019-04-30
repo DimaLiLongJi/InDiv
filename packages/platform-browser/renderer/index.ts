@@ -76,6 +76,16 @@ export class PlatfromBrowserRenderer extends Renderer {
     else return document.getElementsByTagName(name);
   }
 
+  public getElementByQuery(name: string, master?: any): Element {
+    if (master) return (master as Element).querySelector(name);
+    else return document.querySelector(name);
+  }
+
+  public getAllElementsByQuery(name: string, master?: any): NodeListOf<Element>  {
+    if (master) return (master as Element).querySelectorAll(name);
+    else return document.querySelectorAll(name);
+  }
+
   public hasChildNodes(nativeElement: Element): boolean {
     return nativeElement.hasChildNodes();
   }
