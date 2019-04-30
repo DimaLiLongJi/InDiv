@@ -1,5 +1,5 @@
-<a name="2.0.8"></a>
-# [2.0.8](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.0.8) (2019-04-12)
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.1.0) (2019-04-30)
 
 
 ### Features

@@ -53,10 +53,10 @@ export default class AppComponent {}
 
 **特别说明：`templateUrl?: string;` 可为相对路径和绝对路径**
 
-1. 相对路径（v2.0.5）：
+1. 相对路径：
   - 前端使用，如果 `@indiv/indiv-loader` 的 `options` 没有指定 `templateRootPath?: string` 则默认**该文件路径为根路径**
-  - 后端使用，需要在 `@indiv/platform-server` 的 `renderToString` 方法中配置统一的模板根路径 `templateRootPath: string` **`path.resolve(templateRootPath, templateUrl)` 解析出的模板路径即为组件的模板所在路径**
-2. 绝对路径（v2.0.8）：需要使用 `@indiv/indiv-loader` 并配置 options: `templateRootPath: string` 模板根路径进行编译处理，**支持前后端同构** **`${templateRootPath}${templateUrl}` 解析出的模板路径即为组件的模板所在路径**
+  - 后端使用(**v2.1.0**)，需要在 `@indiv/platform-server` 的 `renderToString` 方法中配置统一的模板根路径 `templateRootPath: string` **`path.resolve(templateRootPath, templateUrl)` 解析出的模板路径即为组件的模板所在路径**
+2. 绝对路径(**v2.1.0**)：需要使用 `@indiv/indiv-loader` 并配置 options: `templateRootPath: string` 模板根路径进行编译处理，**支持前后端同构** **`${templateRootPath}${templateUrl}` 解析出的模板路径即为组件的模板所在路径**
 TODO
 
 现在我们将 `AppComponent` 在 `app.module.ts` 中声明一下并放入引导启动的 `bootstrap`中。启动http服务就可以看到页面上渲染出 `AppComponent` 的模板了。
@@ -369,7 +369,7 @@ export default class AppComponent {
 
   1. 当参数为 `string` 时，如果为该组件可以使用的组件或指令的 `selector` ，则属性为匹配到的**组件或指令实例**的第一项或是全部
   2. 当参数为 `string` 时，如果为该组件内部某个元素的 `tag name` ，则属性为匹配到的**ElementRef实例**的第一项或是全部
-  3. 当参数为 `string` 时，如果为该组件内部某个元素的 **css 标准选择器语法** ，则属性为匹配到的**ElementRef实例**的第一项或是全部（**v2.0.8开始支持**）
+  3. 当参数为 `string` 时，如果为该组件内部某个元素的 **css 标准选择器语法** ，则属性为匹配到的**ElementRef实例**的第一项或是全部（**v2.1.0开始支持**）
   4. 当参数为 `Function` 时，如果为该组件可以使用的组件或指令的 `class` ，则属性为匹配到的**组件或指令实例**的第一项或是全部
 
 > app.component.ts
@@ -518,7 +518,7 @@ export default class ShowAgeComponent implements nvReceiveInputs {
 
   1. 当参数为`string`时，如果为该组件**视图插槽内**的组件或指令的`selector`，则属性为匹配到的**组件或指令实例**的第一项或是全部
   2. 当参数为`string`时，如果为该组件**视图插槽内**的某个元素的`tag name`，则属性为匹配到的**ElementRef实例**的第一项或是全部
-  3. 当参数为 `string` 时，如果为该组件**视图插槽内**的某个元素的 **css 标准选择器语法** ，则属性为匹配到的**ElementRef实例**的第一项或是全部（**v2.0.8开始支持**）
+  3. 当参数为 `string` 时，如果为该组件**视图插槽内**的某个元素的 **css 标准选择器语法** ，则属性为匹配到的**ElementRef实例**的第一项或是全部（**v2.1.0开始支持**）
   4. 当参数为`Function`时，如果为该组件**视图插槽内**使用的组件或指令的`class`，则属性为匹配到的**组件或指令实例**的第一项或是全部
 
 > components/show-age/show-age.component.ts

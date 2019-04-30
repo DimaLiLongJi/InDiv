@@ -170,14 +170,14 @@ module.exports = {
 
 1. `rootModule: Function` 应用的根模块
 2. `routeConfig?: RouteCongfig` 路由的配置项
-3. `templateRootPath?: string` 模板的根路径**v2.0.8新增，用于同构**
+3. `templateRootPath?: string` 模板的根路径**v2.1.0新增，用于同构**
 
 
 ## 同构
 
 **注意**
 
-**如果组件使用了 `templateUrl`，推荐使用绝对路径并配合设置 `renderToString` 的第三个参数 `templateRootPath?: string` 完成前后端同构(v2.0.8开始支持)**
+**v2.1.0开始，如果组件使用了 `templateUrl`，推荐使用绝对路径并配合设置 `renderToString` 的第三个参数 `templateRootPath?: string` 完成前后端同构**
 
 > render.ts
 

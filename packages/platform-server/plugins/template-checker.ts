@@ -12,15 +12,10 @@ export function templateChecker(component: IComponent) {
   if (component.template) return;
   if (component.templateUrl) {
     let templatePath = component.templateUrl;
-    const templateRootPath = (component.$indivInstance as InDiv).getTemplateRootPath;
+    const templateRootPath = (component.indivInstance as InDiv).getTemplateRootPath;
     if (templateRootPath) {
-      if (path.isAbsolute(component.templateUrl)) {
-        templatePath = `${templateRootPath}${component.templateUrl}`;
-        console.log(8888888, templateRootPath, component.templateUrl, templatePath);
-      } else {
-        templatePath = path.resolve(templateRootPath, component.templateUrl);
-        console.log(9999999, templateRootPath, component.templateUrl, templatePath);
-      }
+      if (path.isAbsolute(component.templateUrl)) templatePath = `${templateRootPath}${component.templateUrl}`;
+      else templatePath = path.resolve(templateRootPath, component.templateUrl);
     }
     const templateString = fs.readFileSync(templatePath).toString();
     component.template = templateString;

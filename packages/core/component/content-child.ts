@@ -19,9 +19,9 @@ function buildContentChild(component: IComponent): void {
         const found = foundMap.find(value => ((value.constructorFunction as any).selector === selector) && value.isFromContent);
         if (found) component[propertyName] = found.instanceScope;
       } else {
-        const content = component.$indivInstance.getRenderer.getElementByQuery('nv-content', component.nativeElement);
+        const content = component.indivInstance.getRenderer.getElementByQuery('nv-content', component.nativeElement);
         if (!content) return; 
-        const findElementRef = component.$indivInstance.getRenderer.getElementByQuery(selector, content);
+        const findElementRef = component.indivInstance.getRenderer.getElementByQuery(selector, content);
         if (findElementRef) component[propertyName] = new ElementRef(findElementRef);
       }
     }
@@ -49,10 +49,10 @@ function buildContentChildren(component: IComponent): void {
           if (((value.constructorFunction as any).selector === selector) && value.isFromContent) return value.instanceScope;
         });
       } else {
-        const contents: any[] = component.$indivInstance.getRenderer.getAllElementsByQuery('nv-content', component.nativeElement);
+        const contents: any[] = component.indivInstance.getRenderer.getAllElementsByQuery('nv-content', component.nativeElement);
         const propertyValues: any[] = [];
         Array.from(contents).forEach(content => {
-          Array.from(component.$indivInstance.getRenderer.getAllElementsByQuery(selector, content)).forEach((findElementRef: any) => {
+          Array.from(component.indivInstance.getRenderer.getAllElementsByQuery(selector, content)).forEach((findElementRef: any) => {
             propertyValues.push(new ElementRef(findElementRef));
           });
         });

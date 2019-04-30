@@ -82,7 +82,13 @@ module.exports = (env) => ({
           },
         },
         'awesome-typescript-loader',
-        path.resolve(__dirname, 'packages/indiv-loader/build/index.js'),
+        {
+          loader: path.resolve(__dirname, 'packages/indiv-loader/build/index.js'),
+          options: {
+            useTypeScript: true,
+            templateRootPath: './loader-demo/components',
+          },
+        },
       ],
     },
     {

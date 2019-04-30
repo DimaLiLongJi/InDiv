@@ -58,7 +58,8 @@ export function Component(options: TComponentOptions): (_constructor: Function) 
 
     vm.watchData = function (): void {
       // call templateChecker,when env is ssr,will render templateUrl to template first
-      if (!(this as IComponent).template) (this as IComponent).$indivInstance.templateChecker(this as IComponent);
+      // if (!(this as IComponent).template) (this as IComponent).indivInstance.templateChecker(this as IComponent);
+      (this as IComponent).indivInstance.templateChecker(this as IComponent);
       // OnPush 模式只能通过 inputs 触发更新，所以直接跳出
       if ((this as IComponent).nvChangeDetection === ChangeDetectionStrategy.OnPush) return;
 

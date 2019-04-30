@@ -2,7 +2,8 @@ import { Component, DoCheck, BeforeMount, ReceiveInputs, SetState, OnDestory, El
 
 @Component({
   selector: 'pc-component',
-  templateUrl: './template.html',
+  // templateUrl: './template.html',
+  templateUrl: './pc-component/template.html',
 })
 export class PComponent implements DoCheck, BeforeMount, ReceiveInputs, OnDestory {
   @StateSetter() public setState: SetState;

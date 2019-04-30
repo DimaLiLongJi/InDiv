@@ -273,7 +273,7 @@ export class InDiv {
     const otherInjector = otherModule ? otherModule.privateInjector : null;
     const component: IComponent = factoryCreator(BootstrapComponent, otherInjector, provideAndInstanceMap);
 
-    component.$indivInstance = this;
+    component.indivInstance = this;
 
     if (otherModule) {
       otherModule.declarations.forEach((findDeclaration: Function) => {
