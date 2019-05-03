@@ -15,8 +15,8 @@ function clearInstanceWhenDestory(vm: IComponent | IDirective): void {
   vm.declarationMap = null;
   vm.inputsList = null;
   vm.directiveList = null;
-  vm.otherInjector = null;
-  vm.privateInjector = null;
+  vm.injector.parentInjector = null;
+  vm.injector = null;
   vm.privateProviders = null;
   if (type === 'nvComponent') (vm as IComponent).dependencesList = null;
   if (type === 'nvComponent') (vm as IComponent).compileInstance = null;

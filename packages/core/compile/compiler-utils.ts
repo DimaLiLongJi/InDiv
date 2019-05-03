@@ -13,10 +13,9 @@ import { factoryCreator } from '../di';
  * @returns {IComponent}
  */
 export function buildComponentScope(ComponentClass: Function, inputs: any, nativeElement: any, componentInstance: IComponent): IComponent {
-  const provideAndInstanceMap = new Map();
-  provideAndInstanceMap.set(ElementRef, new ElementRef(nativeElement));
-
-  const _component: IComponent = factoryCreator(ComponentClass, componentInstance.otherInjector, provideAndInstanceMap);
+  const componentInjector = componentInstance.injector.fork();
+  componentInjector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef(nativeElement));
+  const _component: IComponent = factoryCreator(ComponentClass, componentInjector);
 
   // _save_inputs in @Component for save props states
   _component._save_inputs = inputs;
@@ -34,9 +33,6 @@ export function buildComponentScope(ComponentClass: Function, inputs: any, nativ
     if (!_component.declarationMap.has(key)) _component.declarationMap.set(key, declaration);
   });
 
-  // bind compile for @Component
-  _component.otherInjector = componentInstance.otherInjector;
-
   return _component;
 }
 
@@ -51,10 +47,9 @@ export function buildComponentScope(ComponentClass: Function, inputs: any, nativ
  * @returns {IDirective}
  */
 export function buildDirectiveScope(DirectiveClass: Function, inputs: any, nativeElement: any, componentInstance: IComponent): IDirective {
-  const provideAndInstanceMap = new Map();
-  provideAndInstanceMap.set(ElementRef, new ElementRef(nativeElement));
-
-  const _directive: IDirective = factoryCreator(DirectiveClass, componentInstance.otherInjector, provideAndInstanceMap);
+  const directiveInjector = componentInstance.injector.fork();
+  directiveInjector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef(nativeElement));
+  const _directive: IDirective = factoryCreator(DirectiveClass, directiveInjector);
 
   _directive._save_inputs = inputs;
   _directive.nativeElement = nativeElement;
@@ -68,8 +63,6 @@ export function buildDirectiveScope(DirectiveClass: Function, inputs: any, nativ
   componentInstance.declarationMap.forEach((declaration, key) => {
     if (!_directive.declarationMap.has(key)) _directive.declarationMap.set(key, declaration);
   });
-
-  _directive.otherInjector = componentInstance.otherInjector;
 
   return _directive;
 }

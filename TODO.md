@@ -37,16 +37,32 @@
 - [x] JIT compile (default)
 - [x] vnode to string
 - [x] SSR 服务端渲染 server side render: @indiv/platform-server
-- [x] @ViewChild @ViewChildren
 - [x] AOT compile
 - [x] lifecycleCaller
-- [x] `<nv-content></nv-content>`
-- [x] @ContentChild @ContentChildren
 - [x] 检查变更 onPush
 - [x] force render api
 - [x] comment vnod
 - [x] support absolute path of `templateUrl`e
 - [x] 前后端因为 `templateUrl` 导致的无法同构
 - [ ] AOT compiler with babylon and traversal
-- [ ] support Pipe
 - [ ] @indiv/cli
+- [ ] angular装饰器
+  - [x] [Component](https://www.angular.cn/api/core/Component)
+  - [x] [Directive](https://www.angular.cn/api/core/Pipe)
+  - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
+  - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
+  - [x] [NgModule](https://www.angular.cn/api/core/NgModule)
+  - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
+  - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
+  - [x] [ViewChild](https://www.angular.cn/api/core/ViewChild)
+  - [x] [ViewChildren](https://www.angular.cn/api/core/ViewChildren)
+  - [x] [Input](https://www.angular.cn/api/core/Input)
+  - [ ] [Output](https://www.angular.cn/api/core/Output)
+  - [ ] [HostBinding](https://www.angular.cn/api/core/HostBinding)
+  - [ ] [HostListener](https://www.angular.cn/api/core/HostListener)
+  - [ ] [Host](https://www.angular.cn/api/core/Host)
+  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
+  - [ ] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
+  - [ ] [Self](https://www.angular.cn/api/core/Self)
+  - [ ] [Optional](https://www.angular.cn/api/core/Optional)
+  - [ ] [Attribute](https://www.angular.cn/api/core/Attribute)

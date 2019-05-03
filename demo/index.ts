@@ -644,8 +644,9 @@ class M1 {
   constructor(
     private hsr: HeroSearchService,
     private indiv: InDiv,
+    private m2: M2,
   ) {
-    console.log(999999888777, '来自注入的模块 M1', this.hsr, this.indiv);
+    console.log(999999888777, '来自注入的模块 M1', this.hsr, this.indiv, this.m2);
   }
 }
 

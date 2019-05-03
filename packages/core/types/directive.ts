@@ -19,8 +19,7 @@ export interface IDirective {
     declarationMap?: Map<string, Function>;
     inputsList?: { propertyName: string; inputName: string; }[];
     directiveList?: DirectiveList[];
-    otherInjector?: Injector;
-    privateInjector?: Injector;
+    injector?: Injector;
     privateProviders?: TProviders;
 
     nvOnInit?(): void;

@@ -31,7 +31,6 @@ export function Component(options: TComponentOptions): (_constructor: Function) 
   return function (_constructor: Function): void {
     injected(_constructor);
     (_constructor as any).isSingletonMode = false;
-    rootInjector.setProvider(_constructor, _constructor);
     (_constructor as any).nvType = 'nvComponent';
     (_constructor as any).selector = options.selector;
     const vm: IComponent = _constructor.prototype;

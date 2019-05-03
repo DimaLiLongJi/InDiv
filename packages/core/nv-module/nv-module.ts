@@ -1,5 +1,5 @@
 import { INvModule, TProviders } from '../types';
-import { injected, Injector, rootInjector } from '../di';
+import { injected, rootInjector } from '../di';
 
 export type TNvModuleOptions = {
   imports?: Function[];
@@ -26,7 +26,6 @@ export function NvModule(options: TNvModuleOptions): (_constructor: Function) =>
     rootInjector.setProvider(_constructor, _constructor);
     (_constructor as any).nvType = 'nvModule';
     const vm: INvModule = _constructor.prototype;
-    vm.privateInjector = new Injector();
     if (!vm.providers) vm.providers = [];
     if (options.imports) vm.imports = options.imports;
     if (options.declarations) vm.declarations = options.declarations;

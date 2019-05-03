@@ -110,6 +110,33 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
 </div>
 ```
 
+
+#### 未来
+
+该项目创建的目的是为了学习下 angular 的架构，并尝试用自己的想法实现，因为目标为实现 angular 的一些装饰器和功能。
+
+- [ ] angular decorators
+  - [x] [Component](https://www.angular.cn/api/core/Component)
+  - [x] [Directive](https://www.angular.cn/api/core/Pipe)
+  - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
+  - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
+  - [x] [NgModule as NvModule](https://www.angular.cn/api/core/NgModule)
+  - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
+  - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
+  - [x] [ViewChild](https://www.angular.cn/api/core/ViewChild)
+  - [x] [ViewChildren](https://www.angular.cn/api/core/ViewChildren)
+  - [x] [Input](https://www.angular.cn/api/core/Input)
+  - [ ] [Output](https://www.angular.cn/api/core/Output)
+  - [ ] [HostBinding](https://www.angular.cn/api/core/HostBinding)
+  - [ ] [HostListener](https://www.angular.cn/api/core/HostListener)
+  - [ ] [Host](https://www.angular.cn/api/core/Host)
+  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
+  - [ ] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
+  - [ ] [Self](https://www.angular.cn/api/core/Self)
+  - [ ] [Optional](https://www.angular.cn/api/core/Optional)
+  - [ ] [Attribute](https://www.angular.cn/api/core/Attribute)
+
+
 #### 反馈
 
 * 你可以和我一起做贡献！你可以到 [Github](https://github.com/DimaLiLongJi/InDiv) 上的仓库中提出文档方面的问题，并创建Pull Requests

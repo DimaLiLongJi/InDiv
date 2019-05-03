@@ -1,6 +1,6 @@
 import { INvModule, IComponent } from '../types';
 import { factoryCreator, rootInjector } from '../di';
-import { getModuleFromRootInjector } from '../nv-module';
+import { factoryModule } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';
 import { lifecycleCaller } from '../lifecycle';
@@ -38,8 +38,7 @@ export class InDiv {
    * @memberof InDiv
    */
   constructor() {
-    rootInjector.setProvider(InDiv, InDiv);
-    rootInjector.setInstance(InDiv, this);
+    rootInjector.setProviderAndInstance(InDiv, InDiv, this);
   }
 
   /**
@@ -236,8 +235,7 @@ export class InDiv {
    */
   public bootstrapModule(Nvmodule: Function): void {
     if (!Nvmodule) throw new Error('must send a root module');
-
-    this.rootModule = getModuleFromRootInjector(Nvmodule, null);
+    this.rootModule = factoryModule(Nvmodule, true);
     this.declarations = [...this.rootModule.declarations];
   }
 
@@ -267,11 +265,9 @@ export class InDiv {
    * @memberof InDiv
    */
   public initComponent<R = Element>(BootstrapComponent: Function, nativeElement: R, otherModule?: INvModule): IComponent {
-    const provideAndInstanceMap = new Map();
-    provideAndInstanceMap.set(ElementRef, new ElementRef<R>(nativeElement));
-
-    const otherInjector = otherModule ? otherModule.privateInjector : null;
-    const component: IComponent = factoryCreator(BootstrapComponent, otherInjector, provideAndInstanceMap);
+    const injector = otherModule ? otherModule.injector.fork() : this.rootModule.injector.fork();
+    injector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef<R>(nativeElement));
+    const component: IComponent = factoryCreator(BootstrapComponent, injector);
 
     component.indivInstance = this;
 
@@ -284,9 +280,6 @@ export class InDiv {
         if (!component.declarationMap.has((findDeclaration as any).selector)) component.declarationMap.set((findDeclaration as any).selector, findDeclaration);
       });
     }
-
-    // set otherInjector for components from loadModule to be used
-    component.otherInjector = otherInjector;
 
     lifecycleCaller(component, 'nvOnInit');
     lifecycleCaller(component, 'watchData');
@@ -324,7 +317,7 @@ export class InDiv {
    * expose function for render Component
    * 
    * if otherModule don't has use rootModule
-   * if has otherModule, build component will use privateInjector from loadModule instead of rootInjector
+   * if has otherModule, build component will use injector from loadModule instead of rootInjector
    * if has initVnode, it will use initVnode for new Component
    *
    * @template R

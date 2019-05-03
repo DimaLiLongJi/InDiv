@@ -30,6 +30,6 @@
   },
   "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
   "peerDependencies": {
-    "@indiv/core": "2.1.0"
+    "@indiv/core": "2.1.1"
   }
 }

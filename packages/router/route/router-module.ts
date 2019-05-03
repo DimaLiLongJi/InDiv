@@ -1,4 +1,4 @@
-import { IComponent, INvModule, ComponentList, DirectiveList, factoryModule, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller } from '@indiv/core';
+import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, factoryModule } from '@indiv/core';
 import { nvRouteStatus, NvLocation } from './location';
 import { RouterTo, RouterFrom } from './directives';
 
@@ -490,7 +490,7 @@ export class RouteModule {
   /**
    * instantiate Component
    * 
-   * use InDiv renderComponent
+   * use InDiv initComponent
    * 
    * if argument has loadModule, use loadModule
    * if argument has'nt loadModule, use rootModule in InDiv
@@ -546,7 +546,7 @@ export class RouteModule {
 
     if (!loadModule) throw new Error('load child failed, please check your routes.');
 
-    const loadModuleInstance = factoryModule(loadModule, loadModule.prototype.privateInjector);
+    const loadModuleInstance = factoryModule(loadModule);
     this.loadModuleMap.set(currentUrlPath, loadModuleInstance);
 
     return loadModuleInstance;

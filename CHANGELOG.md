@@ -1,3 +1,15 @@
+<a name="2.1.1"></a>
+# [2.1.1](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.1.1) (2019-05-03)
+
+
+### Features
+
+* **package:@indiv/core** use `injector.fork()` to build `Injector`
+* **package:@indiv/platform-server** update `factoryModule`
+* **package:@indiv/router** update `factoryModule`
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.1.0) (2019-04-30)
 
