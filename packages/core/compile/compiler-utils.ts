@@ -13,7 +13,7 @@ import { factoryCreator } from '../di';
  * @returns {IComponent}
  */
 export function buildComponentScope(ComponentClass: Function, inputs: any, nativeElement: any, componentInstance: IComponent): IComponent {
-  const componentInjector = componentInstance.injector.fork();
+  const componentInjector = componentInstance.$privateInjector.fork();
   componentInjector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef(nativeElement));
   const _component: IComponent = factoryCreator(ComponentClass, componentInjector);
 
@@ -47,7 +47,7 @@ export function buildComponentScope(ComponentClass: Function, inputs: any, nativ
  * @returns {IDirective}
  */
 export function buildDirectiveScope(DirectiveClass: Function, inputs: any, nativeElement: any, componentInstance: IComponent): IDirective {
-  const directiveInjector = componentInstance.injector.fork();
+  const directiveInjector = componentInstance.$privateInjector.fork();
   directiveInjector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef(nativeElement));
   const _directive: IDirective = factoryCreator(DirectiveClass, directiveInjector);
 

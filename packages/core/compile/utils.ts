@@ -35,13 +35,12 @@ export function argumentsIsReady(exp: string, vnode: Vnode, vm: any): boolean {
     args.forEach(arg => {
       const _argKey = arg.split('.')[0];
       if (arg === '') return;
+      if (arg === '$event') return;
       else if (arg === '$element') return;
       else if (arg === 'true' || arg === 'false') return;
       else if (arg === 'null') return;
       else if (arg === 'undefined') return;
-      else if (/^\'.*\'$/.test(arg)) return;
-      else if (/^\".*\"$/.test(arg)) return;
-      else if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /^[0-9]*$/.test(arg)) return;
+      else if (/^\'.*\'$/.test(arg) || /^\".*\"$/.test(arg) || /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/.test(arg)) return;
       else if (isFromVM(vm, arg)) return;
       else if (vnode.repeatData && vnode.repeatData.hasOwnProperty(_argKey)) return;
       else result = false;
@@ -71,12 +70,12 @@ export function valueIsReady(exp: string, vnode: Vnode, vm: any): boolean {
     } else _exp = exp.split('.')[0]; // is common dirctive
 
     if (_exp === '') return true;
+    if (_exp === '$event') return true;
+    if (_exp === '$element') return true;
     else if (_exp === 'true' || _exp === 'false') return true;
     else if (_exp === 'null') return true;
     else if (_exp === 'undefined') return true;
-    else if (/^\'.*\'$/.test(_exp)) return true;
-    else if (/^\".*\"$/.test(_exp)) return true;
-    else if (!/^\'.*\'$/.test(_exp) && !/^\".*\"$/.test(_exp) && /^[0-9]*$/.test(_exp)) return true;
+    else if (/^\'.*\'$/.test(_exp) || /^\".*\"$/.test(_exp) || /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/.test(_exp)) return true;
     else if (isFromVM(vm, _exp)) return true;
     else if (vnode.repeatData && vnode.repeatData.hasOwnProperty(_exp)) return true;
     else return false;
@@ -140,7 +139,7 @@ export function getVMFunctionArguments(vm: any, exp: string, vnode: Vnode): any[
     if (isFromVM(vm, arg)) return argsList.push(getVMVal(vm, arg));
     if (/^\'.*\'$/.test(arg)) return argsList.push(arg.match(/^\'(.*)\'$/)[1]);
     if (/^\".*\"$/.test(arg)) return argsList.push(arg.match(/^\"(.*)\"$/)[1]);
-    if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /^[0-9]*$/.test(arg)) return argsList.push(Number(arg));
+    if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/.test(arg)) return argsList.push(Number(arg));
     if (vnode.repeatData) {
       // $index in this
       Object.keys(vnode.repeatData).forEach(key => {

@@ -18,8 +18,13 @@ export interface IDirective {
     indivInstance?: InDiv;
     declarationMap?: Map<string, Function>;
     inputsList?: { propertyName: string; inputName: string; }[];
+    viewChildList?: { propertyName: string; selector: string | Function; }[];
+    viewChildrenList?: { propertyName: string; selector: string | Function; }[];
+    contentChildList?: { propertyName: string; selector: string | Function; }[];
+    contentChildrenList?: { propertyName: string; selector: string | Function; }[];
+    hostListenerList?: { eventName: string; handler: (e: Event) => void; args?: string[] }[];
     directiveList?: DirectiveList[];
-    injector?: Injector;
+    $privateInjector?: Injector;
     privateProviders?: TProviders;
 
     nvOnInit?(): void;

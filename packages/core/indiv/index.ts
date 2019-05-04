@@ -265,7 +265,7 @@ export class InDiv {
    * @memberof InDiv
    */
   public initComponent<R = Element>(BootstrapComponent: Function, nativeElement: R, otherModule?: INvModule): IComponent {
-    const injector = otherModule ? otherModule.injector.fork() : this.rootModule.injector.fork();
+    const injector = otherModule ? otherModule.$privateInjector.fork() : this.rootModule.$privateInjector.fork();
     injector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef<R>(nativeElement));
     const component: IComponent = factoryCreator(BootstrapComponent, injector);
 

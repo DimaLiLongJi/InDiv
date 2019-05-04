@@ -16,7 +16,7 @@ export function factoryModule(FindNvModule: Function, isRoot?: boolean): INvModu
   if (!rootInjector.getInstance(FindNvModule)) {
     const injector = isRoot ? rootInjector : rootInjector.fork();
     moduleFound = factoryModuleWithInjector(FindNvModule, injector);
-    moduleFound.injector = injector;
+    moduleFound.$privateInjector = injector;
     rootInjector.setInstance(FindNvModule, moduleFound);
   } else moduleFound = rootInjector.getInstance(FindNvModule);
   return moduleFound;

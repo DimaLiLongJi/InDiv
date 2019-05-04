@@ -1,4 +1,4 @@
-import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter } from '@indiv/core';
+import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren } from '@indiv/core';
 import { RouteChange, RouteModule, TRouter } from '@indiv/router'; 
 import { HeroSearchService, HeroSearchService2 } from './service';
 
@@ -199,6 +199,7 @@ export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
     this.renderer.addEventListener(this.element.nativeElement, 'mouseover', this.changeColor);
     this.renderer.addEventListener(this.element.nativeElement, 'mouseout', this.removeColor);
   }
+
   public nvRouteChange(lastRoute: string, newRoute: string) {
     console.log(5555, 'nvRouteChange TestDirective', newRoute);
   }

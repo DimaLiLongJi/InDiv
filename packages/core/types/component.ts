@@ -36,10 +36,6 @@ export interface IComponent extends IDirective {
   template?: string;
   templateUrl?: string;
   nvChangeDetection?: ChangeDetectionStrategy;
-  viewChildList?: { propertyName: string; selector: string | Function; }[];
-  viewChildrenList?: { propertyName: string; selector: string | Function; }[];
-  contentChildList?: { propertyName: string; selector: string | Function; }[];
-  contentChildrenList?: { propertyName: string; selector: string | Function; }[];
   componentList?: ComponentList[];
 
   // compile template from string to templateVnode

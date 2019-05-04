@@ -32,6 +32,17 @@ export class Injector {
   private readonly instanceMap: Map<any, any> = new Map();
 
   /**
+   * Creates an instance of Injector
+   * 
+   * set provider and instance with Injector
+   * 
+   * @memberof Injector
+   */
+  constructor() {
+    this.setProviderAndInstance(Injector, Injector, this);
+  }
+
+  /**
    * set Provider(Map) for save provide
    *
    * @param {*} key

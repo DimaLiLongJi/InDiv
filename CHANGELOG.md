@@ -1,5 +1,5 @@
-<a name="2.1.1"></a>
-# [2.1.1](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.1.1) (2019-05-03)
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.2.0) (2019-05-05)
 
 
 ### Features
@@ -7,6 +7,7 @@
 * **package:@indiv/core** use `injector.fork()` to build `Injector`
 * **package:@indiv/platform-server** update `factoryModule`
 * **package:@indiv/router** update `factoryModule`
+* **package:@indiv/core** add `@HostListener` and `@HostBinding`
 
 
 

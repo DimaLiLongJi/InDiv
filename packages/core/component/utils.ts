@@ -1,4 +1,4 @@
-import { IComponent, ComponentList, DirectiveList } from '../types';
+import { IComponent, ComponentList, DirectiveList, IDirective } from '../types';
 import { utils } from '../utils';
 
 /**
@@ -95,19 +95,19 @@ export function collectDependencesFromViewModel(componentInstance: IComponent): 
 /**
  * to build foundMap for @ViewChild @ViewChildren @ContentChild @ContentChildren
  *
- * @param {IComponent} component
+ * @param {IComponent | IDirective} instance
  * @param {(string | Function)} selector
  * @returns {(ComponentList[] | DirectiveList[])}
  */
-export function buildFoundMap(component: IComponent, selector: string | Function): ComponentList[] | DirectiveList[] {
+export function buildFoundMap(instance: IComponent | IDirective, selector: string | Function): ComponentList[] | DirectiveList[] {
   let toFindMap: ComponentList[] | DirectiveList[];
   if (typeof selector === 'string') {
-    if ((component.declarationMap.get(selector) as any).nvType === 'nvComponent') toFindMap = component.componentList;
-    if ((component.declarationMap.get(selector) as any).nvType === 'nvDirective') toFindMap = component.directiveList;
+    if ((instance.declarationMap.get(selector) as any).nvType === 'nvComponent') toFindMap = instance.componentList;
+    if ((instance.declarationMap.get(selector) as any).nvType === 'nvDirective') toFindMap = instance.directiveList;
   }
   if (utils.isFunction(selector)) {
-    if ((selector as any).nvType === 'nvComponent') toFindMap = component.componentList;
-    if ((selector as any).nvType === 'nvDirective') toFindMap = component.directiveList;
+    if ((selector as any).nvType === 'nvComponent') toFindMap = instance.componentList;
+    if ((selector as any).nvType === 'nvDirective') toFindMap = instance.directiveList;
   }
   return toFindMap;
 }

@@ -80,6 +80,6 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
 export function factoryCreator(_constructor: Function, injector?: Injector): any {
     const args = injectionCreator(_constructor, injector);
     const factoryInstance = new (_constructor as any)(...args);
-    factoryInstance.injector = injector;
+    factoryInstance.$privateInjector = injector;
     return factoryInstance;
 }
