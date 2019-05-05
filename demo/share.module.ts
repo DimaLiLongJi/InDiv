@@ -1,4 +1,4 @@
-import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren } from '@indiv/core';
+import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener } from '@indiv/core';
 import { RouteChange, RouteModule, TRouter } from '@indiv/router'; 
 import { HeroSearchService, HeroSearchService2 } from './service';
 
@@ -188,16 +188,12 @@ export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
   @Input('test-directive') public testDirective: string;
   constructor(
     private hss: HeroSearchService,
-    private element: ElementRef,
     private renderer: Renderer,
   ) {}
 
   public nvOnInit() {
-    console.log(5555, 'init TestDirective', this.testDirective);
-    console.log(666666, 'init TestDirective element', this.element);
+    // console.log(5555, 'init TestDirective', this.testDirective);
     this.hss.test();
-    this.renderer.addEventListener(this.element.nativeElement, 'mouseover', this.changeColor);
-    this.renderer.addEventListener(this.element.nativeElement, 'mouseout', this.removeColor);
   }
 
   public nvRouteChange(lastRoute: string, newRoute: string) {
@@ -206,12 +202,13 @@ export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
   public nvReceiveInputs(nextInputs: any): void {
     console.log(33333, 'nvReceiveInputs test-directive', nextInputs);
   }
-
-  public changeColor = () => {
-    this.renderer.setStyle(this.element.nativeElement, 'color', 'red');
+  @HostListener('mouseover', ['$element'])
+  public changeColor = (element: any) => {
+    this.renderer.setStyle(element, 'color', 'red');
   }
-  public removeColor = () => {
-    this.renderer.removeStyle(this.element.nativeElement, 'color');
+  @HostListener('mouseout', ['$element'])
+  public removeColor = (element: any) => {
+    this.renderer.removeStyle(element, 'color');
   }
 }
 

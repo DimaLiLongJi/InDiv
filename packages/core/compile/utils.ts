@@ -91,6 +91,7 @@ export function valueIsReady(exp: string, vnode: Vnode, vm: any): boolean {
  * @returns {*}
  */
 export function getVMVal(vm: any, exp: string): any {
+  if (!exp) return vm;
   const valueList = exp.replace(/\(.*\)/, '').split('.');
   let value = vm;
   valueList.forEach(v => {

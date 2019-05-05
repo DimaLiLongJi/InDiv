@@ -10,16 +10,16 @@ import { buildFoundMap } from './utils';
  * @returns {void}
  */
 function buildViewChild(component: IComponent): void {
-  if (!component.viewChildList) return;
-  component.viewChildList.forEach(({ propertyName, selector }) => {
+  if (!component.$viewChildList) return;
+  component.$viewChildList.forEach(({ propertyName, selector }) => {
     if (typeof selector === 'string') {
-      if (component.declarationMap.has(selector)) {
+      if (component.$declarationMap.has(selector)) {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
         const found = foundMap.find(value => (value.constructorFunction as any).selector === selector);
         if (found) component[propertyName] = found.instanceScope;
       } else {
-        const findElementRef = component.indivInstance.getRenderer.getElementByQuery(selector, component.nativeElement);
+        const findElementRef = component.$indivInstance.getRenderer.getElementByQuery(selector, component.$nativeElement);
         if (findElementRef) component[propertyName] = new ElementRef(findElementRef);
       }
     }
@@ -37,16 +37,16 @@ function buildViewChild(component: IComponent): void {
  * @returns {void}
  */
 function buildViewChildren(component: IComponent): void {
-  if (!component.viewChildrenList) return;
-  component.viewChildrenList.forEach(({ propertyName, selector }) => {
+  if (!component.$viewChildrenList) return;
+  component.$viewChildrenList.forEach(({ propertyName, selector }) => {
     if (typeof selector === 'string') {
-      if (component.declarationMap.has(selector)) {
+      if (component.$declarationMap.has(selector)) {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
         component[propertyName] = (foundMap as any[]).map(value => {
           if ((value.constructorFunction as any).selector === selector) return value.instanceScope;
         });
-      } else component[propertyName] = Array.from(component.indivInstance.getRenderer.getAllElementsByQuery(selector, component.nativeElement)).map((findElementRef) => new ElementRef(findElementRef));
+      } else component[propertyName] = Array.from(component.$indivInstance.getRenderer.getAllElementsByQuery(selector, component.$nativeElement)).map((findElementRef) => new ElementRef(findElementRef));
     }
     if (utils.isFunction(selector)) {
       const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
@@ -84,8 +84,8 @@ export function buildViewChildandChildren(component: IComponent): void {
  */
 export function ViewChild(selector: Function | string): (target: IComponent, propertyName: string) => any {
   return function (target: IComponent, propertyName: string): any {
-    if (!target.viewChildList) target.viewChildList = [];
-    target.viewChildList.push({ propertyName, selector });
+    if (!target.$viewChildList) target.$viewChildList = [];
+    target.$viewChildList.push({ propertyName, selector });
     return target[propertyName];
   };
 }
@@ -106,8 +106,8 @@ export function ViewChild(selector: Function | string): (target: IComponent, pro
  */
 export function ViewChildren(selector: Function | string): (target: IComponent, propertyName: string) => any {
   return function (target: IComponent, propertyName: string): any {
-    if (!target.viewChildrenList) target.viewChildrenList = [];
-    target.viewChildrenList.push({ selector, propertyName });
+    if (!target.$viewChildrenList) target.$viewChildrenList = [];
+    target.$viewChildrenList.push({ selector, propertyName });
     return target[propertyName];
   };
 }

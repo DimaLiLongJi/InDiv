@@ -8,7 +8,7 @@ export type TComAndDir = {
     nativeElement: any;
     inputs: any;
     name: string;
-    nvContent?: Vnode[];
+    content?: Vnode[];
     isFromContent: boolean;
   }[];
   directives: {
@@ -22,27 +22,27 @@ export type TComAndDir = {
 
 export type ComponentList = {
   instanceScope: IComponent;
-  nvContent: Vnode[];
+  content: Vnode[];
   isDirty: boolean;
 } & DirectiveList;
 
 export interface IComponent extends IDirective {
   [key: string]: any;
-  dependencesList?: string[];
-  watchStatus?: 'pending' | 'available' | 'disable';
-  isWaitingRender?: boolean;
-  compileInstance?: Compile;
+  $dependencesList?: string[];
+  $watchStatus?: 'pending' | 'available' | 'disable';
+  $isWaitingRender?: boolean;
+  $compileInstance?: Compile;
 
-  template?: string;
-  templateUrl?: string;
-  nvChangeDetection?: ChangeDetectionStrategy;
-  componentList?: ComponentList[];
+  $template?: string;
+  $templateUrl?: string;
+  $nvChangeDetection?: ChangeDetectionStrategy;
+  $componentList?: ComponentList[];
 
   // compile template from string to templateVnode
-  parseVnodeOptions?: ParseOptions;
-  templateVnode?: Vnode[];
-  saveVnode?: Vnode[];
-  nvContent?: Vnode[];
+  $parseVnodeOptions?: ParseOptions;
+  $templateVnode?: Vnode[];
+  $saveVnode?: Vnode[];
+  $nvContent?: Vnode[];
 
   watchData?(): void;
   render?(): Promise<IComponent>;

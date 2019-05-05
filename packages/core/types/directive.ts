@@ -10,22 +10,29 @@ export type DirectiveList = {
     isFromContent: boolean;
 };
 
+export enum HostBindingListType {
+    property,
+    attr,
+    class,
+    style,
+}
 
 export interface IDirective {
     [key: string]: any;
-    _save_inputs?: any;
-    nativeElement?: Element | any;
-    indivInstance?: InDiv;
-    declarationMap?: Map<string, Function>;
-    inputsList?: { propertyName: string; inputName: string; }[];
-    viewChildList?: { propertyName: string; selector: string | Function; }[];
-    viewChildrenList?: { propertyName: string; selector: string | Function; }[];
-    contentChildList?: { propertyName: string; selector: string | Function; }[];
-    contentChildrenList?: { propertyName: string; selector: string | Function; }[];
-    hostListenerList?: { eventName: string; handler: (e: Event) => void; args?: string[] }[];
-    directiveList?: DirectiveList[];
+    $saveInputs?: any;
+    $nativeElement?: Element | any;
+    $indivInstance?: InDiv;
+    $declarationMap?: Map<string, Function>;
+    $inputsList?: { propertyName: string; inputName: string; }[];
+    $viewChildList?: { propertyName: string; selector: string | Function; }[];
+    $viewChildrenList?: { propertyName: string; selector: string | Function; }[];
+    $contentChildList?: { propertyName: string; selector: string | Function; }[];
+    $contentChildrenList?: { propertyName: string; selector: string | Function; }[];
+    $hostListenerList?: { eventName: string; propertyName: string; handler?: (e: Event) => void; args?: string[]; }[];
+    $hostBindingList?: { type: HostBindingListType; name: string; propertyName: any; }[];
+    $directiveList?: DirectiveList[];
     $privateInjector?: Injector;
-    privateProviders?: TProviders;
+    $privateProviders?: TProviders;
 
     nvOnInit?(): void;
     nvBeforeMount?(): void;

@@ -1,4 +1,4 @@
-import { ElementRef, utils, Directive, OnInit, ReceiveInputs, OnDestory, Input, Renderer } from '@indiv/core';
+import { ElementRef, utils, Directive, OnInit, ReceiveInputs, OnDestory, Input, Renderer, HostListener, HostBinding } from '@indiv/core';
 import { NvLocation } from './location';
 import { RouteChange } from './lifecycle';
 
@@ -11,22 +11,22 @@ import { RouteChange } from './lifecycle';
  * @implements {ReceiveInputs}
  * @implements {RouteChange}
  */
+// todo
 @Directive({
   selector: 'routerTo',
 })
 export class RouterTo implements OnInit, ReceiveInputs, RouteChange, OnDestory {
-  @Input('routerTo') private to: string;
+  @HostBinding('router-link-to') @Input('routerTo') private to: string;
   private from: string;
 
   constructor(
-    private renderer: Renderer,
-    private element: ElementRef,
+    // private renderer: Renderer,
+    // private element: ElementRef,
     private location: NvLocation,
   ) { }
 
   public nvOnInit() {
     this.resetState(this.to);
-    this.renderer.addEventListener(this.element.nativeElement, 'click', this.routeTo);
   }
 
   public nvReceiveInputs(nextInputs: string) {
@@ -38,16 +38,16 @@ export class RouterTo implements OnInit, ReceiveInputs, RouteChange, OnDestory {
   }
 
   public nvOnDestory() {
-    this.renderer.removeEventListener(this.element.nativeElement, 'click', this.routeTo);
-    this.renderer.removeAttribute(this.element.nativeElement, 'router-link-to');
+    // this.renderer.removeAttribute(this.element.nativeElement, 'router-link-to');
   }
 
-  private routeTo = () => {
+  @HostListener('click', ['$element'])
+  public routeTo = (element: any) => {
     this.resetState(this.to);
     const nvLocation = this.location.get();
     const currentUrl = `${nvLocation.path}${utils.buildQuery(nvLocation.query)}`;
     if (!this.to) {
-      console.error('Directive router-to on element', this.element.nativeElement, 'need a input');
+      console.error('Directive router-to on element', element, 'need a input');
       return;
     }
     if (this.from && currentUrl === this.from) this.location.set(this.to);
@@ -56,8 +56,8 @@ export class RouterTo implements OnInit, ReceiveInputs, RouteChange, OnDestory {
 
   private resetState(to: string) {
     this.to = to;
-    this.renderer.setAttribute(this.element.nativeElement, 'router-link-to', to);
-    this.from = this.renderer.getAttribute(this.element.nativeElement, 'router-link-from');
+    // this.renderer.setAttribute(this.element.nativeElement, 'router-link-to', to);
+    // this.from = this.renderer.getAttribute(this.element.nativeElement, 'router-link-from');
   }
 }
 

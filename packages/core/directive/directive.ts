@@ -21,9 +21,9 @@ export function Directive(options: TDirectiveOptions): (_constructor: Function) 
     (_constructor as any).nvType = 'nvDirective';
     (_constructor as any).selector = options.selector;
     const vm: IDirective = _constructor.prototype;
-    if (options.providers) vm.privateProviders = [...options.providers];
+    if (options.providers) vm.$privateProviders = [...options.providers];
 
-    vm.declarationMap = new Map();
+    vm.$declarationMap = new Map();
   };
 }
 

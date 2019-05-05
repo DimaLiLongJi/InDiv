@@ -568,7 +568,7 @@ export default class ShowAgeComponent implements nvReceiveInputs, AfterMount {
 
 * `constructor` 在类被实例化的时候回触发，你可以在这里初始化
 * `nvOnInit(): void;` constructor 之后，在这个生命周期中，可以获取 inputs，此生命周期会在开启监听前被触发，并且之后再也不会触发**推荐在此做数据初始化**
-* `nvBeforeMount(): void;` 在 nvOnInit 之后，template 挂载页面之前被触发，有组件第一次渲染页面（render）前会被触发
+* `nvBeforeMount(): void;` 在 nvOnInit 之后，template 挂载页面之前被触发，在组件第一次渲染页面（render）前会被触发
 * `nvHasRender(): void;` 在 nvAfterMount 之前，渲染完成后被触发，每次触发渲染页面（render）后都会被触发**为了避免递归render，在此生命周期内同步更改成员变量无法触发视图更新；当服务端环境时将无法触发此钩子之后的生命周期钩子（不包括此钩子）**
 * `nvAfterMount(): void;` 在 nvBeforeMount 之后和首次 nvHasRender 之后，template 挂载页面完毕之后被触发，只有组件第一次渲染页面（render）后挂载实例到DOM上后会被触发**推荐在此做异步拉取数据**
 * `nvDoCheck(): void;` 监听被监听的属性变化，当被监听的属性被更改后触发，可以在此步做 diff**尽量不要在此更改数据，会导致爆栈**

@@ -157,7 +157,7 @@ export class CompileUtil {
       if (!utils.hasWindowAndDocument()) return;
       if (isFromVM(vm, exp)) setVMVal(vm, exp, (event.target as HTMLInputElement).value);
       // OnPush 模式要允许触发更新
-      if ((vm as IComponent).nvChangeDetection === ChangeDetectionStrategy.OnPush) {
+      if ((vm as IComponent).$nvChangeDetection === ChangeDetectionStrategy.OnPush) {
         if ((vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
         (vm as IComponent).render();
       }
@@ -344,7 +344,7 @@ export class CompileUtil {
       copyRepeatData(child, repeatData);
       // 转移到 <nv-content>到组件视图上
       const isNvContentVNode = isTagName(child, 'nv-content');
-      if (isNvContentVNode) child.childNodes = vm.nvContent.map((nvContent: Vnode) => cloneVnode(nvContent, null, child));
+      if (isNvContentVNode) child.childNodes = vm.$nvContent.map((content: Vnode) => cloneVnode(content, null, child));
 
       const nodeAttrs = child.attributes;
       const text = child.template;
@@ -461,17 +461,17 @@ export class CompileUtil {
         if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/.test(arg)) return argsList.push(Number(arg));
       });
 
-      const saveWatchStatus = (vm as IComponent).watchStatus;
-      if (saveWatchStatus === 'available') (vm as IComponent).watchStatus = 'pending';
+      const saveWatchStatus = (vm as IComponent).$watchStatus;
+      if (saveWatchStatus === 'available') (vm as IComponent).$watchStatus = 'pending';
 
       fn.apply(vm, argsList);
 
       if (saveWatchStatus === 'available') {
-        (vm as IComponent).watchStatus = 'available';
-        if ((vm as IComponent).isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
-        if ((vm as IComponent).isWaitingRender) {
+        (vm as IComponent).$watchStatus = 'available';
+        if ((vm as IComponent).$isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
+        if ((vm as IComponent).$isWaitingRender) {
           (vm as IComponent).render();
-          (vm as IComponent).isWaitingRender = false;
+          (vm as IComponent).$isWaitingRender = false;
         }
       }
     };

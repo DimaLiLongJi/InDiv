@@ -269,21 +269,21 @@ export class InDiv {
     injector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef<R>(nativeElement));
     const component: IComponent = factoryCreator(BootstrapComponent, injector);
 
-    component.indivInstance = this;
+    component.$indivInstance = this;
 
     if (otherModule) {
       otherModule.declarations.forEach((findDeclaration: Function) => {
-        if (!component.declarationMap.has((findDeclaration as any).selector)) component.declarationMap.set((findDeclaration as any).selector, findDeclaration);
+        if (!component.$declarationMap.has((findDeclaration as any).selector)) component.$declarationMap.set((findDeclaration as any).selector, findDeclaration);
       });
     } else {
       this.rootModule.declarations.forEach((findDeclaration: Function) => {
-        if (!component.declarationMap.has((findDeclaration as any).selector)) component.declarationMap.set((findDeclaration as any).selector, findDeclaration);
+        if (!component.$declarationMap.has((findDeclaration as any).selector)) component.$declarationMap.set((findDeclaration as any).selector, findDeclaration);
       });
     }
 
     lifecycleCaller(component, 'nvOnInit');
     lifecycleCaller(component, 'watchData');
-    if (!component.template && !component.templateUrl) throw new Error('must set template or templateUrl in bootstrap component');
+    if (!component.$template && !component.$templateUrl) throw new Error('must set template or templateUrl in bootstrap component');
 
     return component;
   }
@@ -301,7 +301,7 @@ export class InDiv {
    * @memberof InDiv
    */
   public async runComponentRenderer<R = Element>(component: IComponent, nativeElement: R, initVnode?: Vnode[]): Promise<IComponent> {
-    if ((component.template || component.templateUrl) && nativeElement) {
+    if ((component.$template || component.$templateUrl) && nativeElement) {
       lifecycleCaller(component, 'nvBeforeMount');
       await this.render<R>(component, nativeElement, initVnode);
 
@@ -360,9 +360,9 @@ export class InDiv {
    * @memberof InDiv
    */
   private async render<R = Element>(component: IComponent, nativeElement: R, initVnode?: Vnode[]): Promise<void> {
-    // if has initVnode, assign initVnode for component.saveVnode 
-    if (initVnode) component.saveVnode = initVnode;
-    component.nativeElement = nativeElement;
+    // if has initVnode, assign initVnode for component.$saveVnode 
+    if (initVnode) component.$saveVnode = initVnode;
+    component.$nativeElement = nativeElement;
     await component.render();
   }
 }

@@ -1,32 +1,35 @@
 import { IComponent, IDirective } from '../types';
+import { addHostListener, removeHostListener, bindHostBinding } from '../directive';
 
 const stopRenderLifecycles: string[] = ['nvOnInit', 'watchData', 'nvBeforeMount', 'nvHasRender', 'nvOnDestory'];
 
 /**
  * clear prototypes when call nvOnDestory
  *
- * @param {(IComponent | IDirective)} vm
+ * @param {(IComponent | IDirective)} instance
  */
-function clearInstanceWhenDestory(vm: IComponent | IDirective): void {
-  const type = (vm.constructor as any).nvType;
-  vm.nativeElement = null;
-  vm._save_inputs = null;
-  vm.indivInstance = null;
-  vm.declarationMap = null;
-  vm.inputsList = null;
-  vm.directiveList = null;
-  vm.$privateInjector.parentInjector = null;
-  vm.$privateInjector = null;
-  vm.viewChildList = null;
-  vm.viewChildrenList = null;
-  vm.contentChildList = null;
-  vm.contentChildrenList = null;
-  if (type === 'nvComponent') (vm as IComponent).dependencesList = null;
-  if (type === 'nvComponent') (vm as IComponent).compileInstance = null;
-  if (type === 'nvComponent') (vm as IComponent).componentList = null;
-  if (type === 'nvComponent') (vm as IComponent).templateVnode = null;
-  if (type === 'nvComponent') (vm as IComponent).saveVnode = null;
-  if (type === 'nvComponent') (vm as IComponent).nvContent = null;
+function clearInstanceWhenDestory(instance: IComponent | IDirective): void {
+  const type = (instance.constructor as any).nvType;
+  instance.$nativeElement = null;
+  instance.$saveInputs = null;
+  instance.$indivInstance = null;
+  instance.$declarationMap = null;
+  instance.$directiveList = null;
+  instance.$privateInjector.parentInjector = null;
+  instance.$privateInjector = null;
+  instance.$inputsList = null;
+  instance.$viewChildList = null;
+  instance.$viewChildrenList = null;
+  instance.$contentChildList = null;
+  instance.$contentChildrenList = null;
+  instance.$hostListenerList = null;
+  instance.$hostBindingList = null;
+  if (type === 'nvComponent') (instance as IComponent).$dependencesList = null;
+  if (type === 'nvComponent') (instance as IComponent).$compileInstance = null;
+  if (type === 'nvComponent') (instance as IComponent).$componentList = null;
+  if (type === 'nvComponent') (instance as IComponent).$templateVnode = null;
+  if (type === 'nvComponent') (instance as IComponent).$saveVnode = null;
+  if (type === 'nvComponent') (instance as IComponent).$nvContent = null;
 }
 
 /**
@@ -35,39 +38,45 @@ function clearInstanceWhenDestory(vm: IComponent | IDirective): void {
  * if lifecycle is nvOnInit or watchData or nvBeforeMount or nvOnDestory, component won't render
  *
  * @export
- * @param {(IComponent | IDirective)} vm
+ * @param {(IComponent | IDirective)} instance
  * @param {string} lifecycle
  * @returns {void}
  */
-export function lifecycleCaller(vm: IComponent | IDirective, lifecycle: string): void {
-  if (!(vm as any)[lifecycle]) return;
+export function lifecycleCaller(instance: IComponent | IDirective, lifecycle: string): void {
+  if (lifecycle === 'nvAfterMount') {
+    addHostListener(instance);
+    bindHostBinding(instance);
+  }
+  if (lifecycle === 'nvOnDestory') removeHostListener(instance);
+
+  if (!(instance as any)[lifecycle]) return;
   // Component
-  if ((vm.constructor as any).nvType === 'nvComponent') {
-    const canRenderLifecycle = stopRenderLifecycles.indexOf(lifecycle) === -1;
-    const saveWatchStatus = (vm as IComponent).watchStatus;
+  if ((instance.constructor as any).nvType === 'nvComponent') {
+    const canRender = stopRenderLifecycles.indexOf(lifecycle) === -1;
+    const saveWatchStatus = (instance as IComponent).$watchStatus;
 
-    if (!canRenderLifecycle) (vm as IComponent).watchStatus = 'pending';
-    if (canRenderLifecycle && saveWatchStatus === 'available') (vm as IComponent).watchStatus = 'pending';
+    if (!canRender) (instance as IComponent).$watchStatus = 'pending';
+    if (canRender && saveWatchStatus === 'available') (instance as IComponent).$watchStatus = 'pending';
 
-    (vm as IComponent)[lifecycle]();
+    (instance as IComponent)[lifecycle]();
 
-    if (!canRenderLifecycle) {
-      (vm as IComponent).watchStatus = 'available';
-      (vm as IComponent).isWaitingRender = false;
+    if (!canRender) {
+      (instance as IComponent).$watchStatus = 'available';
+      (instance as IComponent).$isWaitingRender = false;
     }
-    if (canRenderLifecycle && saveWatchStatus === 'available') {
-      (vm as IComponent).watchStatus = 'available';
-      if ((vm as IComponent).isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
-      if ((vm as IComponent).isWaitingRender) {
-        (vm as IComponent).render();
-        (vm as IComponent).isWaitingRender = false;
+    if (canRender && saveWatchStatus === 'available') {
+      (instance as IComponent).$watchStatus = 'available';
+      if ((instance as IComponent).$isWaitingRender && (instance as IComponent).nvDoCheck) (instance as IComponent).nvDoCheck();
+      if ((instance as IComponent).$isWaitingRender) {
+        (instance as IComponent).render();
+        (instance as IComponent).$isWaitingRender = false;
       }
     }
-    if (lifecycle === 'nvOnDestory') clearInstanceWhenDestory(vm);
+    if (lifecycle === 'nvOnDestory') clearInstanceWhenDestory(instance);
   }
   // Directive
-  if ((vm.constructor as any).nvType === 'nvDirective') {
-    (vm as IDirective)[lifecycle]();
-    if (lifecycle === 'nvOnDestory') clearInstanceWhenDestory(vm);
+  if ((instance.constructor as any).nvType === 'nvDirective') {
+    (instance as IDirective)[lifecycle]();
+    if (lifecycle === 'nvOnDestory') clearInstanceWhenDestory(instance);
   }
 }

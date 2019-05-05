@@ -80,7 +80,7 @@ function buildDeclarations4Declarations(moduleInstance: INvModule): void {
   for (let i = 0; i < length; i++) {
     const FindDeclaration: any = moduleInstance.declarations[i];
     moduleInstance.declarations.forEach((needInjectDeclaration: any) => {
-      if (!FindDeclaration.prototype.declarationMap.has(needInjectDeclaration.selector)) FindDeclaration.prototype.declarationMap.set(needInjectDeclaration.selector, needInjectDeclaration);
+      if (!FindDeclaration.prototype.$declarationMap.has(needInjectDeclaration.selector)) FindDeclaration.prototype.$declarationMap.set(needInjectDeclaration.selector, needInjectDeclaration);
     });
   }
 }

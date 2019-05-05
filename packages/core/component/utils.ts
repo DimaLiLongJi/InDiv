@@ -2,13 +2,13 @@ import { IComponent, ComponentList, DirectiveList, IDirective } from '../types';
 import { utils } from '../utils';
 
 /**
- * collect dependences from inputs of @Component template
+ * collect dependences from inputs of @Component $template
  *
  * @param {IComponent} componentInstance
  * @returns {void}
  */
 function resolveInputs(componentInstance: IComponent): void {
-  const templateMatchResult: string[] = componentInstance.template.match(/\"\{[^\{\}]+?\}\"/g);
+  const templateMatchResult: string[] = componentInstance.$template.match(/\"\{[^\{\}]+?\}\"/g);
   if (!templateMatchResult) return;
   templateMatchResult.forEach((matchProps) => {
     const pureMatchProps = matchProps.replace(/^\"\{/, '').replace(/\}\"$/, '');
@@ -16,23 +16,36 @@ function resolveInputs(componentInstance: IComponent): void {
       const args = pureMatchProps.match(/\((.*)\)/)[1].replace(/\s+/g, '').split(',');
       args.forEach(arg => {
         const pureArg = arg.split('.')[0];
-        if (componentInstance && pureArg in componentInstance && componentInstance.dependencesList.indexOf(pureArg) === -1) componentInstance.dependencesList.push(pureArg);
+        if (componentInstance && pureArg in componentInstance && componentInstance.$dependencesList.indexOf(pureArg) === -1) componentInstance.$dependencesList.push(pureArg);
       });
     } else {
       const pureProps = pureMatchProps.split('.')[0];
-      if (componentInstance && pureProps in componentInstance && componentInstance.dependencesList.indexOf(pureProps) === -1) componentInstance.dependencesList.push(pureProps);
+      if (componentInstance && pureProps in componentInstance && componentInstance.$dependencesList.indexOf(pureProps) === -1) componentInstance.$dependencesList.push(pureProps);
     }
   });
 }
 
 /**
- * collect dependences from nv directives of @Component template
+ * collect dependences from @HostBinding of @Component
+ *
+ * @param {IComponent} componentInstance
+ * @returns {void}
+ */
+function resolveHostBinding(componentInstance: IComponent): void {
+  if (!componentInstance.$hostBindingList) return;
+  componentInstance.$hostBindingList.forEach(({propertyName}) => {
+    if (componentInstance.$dependencesList.indexOf(propertyName) === -1) componentInstance.$dependencesList.push(propertyName);
+  });
+}
+
+/**
+ * collect dependences from nv directives of @Component $template
  *
  * @param {IComponent} componentInstance
  * @returns {void}
  */
 function resolveDirective(componentInstance: IComponent): void {
-  const templateMatchResult: string[] = componentInstance.template.match(/nv\-[a-z,A-Z]+\=\"((?!nv\-)(?!\=).)+\"/g);
+  const templateMatchResult: string[] = componentInstance.$template.match(/nv\-[a-z,A-Z]+\=\"((?!nv\-)(?!\=).)+\"/g);
   if (!templateMatchResult) return;
   templateMatchResult.forEach((matchProps) => {
     const pureMatchProps = matchProps.split('=')[1].replace(/^\"/, '').replace(/\"$/, '');
@@ -40,7 +53,7 @@ function resolveDirective(componentInstance: IComponent): void {
       const args = pureMatchProps.replace(/^(\@)/, '').match(/\((.*)\)/)[1].replace(/\s+/g, '').split(',');
       args.forEach(arg => {
         const pureArg = arg.split('.')[0];
-        if (componentInstance && pureArg in componentInstance && componentInstance.dependencesList.indexOf(pureArg) === -1) componentInstance.dependencesList.push(pureArg);
+        if (componentInstance && pureArg in componentInstance && componentInstance.$dependencesList.indexOf(pureArg) === -1) componentInstance.$dependencesList.push(pureArg);
       });
     } else {
       let pureProps = null;
@@ -51,19 +64,19 @@ function resolveDirective(componentInstance: IComponent): void {
         pureProps = value.split('.')[0];
       }
       if (!/^nv-repeat=.*/.test(matchProps)) pureProps = pureMatchProps.split('.')[0];
-      if (componentInstance && pureProps in componentInstance && componentInstance.dependencesList.indexOf(pureProps) === -1) componentInstance.dependencesList.push(pureProps);
+      if (componentInstance && pureProps in componentInstance && componentInstance.$dependencesList.indexOf(pureProps) === -1) componentInstance.$dependencesList.push(pureProps);
     }
   });
 }
 
 /**
- * collect dependences from {{ }} of @Component template
+ * collect dependences from {{ }} of @Component $template
  *
  * @param {IComponent} componentInstance
  * @returns
  */
 function resolveTemplateText(componentInstance: IComponent) {
-  const templateMatchResult: string[] = componentInstance.template.match(/(\{\{[^\{\}]+?\}\})/g);
+  const templateMatchResult: string[] = componentInstance.$template.match(/(\{\{[^\{\}]+?\}\})/g);
   if (!templateMatchResult) return;
   templateMatchResult.forEach((matchProps) => {
     const pureMatchProps = matchProps.replace(/^\{\{/, '').replace(/\}\}$/, '');
@@ -71,23 +84,24 @@ function resolveTemplateText(componentInstance: IComponent) {
       const args = pureMatchProps.match(/\((.*)\)/)[1].replace(/\s+/g, '').split(',');
       args.forEach(arg => {
         const pureArg = arg.split('.')[0];
-        if (componentInstance && pureArg in componentInstance && componentInstance.dependencesList.indexOf(pureArg) === -1) componentInstance.dependencesList.push(pureArg);
+        if (componentInstance && pureArg in componentInstance && componentInstance.$dependencesList.indexOf(pureArg) === -1) componentInstance.$dependencesList.push(pureArg);
       });
     } else {
       const pureProps = pureMatchProps.split('.')[0];
-      if (componentInstance && pureProps in componentInstance && componentInstance.dependencesList.indexOf(pureProps) === -1) componentInstance.dependencesList.push(pureProps);
+      if (componentInstance && pureProps in componentInstance && componentInstance.$dependencesList.indexOf(pureProps) === -1) componentInstance.$dependencesList.push(pureProps);
     }
   });
 }
 
 /**
- * collect dependences from @Component template
+ * collect dependences from @Component $template
  *
  * @export
  * @param {IComponent} componentInstance
  */
 export function collectDependencesFromViewModel(componentInstance: IComponent): void {
   resolveInputs(componentInstance);
+  resolveHostBinding(componentInstance);
   resolveDirective(componentInstance);
   resolveTemplateText(componentInstance);
 }
@@ -102,12 +116,12 @@ export function collectDependencesFromViewModel(componentInstance: IComponent): 
 export function buildFoundMap(instance: IComponent | IDirective, selector: string | Function): ComponentList[] | DirectiveList[] {
   let toFindMap: ComponentList[] | DirectiveList[];
   if (typeof selector === 'string') {
-    if ((instance.declarationMap.get(selector) as any).nvType === 'nvComponent') toFindMap = instance.componentList;
-    if ((instance.declarationMap.get(selector) as any).nvType === 'nvDirective') toFindMap = instance.directiveList;
+    if ((instance.$declarationMap.get(selector) as any).nvType === 'nvComponent') toFindMap = instance.$componentList;
+    if ((instance.$declarationMap.get(selector) as any).nvType === 'nvDirective') toFindMap = instance.$directiveList;
   }
   if (utils.isFunction(selector)) {
-    if ((selector as any).nvType === 'nvComponent') toFindMap = instance.componentList;
-    if ((selector as any).nvType === 'nvDirective') toFindMap = instance.directiveList;
+    if ((selector as any).nvType === 'nvComponent') toFindMap = instance.$componentList;
+    if ((selector as any).nvType === 'nvDirective') toFindMap = instance.$directiveList;
   }
   return toFindMap;
 }

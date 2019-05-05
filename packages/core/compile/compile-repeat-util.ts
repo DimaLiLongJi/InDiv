@@ -206,7 +206,7 @@ export class CompileRepeatUtil {
         }
       } else throw new Error(`directive: nv-model can\'t use recognize this prop ${exp}`);
       // OnPush 模式要允许触发更新
-      if ((vm as IComponent).nvChangeDetection === ChangeDetectionStrategy.OnPush) {
+      if ((vm as IComponent).$nvChangeDetection === ChangeDetectionStrategy.OnPush) {
         if ((vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
         (vm as IComponent).render();
       }
@@ -354,17 +354,17 @@ export class CompileRepeatUtil {
         }
       });
 
-      const saveWatchStatus = (vm as IComponent).watchStatus;
-      if (saveWatchStatus === 'available') (vm as IComponent).watchStatus = 'pending';
+      const saveWatchStatus = (vm as IComponent).$watchStatus;
+      if (saveWatchStatus === 'available') (vm as IComponent).$watchStatus = 'pending';
 
       fn.apply(vm, argsList);
 
       if (saveWatchStatus === 'available') {
-        (vm as IComponent).watchStatus = 'available';
-        if ((vm as IComponent).isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
-        if ((vm as IComponent).isWaitingRender) {
+        (vm as IComponent).$watchStatus = 'available';
+        if ((vm as IComponent).$isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
+        if ((vm as IComponent).$isWaitingRender) {
           (vm as IComponent).render();
-          (vm as IComponent).isWaitingRender = false;
+          (vm as IComponent).$isWaitingRender = false;
         }
       }
     };

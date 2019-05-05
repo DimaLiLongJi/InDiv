@@ -16,11 +16,11 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
     if ((_constructor as any)._needInjectedClass) _needInjectedClass = (_constructor as any)._needInjectedClass;
     if ((_constructor as any).injectTokens) _needInjectedClass = (_constructor as any).injectTokens;
 
-    // build privateProviders into injector of component
-    if ((_constructor.prototype as any).privateProviders as TProviders) {
-        const length = (_constructor.prototype as any).privateProviders.length;
+    // build $privateProviders into injector of component
+    if ((_constructor.prototype as any).$privateProviders as TProviders) {
+        const length = (_constructor.prototype as any).$privateProviders.length;
         for (let i = 0; i < length; i++) {
-            const service = (_constructor.prototype as any).privateProviders[i];
+            const service = (_constructor.prototype as any).$privateProviders[i];
             if ((service as TInjectTokenProvider).provide) {
                 if ((service as TUseClassProvider).useClass || (service as TUseValueProvider).useValue) injector.setProvider((service as TInjectTokenProvider).provide, service);
             } else {

@@ -33,10 +33,10 @@ export function watchData(data: any, propertyName: string, target: IComponent, w
         val = newVal;
         watchData(val, propertyName, target, watcher, render);
 
-        if (target.watchStatus === 'available') {
+        if (target.$watchStatus === 'available') {
           if (watcher) watcher();
           if (render) render();
-        } else target.isWaitingRender = true;
+        } else target.$isWaitingRender = true;
       },
     });
   }
@@ -69,10 +69,10 @@ export function watchDataByKey(target: IComponent, propertyName: string, watcher
       if (utils.isEqual(newValue, data)) return;
 
       data = newValue;
-      if (target.watchStatus === 'available') {
+      if (target.$watchStatus === 'available') {
         if (watcher) watcher();
         if (render) render();
-      } else target.isWaitingRender = true;
+      } else target.$isWaitingRender = true;
     },
   });
 }
@@ -97,8 +97,8 @@ export function WatcherDependences(target: IComponent, propertyName: string) {
     watchDataByKey(target, propertyName, null, target.render.bind(target));
     watchData(data, propertyName, target, null, target.render.bind(target));
   }
-  if (target.dependencesList && target.dependencesList.indexOf(propertyName) === -1) target.dependencesList.push(propertyName);
-  if (!target.dependencesList) target.dependencesList = [propertyName];
+  if (target.$dependencesList && target.$dependencesList.indexOf(propertyName) === -1) target.$dependencesList.push(propertyName);
+  if (!target.$dependencesList) target.$dependencesList = [propertyName];
 }
 
 /**
@@ -107,12 +107,12 @@ export function WatcherDependences(target: IComponent, propertyName: string) {
  * add watch property in prototype chain of instance
  *
  * @export
- * @returns {(target: any, propertyName: string) => any}
+ * @returns {(target: IComponent, propertyName: string) => any}
  */
-export function Watch(): (target: any, propertyName: string) => any {
-  return function (target: any, propertyName: string): any {
-    if (target.dependencesList && target.dependencesList.indexOf(propertyName) === -1) target.dependencesList.push(propertyName);
-    if (!target.dependencesList) target.dependencesList = [propertyName];
+export function Watch(): (target: IComponent, propertyName: string) => any {
+  return function (target: IComponent, propertyName: string): any {
+    if (target.$dependencesList && target.$dependencesList.indexOf(propertyName) === -1) target.$dependencesList.push(propertyName);
+    if (!target.$dependencesList) target.$dependencesList = [propertyName];
     return target[propertyName];
   };
 }
