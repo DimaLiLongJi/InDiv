@@ -1,5 +1,6 @@
 import { IDirective, IComponent } from '../types';
 import { isFromVM, getVMVal } from '../compile';
+import { addHostBinding } from './host-binding';
 
 /**
  * add listener in instance.$nativeElement
@@ -28,6 +29,8 @@ export function addHostListener(instance: IComponent | IDirective): void {
         });
       }
       instance[listener.propertyName].apply(instance, handlerArgs);
+      // for Directive
+      if ((instance.constructor as any).nvType === 'nvDirective') addHostBinding(instance);
     };
     instance.$indivInstance.getRenderer.addEventListener(instance.$nativeElement, listener.eventName, listener.handler);
   });

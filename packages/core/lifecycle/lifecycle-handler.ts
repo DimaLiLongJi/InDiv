@@ -1,14 +1,14 @@
 import { IComponent, IDirective } from '../types';
-import { addHostListener, removeHostListener, bindHostBinding } from '../directive';
+import { addHostListener, removeHostListener, addHostBinding, removeHostBinding } from '../directive';
 
 const stopRenderLifecycles: string[] = ['nvOnInit', 'watchData', 'nvBeforeMount', 'nvHasRender', 'nvOnDestory'];
 
 /**
- * clear prototypes when call nvOnDestory
+ * clear prototypes after nvOnDestory
  *
  * @param {(IComponent | IDirective)} instance
  */
-function clearInstanceWhenDestory(instance: IComponent | IDirective): void {
+function clearInstanceAfterDestory(instance: IComponent | IDirective): void {
   const type = (instance.constructor as any).nvType;
   instance.$nativeElement = null;
   instance.$saveInputs = null;
@@ -17,6 +17,7 @@ function clearInstanceWhenDestory(instance: IComponent | IDirective): void {
   instance.$directiveList = null;
   instance.$privateInjector.parentInjector = null;
   instance.$privateInjector = null;
+  instance.$privateProviders = null;
   instance.$inputsList = null;
   instance.$viewChildList = null;
   instance.$viewChildrenList = null;
@@ -24,12 +25,18 @@ function clearInstanceWhenDestory(instance: IComponent | IDirective): void {
   instance.$contentChildrenList = null;
   instance.$hostListenerList = null;
   instance.$hostBindingList = null;
-  if (type === 'nvComponent') (instance as IComponent).$dependencesList = null;
-  if (type === 'nvComponent') (instance as IComponent).$compileInstance = null;
-  if (type === 'nvComponent') (instance as IComponent).$componentList = null;
-  if (type === 'nvComponent') (instance as IComponent).$templateVnode = null;
-  if (type === 'nvComponent') (instance as IComponent).$saveVnode = null;
-  if (type === 'nvComponent') (instance as IComponent).$nvContent = null;
+  instance.$dependencesList = null;
+  if (type === 'nvComponent') {
+    (instance as IComponent).$compileInstance = null;
+    (instance as IComponent).$componentList = null;
+    (instance as IComponent).$templateVnode = null;
+    (instance as IComponent).$saveVnode = null;
+    (instance as IComponent).$nvContent = null;
+    (instance as IComponent).$parseVnodeOptions = null;
+    (instance as IComponent).$template = null;
+    (instance as IComponent).$temptemplatelate = null;
+    (instance as IComponent).$nvChangeDetection = null;
+  }
 }
 
 /**
@@ -43,13 +50,13 @@ function clearInstanceWhenDestory(instance: IComponent | IDirective): void {
  * @returns {void}
  */
 export function lifecycleCaller(instance: IComponent | IDirective, lifecycle: string): void {
-  if (lifecycle === 'nvAfterMount') {
-    addHostListener(instance);
-    bindHostBinding(instance);
+  // before call
+  if (lifecycle === 'nvAfterMount') addHostListener(instance);
+  if (lifecycle === 'nvOnDestory') {
+    removeHostListener(instance);
+    removeHostBinding(instance);
   }
-  if (lifecycle === 'nvOnDestory') removeHostListener(instance);
 
-  if (!(instance as any)[lifecycle]) return;
   // Component
   if ((instance.constructor as any).nvType === 'nvComponent') {
     const canRender = stopRenderLifecycles.indexOf(lifecycle) === -1;
@@ -58,7 +65,7 @@ export function lifecycleCaller(instance: IComponent | IDirective, lifecycle: st
     if (!canRender) (instance as IComponent).$watchStatus = 'pending';
     if (canRender && saveWatchStatus === 'available') (instance as IComponent).$watchStatus = 'pending';
 
-    (instance as IComponent)[lifecycle]();
+    if (instance[lifecycle]) (instance as IComponent)[lifecycle]();
 
     if (!canRender) {
       (instance as IComponent).$watchStatus = 'available';
@@ -72,11 +79,13 @@ export function lifecycleCaller(instance: IComponent | IDirective, lifecycle: st
         (instance as IComponent).$isWaitingRender = false;
       }
     }
-    if (lifecycle === 'nvOnDestory') clearInstanceWhenDestory(instance);
   }
   // Directive
   if ((instance.constructor as any).nvType === 'nvDirective') {
-    (instance as IDirective)[lifecycle]();
-    if (lifecycle === 'nvOnDestory') clearInstanceWhenDestory(instance);
+    if (instance[lifecycle]) (instance as IDirective)[lifecycle]();
   }
+
+  // after call
+  if (lifecycle === 'nvHasRender') addHostBinding(instance);
+  if (lifecycle === 'nvOnDestory') clearInstanceAfterDestory(instance);
 }

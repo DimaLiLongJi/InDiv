@@ -142,7 +142,7 @@ export default class ChangeColorDirective implements ReceiveInputs {
   @Input() public color: string;
 
   constructor(
-    private element: ElementRef
+    private element: ElementRef,
     private renderer: Renderer,
   ) {
     this.renderer.addEventListener(this.element.nativeElement, 'mouseover', this.changeColor);
@@ -200,6 +200,95 @@ export default class AppComponent {
 }
 ```
 
+
+## 绑定事件和属性
+
+**v2.2.0 新增，指令组件通用**
+
+如果通过注入 `Renderer` 和 `ElementRef` 来为指令和组件的挂载元素添加响应事件或修改属性则过于繁琐，因此从 v2.2.0 开始新增两个装饰器:
+
+1. `@HostListener(eventName: string, args?: string[])` 绑定事件
+2. `@HostBinding(hostPropertyName: string)` 绑定属性
+
+- HostListener
+
+接受2个参数
+1. `eventName: string` 绑定的事件名
+2. `args?: string[]` 绑定方法的参数，**可使用的值与模板指令中的一致**
+
+改造下 `ChangeColorDirective` ，移除掉通过 `ElementRef` 添加事件的代码。
+
+> directives/change-color.directive.ts
+
+```typescript
+import { Directive, Renderer, ReceiveInputs, Input, HostListener } from '@indiv/core';
+
+@Directive({
+    selector: 'change-color',
+})
+export default class ChangeColorDirective implements ReceiveInputs {
+  @Input() public color: string;
+
+  constructor(
+    private renderer: Renderer,
+  ) {}
+
+  public ReceiveInputs(nextInputs: string) {
+    console.log('Directive ReceiveInputs', nextInputs);
+  }
+
+  @HostListener('mouseover', ['$element'])
+  public changeColor = (element: Element) => {
+    this.renderer.setStyle(element, 'color', this.color);
+  }
+
+  @HostListener('mouseout', ['$element'])
+  public removeColor = (element: Element) => {
+    this.renderer.removeStyle(element, 'color');
+  }
+}
+```
+
+- HostBinding
+
+接受1个参数 `hostPropertyName: string` ，但该参数有格式要求：
+
+1. 绑定原型上的属性或方法 : `@HostBinding('propertyName') value: any = 1;`
+2. 绑定属性 attr.attributeName: `@HostBinding('attr.someAttributeName') value: string = 1;`
+3. 添加某个样式 style.style-name: `@HostBinding('style.background-color') color: string = 'red';`
+4. 判断某个 class 是否可以生效 class.className: `@HostBinding('class.someClass') classNameEnable: boolean = false;`
+
+注意：**`@HostBinding` 组件中注解的属性会被加入监听队列，而指令中则会在 `@input` 更新时和 `@HostListener` 事件触发时渲染**
+
+继续修改下上面的指令
+
+> directives/change-color.directive.ts
+
+```typescript
+import { Directive, ReceiveInputs, Input, HostListener, HostBinding } from '@indiv/core';
+
+@Directive({
+    selector: 'change-color',
+})
+export default class ChangeColorDirective implements ReceiveInputs {
+  @Input() public color: string;
+  @HostBinding('style.color') public styleColor: string = null; 
+
+  public ReceiveInputs(nextInputs: string) {
+    console.log('Directive ReceiveInputs', nextInputs);
+  }
+
+  @HostListener('mouseover', ['$element'])
+  public changeColor = (element: Element) => {
+    this.styleColor = this.color;
+  }
+
+  @HostListener('mouseout', ['$element'])
+  public removeColor = (element: Element) => {
+    this.styleColor = null;
+  }
+}
+```
 
 
 ## 生命周期

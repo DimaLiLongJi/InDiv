@@ -19,6 +19,7 @@ export enum HostBindingListType {
 
 export interface IDirective {
     [key: string]: any;
+    $dependencesList?: string[];
     $saveInputs?: any;
     $nativeElement?: Element | any;
     $indivInstance?: InDiv;

@@ -1,13 +1,13 @@
 import { IDirective, IComponent, HostBindingListType } from '../types';
 
 /**
- * bind HostBinding
+ * add HostBinding into nativeElement
  *
  * @export
  * @param {(IComponent | IDirective)} instance
  * @returns {void}
  */
-export function bindHostBinding(instance: IComponent | IDirective): void {
+export function addHostBinding(instance: IComponent | IDirective): void {
     if (!instance.$hostBindingList || instance.$hostBindingList.length === 0) return;
     instance.$hostBindingList.forEach(({type, name, propertyName}) => {
       const value = instance[propertyName];
@@ -28,12 +28,38 @@ export function bindHostBinding(instance: IComponent | IDirective): void {
 }
 
 /**
+ * remove HostBinding from nativeElement
+ *
+ * @export
+ * @param {(IComponent | IDirective)} instance
+ * @returns {void}
+ */
+export function removeHostBinding(instance: IComponent | IDirective): void {
+  if (!instance.$hostBindingList || instance.$hostBindingList.length === 0) return;
+  instance.$hostBindingList.forEach(({type, name, propertyName}) => {
+    const value = instance[propertyName];
+    if (type === HostBindingListType.property) {
+      instance.$nativeElement[name] = null;
+    }
+    if (type === HostBindingListType.attr) {
+      instance.$indivInstance.getRenderer.removeAttribute(instance.$nativeElement, name, value);
+    }
+    if (type === HostBindingListType.style) {
+      instance.$indivInstance.getRenderer.removeStyle(instance.$nativeElement, name);
+    }
+    if (type === HostBindingListType.class) {
+      if (value) instance.$indivInstance.getRenderer.removeNvAttribute(instance.$nativeElement, 'nv-class', name);
+    }
+  });
+}
+
+/**
  * @HostBinding binding for mounted nativeElement of Component or Driective
  * 
- * 1. propertyName: @HostBinding('value') value:any;
- * 2. attr.attributeName: @HostBinding('attr.someAttributeName') role:string;
- * 3. style.styleName: @HostBinding('style.width') width:string;
- * 4. class.classNameEnable: @HostBinding('class.someClass') classNameEnable:boolean;
+ * 1. propertyName: @HostBinding('value') value: any;
+ * 2. attr.attributeName: @HostBinding('attr.someAttributeName') role: string;
+ * 3. style.styleName: @HostBinding('style.width') width: string;
+ * 4. class.classNameEnable: @HostBinding('class.someClass') classNameEnable: boolean;
  *
  * @export
  * @param {string} hostPropertyName
@@ -41,6 +67,10 @@ export function bindHostBinding(instance: IComponent | IDirective): void {
  */
 export function HostBinding(hostPropertyName: string): (target: IComponent | IDirective, propertyName: string) => any {
   return function (target: IComponent | IDirective, propertyName: string): any {
+    // add into $dependencesList
+    if (target.$dependencesList && target.$dependencesList.indexOf(propertyName) === -1) target.$dependencesList.push(propertyName);
+    if (!target.$dependencesList) target.$dependencesList = [propertyName];
+
     if (!target.$hostBindingList) target.$hostBindingList = [];
     let type = HostBindingListType.property;
     let name = hostPropertyName;

@@ -28,7 +28,6 @@ export type ComponentList = {
 
 export interface IComponent extends IDirective {
   [key: string]: any;
-  $dependencesList?: string[];
   $watchStatus?: 'pending' | 'available' | 'disable';
   $isWaitingRender?: boolean;
   $compileInstance?: Compile;

@@ -1,4 +1,4 @@
-import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener } from '@indiv/core';
+import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener, HostBinding } from '@indiv/core';
 import { RouteChange, RouteModule, TRouter } from '@indiv/router'; 
 import { HeroSearchService, HeroSearchService2 } from './service';
 
@@ -185,14 +185,14 @@ const routes: TRouter[] = [
   selector: 'test-directive',
 })
 export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
-  @Input('test-directive') public testDirective: string;
+  @Input('test-directive') private testDirective: string;
+  @HostBinding('style.color') private color: string = null;
   constructor(
     private hss: HeroSearchService,
-    private renderer: Renderer,
   ) {}
 
   public nvOnInit() {
-    // console.log(5555, 'init TestDirective', this.testDirective);
+    console.log(5555, 'init TestDirective', this.testDirective);
     this.hss.test();
   }
 
@@ -204,11 +204,11 @@ export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
   }
   @HostListener('mouseover', ['$element'])
   public changeColor = (element: any) => {
-    this.renderer.setStyle(element, 'color', 'red');
+    this.color = 'red';
   }
   @HostListener('mouseout', ['$element'])
   public removeColor = (element: any) => {
-    this.renderer.removeStyle(element, 'color');
+    this.color = null;
   }
 }
 

@@ -26,19 +26,6 @@ function resolveInputs(componentInstance: IComponent): void {
 }
 
 /**
- * collect dependences from @HostBinding of @Component
- *
- * @param {IComponent} componentInstance
- * @returns {void}
- */
-function resolveHostBinding(componentInstance: IComponent): void {
-  if (!componentInstance.$hostBindingList) return;
-  componentInstance.$hostBindingList.forEach(({propertyName}) => {
-    if (componentInstance.$dependencesList.indexOf(propertyName) === -1) componentInstance.$dependencesList.push(propertyName);
-  });
-}
-
-/**
  * collect dependences from nv directives of @Component $template
  *
  * @param {IComponent} componentInstance
@@ -101,7 +88,6 @@ function resolveTemplateText(componentInstance: IComponent) {
  */
 export function collectDependencesFromViewModel(componentInstance: IComponent): void {
   resolveInputs(componentInstance);
-  resolveHostBinding(componentInstance);
   resolveDirective(componentInstance);
   resolveTemplateText(componentInstance);
 }
