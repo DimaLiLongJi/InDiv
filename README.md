@@ -120,6 +120,7 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
   - [x] [Directive](https://www.angular.cn/api/core/Pipe)
   - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
   - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
+  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
   - [x] [NgModule as NvModule](https://www.angular.cn/api/core/NgModule)
   - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
   - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
@@ -129,11 +130,10 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
   - [ ] [Output](https://www.angular.cn/api/core/Output)
   - [x] [HostBinding](https://www.angular.cn/api/core/HostBinding)
   - [x] [HostListener](https://www.angular.cn/api/core/HostListener)
-  - [ ] [Host](https://www.angular.cn/api/core/Host)
-  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
-  - [ ] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
-  - [ ] [Self](https://www.angular.cn/api/core/Self)
-  - [ ] [Optional](https://www.angular.cn/api/core/Optional)
+  - [x] [Host](https://www.angular.cn/api/core/Host)
+  - [x] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
+  - [x] [Self](https://www.angular.cn/api/core/Self)
+  - [x] [Optional](https://www.angular.cn/api/core/Optional)
   - [ ] [Attribute](https://www.angular.cn/api/core/Attribute)
 
 

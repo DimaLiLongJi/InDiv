@@ -121,4 +121,44 @@ class TestComponent {
 5. 如果仍旧没找到需要的依赖，最终 `InDiv` 会去 **全局注入器`rootInjector`** 中寻找依赖
 6. 如果最终都没找到，则会抛出一个异常。
 
-最后其实推荐将服务直接写入根模块 `AppModule` 或是指定服务的 `providedIn: root`。
+其实推荐将服务直接写入根模块 `AppModule` 或是指定服务的 `providedIn: root`。
+
+
+
+## 干预注入器冒泡
+
+**v2.2.0新增**
+
+indiv 模仿 angular 提供了4种可以**干预注入器冒泡优先级**的**构造函数参数装饰器**：
+
+1. `@SkipSelf()` ：寻找被注解的依赖时将**跳过本组件的注入器容器**，直接像父级请求依赖
+2. `@Self()` ：寻找该被注解的依赖时只能**在本组件的注入器容器**请求依赖
+3. `@Host()` ：寻找该被注解的依赖时只能**在本组件的注入器容器和父组件的注入器中**请求依赖
+4. `@Optional()` ：声明该依赖即使找不到也不抛出错误，并返回个 `null`
+
+干预等级依次为 `@SkipSelf()` > `@Self()` > `@Host()` > `@Optional()`
+
+下面来实现个简单的需求：组件请求一个依赖 `PrivateService` 时，跳过组件的容器，并只能像父组件的注入器请求，并且在未实例化时（既注入器里并不存在该实例）时返回 `null`
+
+> components/test-component/test-component.component.ts
+
+```typescript
+import { Component, SkipSelf, Host, Optional } from '@indiv/core';
+import { PrivateService } from '../../services/private.services';
+
+@Component({
+  selector: 'test-component',
+  template: (`
+    <p>test-component</p>
+  `),
+  providers: [ PrivateService ],
+})
+class TestComponent {
+  constructor(
+    @Optional() @Host() @SkipSelf() private privateService: PrivateService
+  ) {
+  }
+}
+```
+
+利用三个注入器注解：`@Optional() @Host() @SkipSelf()`，将冒泡范围定义在子组件和父组件并跳过子组件的注入器就可以实现！

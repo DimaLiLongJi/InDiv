@@ -46,11 +46,12 @@
 - [x] 前后端因为 `templateUrl` 导致的无法同构
 - [ ] AOT compiler with babylon and traversal
 - [ ] @indiv/cli
-- [ ] angular装饰器
+- [ ] angular decoraters
   - [x] [Component](https://www.angular.cn/api/core/Component)
   - [x] [Directive](https://www.angular.cn/api/core/Pipe)
   - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
   - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
+  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
   - [x] [NgModule](https://www.angular.cn/api/core/NgModule)
   - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
   - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
@@ -60,9 +61,8 @@
   - [ ] [Output](https://www.angular.cn/api/core/Output)
   - [x] [HostBinding](https://www.angular.cn/api/core/HostBinding)
   - [x] [HostListener](https://www.angular.cn/api/core/HostListener)
-  - [ ] [Host](https://www.angular.cn/api/core/Host)
-  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
-  - [ ] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
-  - [ ] [Self](https://www.angular.cn/api/core/Self)
-  - [ ] [Optional](https://www.angular.cn/api/core/Optional)
+  - [x] [Host](https://www.angular.cn/api/core/Host)
+  - [x] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
+  - [x] [Self](https://www.angular.cn/api/core/Self)
+  - [x] [Optional](https://www.angular.cn/api/core/Optional)
   - [ ] [Attribute](https://www.angular.cn/api/core/Attribute)

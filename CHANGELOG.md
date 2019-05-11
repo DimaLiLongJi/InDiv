@@ -8,6 +8,7 @@
 * **package:@indiv/platform-server** update `factoryModule`
 * **package:@indiv/router** update `factoryModule`
 * **package:@indiv/core** add `@HostListener` and `@HostBinding`
+* **package:@indiv/core** add `@Host`, `@SkipSelf`, `@Self` and `@Optional` in DI
 
 
 

@@ -57,12 +57,13 @@ export class Injector {
    * get Provider(Map) by key for save provide
    *
    * @param {*} key
+   * @param {(number | 'always')} [bubblingLayer='always']
    * @returns {*}
    * @memberof Injector
    */
-  public getProvider(key: any): any {
+  public getProvider(key: any, bubblingLayer: number | 'always' = 'always'): any {
     if (this.providerMap.has(key)) return this.providerMap.get(key);
-    else if (this.parentInjector) return this.parentInjector.getProvider(key);
+    else if (bubblingLayer !== 0 && this.parentInjector) return this.parentInjector.getProvider(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
     else return undefined;
   }
 
@@ -84,14 +85,15 @@ export class Injector {
    * get instance of provider by key
    *
    * @param {*} key
+   * @param {(number | 'always')} [bubblingLayer='always']
    * @returns {*}
    * @memberof Injector
    */
-  public getInstance(key: any): any {
+  public getInstance(key: any, bubblingLayer: number | 'always' = 'always'): any {
     if (this.providerMap.has(key)) {
       if (this.instanceMap.has(key)) return this.instanceMap.get(key);
       else return undefined;
-    } else if (this.parentInjector) return this.parentInjector.getInstance(key);
+    } else if (bubblingLayer !== 0 && this.parentInjector) return this.parentInjector.getInstance(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
     else return undefined;
   }
 
@@ -112,12 +114,13 @@ export class Injector {
    * get parent injector of a provider
    *
    * @param {*} key
+   * @param {(number | 'always')} [bubblingLayer='always']
    * @returns {Injector}
    * @memberof Injector
    */
-  public getParentInjectorOfProvider(key: any): Injector {
+  public getParentInjectorOfProvider(key: any, bubblingLayer: number | 'always' = 'always'): Injector {
     if (this.providerMap.has(key)) return this;
-    else if (this.parentInjector) return this.parentInjector.getParentInjectorOfProvider(key);
+    else if (bubblingLayer !== 0 && this.parentInjector) return this.parentInjector.getParentInjectorOfProvider(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
     else {
       console.error(`injector can't find parent injector of provider: ${(key as any).name}`);
       return undefined;
