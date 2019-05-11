@@ -216,6 +216,101 @@ export default class AppModule {}
 2. `{ provide: any; useClass: Function; }` : `{ provide: TestService, useClass: TestService }`。 基本形式。
 3. `{ provide: any; useValue: any; }` : `{ provide: TestService, useValue: '111' }`。会在模块组件或服务中注入一个常量。
 
+- 非 `Class` 类型 `provide`
+
+**v2.2.0新增**
+
+当使用非 `Class` 类型的 `provide` 时，推荐使用 `@Inject(token: any)` 和 `InjectionToken`。
+
+下面指定一个url常量作为依赖注入的 `provider` 并使用：
+
+> providers/url.ts
+
+```typescript
+import { InjectionToken } from '@indiv/core';
+
+export const indivUrlToken = new InjectionToken('indivUrlToken');
+```
+
+> app.module.ts
+
+```typescript
+import { NvModule } from '@indiv/core';
+import AppComponent from './app.component';
+import ShowAgeComponent from './components/show-age/show-age.component';
+import ChangeColorDirective from './directives/change-color.directive';
+import TestService from './provides/test.service';
+import { indivUrlToken } from './provides/url';
+
+@NvModule({
+  imports: [],
+  declarations: [ AppComponent, ShowAgeComponent, ChangeColorDirective ],
+  providers: [
+    {
+      provide: TestService,
+      useClass: TestService,
+    },
+    {
+      provide: 'githubUrl',
+      useValue: 'https://github.com/DimaLiLongJi',
+    },
+    {
+      provide: indivUrlToken,
+      useValue: 'https://github.com/DimaLiLongJi/InDiv',
+    }
+  ],
+  bootstrap: AppComponent,
+  exports: [],
+})
+export default class AppModule {}
+```
+
+在 `AppComponent` 中使用下这两个 provider：
+
+> app.component.ts
+
+```typescript
+import { Component, StateSetter, SetState, Watch, Inject } from '@indiv/core';
+import TestService from './provides/test.service';
+import { indivUrlToken } from './provides/url';
+
+@Component({
+    selector: 'app-component',
+    template: (`
+        <div class="app-component-container">
+          <input nv-model="name"/>
+          <p nv-on:click="addAge()" change-color="{color}">name: {{name}}</p>
+          <show-age age="{age}" uupDateAge="{@upDateAge}"></show-age>
+        </div>
+    `),
+})
+export default class AppComponent {
+  public name: string = 'InDiv';
+  @Watch() public age: number;
+  public color: string = 'red';
+
+  @StateSetter() public setState: SetState;
+
+  constructor(
+    private testService: TestService,
+    @Inject('githubUrl') private githubUrl: string,
+    @Inject(indivUrlToken) private indivUrl: string,
+  ) {
+    console.log(this.testService.count, githubUrl, indivUrl); // 1 https://github.com/DimaLiLongJi https://github.com/DimaLiLongJi/InDiv
+    this.testService.count = 2; // 2
+  }
+
+  public addAge(): void {
+    this.setState({ age: 24 });
+  }
+
+  public upDateAge(age: number) {
+    this.age = age;
+    // this.setState({ age: 24 });
+  }
+}
+```
+
 
 ## 依赖注入
 

@@ -120,7 +120,7 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
   - [x] [Directive](https://www.angular.cn/api/core/Pipe)
   - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
   - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
-  - [ ] [Inject](https://www.angular.cn/api/core/Inject)
+  - [x] [Inject](https://www.angular.cn/api/core/Inject)
   - [x] [NgModule as NvModule](https://www.angular.cn/api/core/NgModule)
   - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
   - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)

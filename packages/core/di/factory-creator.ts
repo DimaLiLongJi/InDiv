@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 import { TProviders, TInjectTokenProvider, TUseClassProvider, TUseValueProvider } from '../types';
 import { Injector } from './injector';
-import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf } from './metadata';
+import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject } from './metadata';
+import { TInjectItem } from './inject';
 
 /**
  * use injector to create arguments for constructor
@@ -36,6 +37,8 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
     const selfList: number[] = Reflect.getMetadata(metadataOfSelf, _constructor) || [];
     const hostList: number[] = Reflect.getMetadata(metadataOfHost, _constructor) || [];
     const optionalList: number[] = Reflect.getMetadata(metadataOfOptional, _constructor) || [];
+    // 使用 @Inject 代替获取类型
+    const injectTokenList: TInjectItem[] = Reflect.getMetadata(metadataOfInject, _constructor) || [];
 
     // find instance from provider
     const needInjectedClassLength = _needInjectedClass.length;
@@ -48,8 +51,9 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
         // 构建冒泡开始的injector
         let findInjector = injector;
         if (skipSelfList.indexOf(i) !== -1) findInjector = injector.parentInjector;
-
-        const key = _needInjectedClass[i];
+        
+        const findTnjectToken = injectTokenList.find((value) => value.index === i);
+        const key = findTnjectToken ? findTnjectToken.token : _needInjectedClass[i];
 
         if (findInjector.getInstance(key, bubblingLayer)) {
             args.push(findInjector.getInstance(key, bubblingLayer));
