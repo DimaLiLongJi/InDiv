@@ -1,4 +1,4 @@
-import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
+import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Injector, Optional } from '@indiv/core';
 import { RouteChange, NvLocation, RouteModule, RouteCanActive } from '@indiv/router';
 import { PlatformBrowser } from '@indiv/platform-browser';
 import { HttpClient, HttpClientResponse } from '@indiv/common';
@@ -317,10 +317,10 @@ class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasRender {
   <div class="fucck" nv-class="test.a" nv-id="'cc'">
   <p>{{testNumber}}</p>
   <input nv-model="test.a" nv-on:click="show(test)" />
-  <p test-directive="{test.a}" nv-id="232" nv-if="countState(a)" nv-on:click="changeInput()">{{a}}</p>
-  <test-component nv-repeat="man in testArray" nv-key="man.id" manName="{countState(man.name)}" nv-if="a">
+  <p test-directive="{test.a}" fuck-y="fuckyou" nv-id="232" nv-if="countState(a)" nv-on:click="changeInput()">{{a}}</p>
+  <test-component test-directive="{test.a}" nv-repeat="man in testArray" nv-key="man.id" manName="{countState(man.name)}" nv-if="a">
     <a>this is {{man.name}}</a>
-    <test-content-component test-directive="{test.a}"></test-content-component>
+    <test-content-component></test-content-component>
   </test-component>
   <p nv-on:click="go()">
     <!-- container: {{countState(color)}} -->
@@ -433,9 +433,10 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
     private indiv: InDiv,
     private privateService: PrivateService,
     private sharedModule: SharedModule,
+    private privateInjector: Injector,
   ) {
     this.privateService.change();
-    console.log(99988, 'from Container', this.sharedModule, this.element, this.indiv, this.privateService.isPrivate);
+    console.log(99988, 'from Container', this.privateInjector, this.sharedModule, this.element, this.indiv, this.privateService.isPrivate);
     this.httpClient.createResponseInterceptor((value: HttpClientResponse) => {
       return {
         data: value.data,
@@ -644,8 +645,9 @@ class M1 {
   constructor(
     private hsr: HeroSearchService,
     private indiv: InDiv,
+    private m2: M2,
   ) {
-    console.log(999999888777, '来自注入的模块 M1', this.hsr, this.indiv);
+    console.log(999999888777, '来自注入的模块 M1', this.hsr, this.indiv, this.m2);
   }
 }
 

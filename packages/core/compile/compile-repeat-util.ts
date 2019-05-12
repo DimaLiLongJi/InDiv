@@ -94,7 +94,7 @@ export class CompileRepeatUtil {
     else if (exp === '$index') value = index;
     else if (/^\'.*\'$/.test(exp)) value = exp.match(/^\'(.*)\'$/)[1];
     else if (/^\".*\"$/.test(exp)) value = exp.match(/^\"(.*)\"$/)[1];
-    else if (!/^\'.*\'$/.test(exp) && !/^\".*\"$/.test(exp) && /^[0-9]*$/g.test(exp)) value = Number(exp);
+    else if (!/^\'.*\'$/.test(exp) && !/^\".*\"$/.test(exp) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/g.test(exp)) value = Number(exp);
     else if (exp === 'true' || exp === 'false') value = (exp === 'true');
     else if (exp === 'null') value = null;
     else if (exp === 'undefined') value = undefined;
@@ -206,7 +206,7 @@ export class CompileRepeatUtil {
         }
       } else throw new Error(`directive: nv-model can\'t use recognize this prop ${exp}`);
       // OnPush 模式要允许触发更新
-      if ((vm as IComponent).nvChangeDetection === ChangeDetectionStrategy.OnPush) {
+      if ((vm as IComponent).$nvChangeDetection === ChangeDetectionStrategy.OnPush) {
         if ((vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
         (vm as IComponent).render();
       }
@@ -344,7 +344,7 @@ export class CompileRepeatUtil {
         if (isFromVM(vm, arg)) return argsList.push(getVMVal(vm, arg));
         if (/^\'.*\'$/.test(arg)) return argsList.push(arg.match(/^\'(.*)\'$/)[1]);
         if (/^\".*\"$/.test(arg)) return argsList.push(arg.match(/^\"(.*)\"$/)[1]);
-        if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /^[0-9]*$/.test(arg)) return argsList.push(Number(arg));
+        if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/.test(arg)) return argsList.push(Number(arg));
         if (arg === key || arg.indexOf(`${key}.`) === 0) return argsList.push(utilVm._getVMRepeatVal(val, arg, key));
         if (vnode.repeatData) {
           // $index in this
@@ -354,17 +354,17 @@ export class CompileRepeatUtil {
         }
       });
 
-      const saveWatchStatus = (vm as IComponent).watchStatus;
-      if (saveWatchStatus === 'available') (vm as IComponent).watchStatus = 'pending';
+      const saveWatchStatus = (vm as IComponent).$watchStatus;
+      if (saveWatchStatus === 'available') (vm as IComponent).$watchStatus = 'pending';
 
       fn.apply(vm, argsList);
 
       if (saveWatchStatus === 'available') {
-        (vm as IComponent).watchStatus = 'available';
-        if ((vm as IComponent).isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
-        if ((vm as IComponent).isWaitingRender) {
+        (vm as IComponent).$watchStatus = 'available';
+        if ((vm as IComponent).$isWaitingRender && (vm as IComponent).nvDoCheck) (vm as IComponent).nvDoCheck();
+        if ((vm as IComponent).$isWaitingRender) {
           (vm as IComponent).render();
-          (vm as IComponent).isWaitingRender = false;
+          (vm as IComponent).$isWaitingRender = false;
         }
       }
     };
@@ -409,7 +409,7 @@ export class CompileRepeatUtil {
           if (isFromVM(vm, arg)) return argsList.push(getVMVal(vm, arg));
           if (/^\'.*\'$/.test(arg)) return argsList.push(arg.match(/^\'(.*)\'$/)[1]);
           if (/^\".*\"$/.test(arg)) return argsList.push(arg.match(/^\"(.*)\"$/)[1]);
-          if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /^[0-9]*$/g.test(arg)) return argsList.push(Number(arg));
+          if (!/^\'.*\'$/.test(arg) && !/^\".*\"$/.test(arg) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/g.test(arg)) return argsList.push(Number(arg));
           if (vnode.repeatData) {
             // $index in this
             Object.keys(vnode.repeatData).forEach(data => {
@@ -441,7 +441,7 @@ export class CompileRepeatUtil {
         attr.nvValue = propValue.match(/^\"(.*)\"$/)[1];
         return;
       }
-      if (!/^\'.*\'$/.test(propValue) && !/^\".*\"$/.test(propValue) && /^[0-9]*$/.test(propValue)) {
+      if (!/^\'.*\'$/.test(propValue) && !/^\".*\"$/.test(propValue) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/.test(propValue)) {
         attr.nvValue = Number(propValue);
         return;
       }

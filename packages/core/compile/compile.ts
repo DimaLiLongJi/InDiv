@@ -24,8 +24,8 @@ export class Compile {
   constructor(el: any, componentInstance: IComponent) {
     this.componentInstance = componentInstance;
     this.mountedElement = el;
-    if (componentInstance.parseVnodeOptions) this.parseVnodeOptions = componentInstance.parseVnodeOptions;
-    if (componentInstance.saveVnode) this.saveVnode = componentInstance.saveVnode;
+    if (componentInstance.$parseVnodeOptions) this.parseVnodeOptions = componentInstance.$parseVnodeOptions;
+    if (componentInstance.$saveVnode) this.saveVnode = componentInstance.$saveVnode;
   }
 
   /**
@@ -40,15 +40,15 @@ export class Compile {
     if (!this.mountedElement) throw new Error('class Compile need el in constructor');
     this.fragment = parseTemplateToVnode('');
 
-    if (!this.saveVnode) this.saveVnode = this.componentInstance.indivInstance.getRenderer.nativeElementToVnode(this.mountedElement, this.parseVnodeOptions);
+    if (!this.saveVnode) this.saveVnode = this.componentInstance.$indivInstance.getRenderer.nativeElementToVnode(this.mountedElement, this.parseVnodeOptions);
 
-    this.compileVnode(this.componentInstance.templateVnode);
+    this.compileVnode(this.componentInstance.$templateVnode);
 
     const patchList: IPatchList[] = [];
     this.fragment.forEach(child => child.parentVnode = { nativeElement: this.mountedElement });
 
     diffVnode({ childNodes: this.saveVnode, nativeElement: this.mountedElement, parentVnode: null }, { childNodes: this.fragment, nativeElement: this.mountedElement, parentVnode: null }, patchList);
-    patchVnode(patchList, this.componentInstance.indivInstance.getRenderer);
+    patchVnode(patchList, this.componentInstance.$indivInstance.getRenderer);
 
     this.fragment = null;
 
@@ -103,7 +103,7 @@ export class Compile {
       if (isRepeatNode(_fragmentChild) && fragment.indexOf(_fragmentChild) !== -1) fragment.splice(fragment.indexOf(_fragmentChild), 1);
 
       // 如果是 <nv-content> 则内部来自父组件
-      if (isTagName(_fragmentChild, 'nv-content')) _fragmentChild.childNodes = this.componentInstance.nvContent.map(nvContent => cloneVnode(nvContent, null, _fragmentChild));
+      if (isTagName(_fragmentChild, 'nv-content')) _fragmentChild.childNodes = this.componentInstance.$nvContent.map(content => cloneVnode(content, null, _fragmentChild));
     });
   }
 

@@ -5,6 +5,8 @@
 
 @indiv 2.0.5以下版本 已经废除，请使用 @indiv v2.0.5+
 
+**最新版本：v3.0.0**
+
 ## 什么是InDiv
 
 #### InDiv 是一个类 angular mvvm库
@@ -109,6 +111,33 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
   <router-render></router-render>
 </div>
 ```
+
+
+#### 未来
+
+该项目创建的目的是为了学习下 angular 的架构，并尝试用自己的想法实现，因为目标为实现 angular 的一些装饰器和功能。
+
+- [ ] angular decorators
+  - [x] [Component](https://www.angular.cn/api/core/Component)
+  - [x] [Directive](https://www.angular.cn/api/core/Pipe)
+  - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
+  - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
+  - [x] [Inject](https://www.angular.cn/api/core/Inject)
+  - [x] [NgModule as NvModule](https://www.angular.cn/api/core/NgModule)
+  - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
+  - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
+  - [x] [ViewChild](https://www.angular.cn/api/core/ViewChild)
+  - [x] [ViewChildren](https://www.angular.cn/api/core/ViewChildren)
+  - [x] [Input](https://www.angular.cn/api/core/Input)
+  - [ ] [Output](https://www.angular.cn/api/core/Output)
+  - [x] [HostBinding](https://www.angular.cn/api/core/HostBinding)
+  - [x] [HostListener](https://www.angular.cn/api/core/HostListener)
+  - [x] [Host](https://www.angular.cn/api/core/Host)
+  - [x] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
+  - [x] [Self](https://www.angular.cn/api/core/Self)
+  - [x] [Optional](https://www.angular.cn/api/core/Optional)
+  - [x] [Attribute](https://www.angular.cn/api/core/Attribute)
+
 
 #### 反馈
 

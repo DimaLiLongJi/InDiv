@@ -155,7 +155,7 @@ export function NvModuleFactoryLoader(loadChild: Function, currentUrlPath: strin
 
   if (!loadModule) throw new Error('load child failed, please check your routes.');
 
-  const loadModuleInstance = factoryModule(loadModule, loadModule.prototype.privateInjector);
+  const loadModuleInstance = factoryModule(loadModule);
   loadModuleMap.set(currentUrlPath, loadModuleInstance);
 
   return loadModuleInstance;

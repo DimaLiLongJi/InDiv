@@ -40,75 +40,11 @@
 
 **思考 为何选择Map而不是Object？**
 
-> @indiv/core/di/injector.ts
-
-```typescript
-/**
- * IOC container for InDiv
- * 
- * methods: push, find, get
- *
- * @export
- * @class Injector
- */
-export class Injector {
-  private readonly providerMap: Map<any, any> = new Map();
-  private readonly instanceMap: Map<any, any> = new Map();
-
-  /**
-   * set Provider(Map) for save provide
-   *
-   * @param {*} key
-   * @param {*} value
-   * @memberof Injector
-   */
-  public setProvider(key: any, value: any): void {
-    if (!this.providerMap.has(key)) this.providerMap.set(key, value);
-  }
-
-  /**
-   * get Provider(Map) by key for save provide
-   *
-   * @param {*} key
-   * @returns {*}
-   * @memberof Injector
-   */
-  public getProvider(key: any): any {
-    return this.providerMap.get(key);
-  }
-
-  /**
-   * set instance of provider by key
-   *
-   * @param {*} key
-   * @param {*} value
-   * @memberof Injector
-   */
-  public setInstance(key: any, value: any): void {
-    if (!this.instanceMap.has(key)) this.instanceMap.set(key, value);
-  }
-
-  /**
-   * get instance of provider by key
-   *
-   * @param {*} key
-   * @returns {*}
-   * @memberof Injector
-   */
-  public getInstance(key: any): any {
-    if (this.instanceMap.has(key)) return this.instanceMap.get(key);
-    return null;
-  }
-}
-
-export const rootInjector = new Injector();
-```
-
 InDiv 模仿了 Angular，实现了一套多级注入器。
 
 实际上，应用程序中有一个与组件树平行的注入器树。 你可以在通过 组件的`@Component`的`providers` 上重新配置一个只属于该组件的注入器。
 
-如果组件依赖了组件注入器中声明的服务提供商`provider`，该组件上的依赖服务实际上将不会成为单例服务，因此每个组件实例都会有一个独立而且不互相影响的服务。
+如果组件依赖了组件注入器中声明的服务提供商`provider`，该组件上的依赖服务实际上将成为仅仅在该组件上的单例服务，因此每个组件实例都会有一个独立而且不互相影响的服务。
 
 > components/test-component/test-component.component.ts
 
@@ -136,7 +72,11 @@ class TestComponent {
 
 ## 多级注入器
 
-你可以为注入器树中不同的注入器分别配置提供商。 所有运行中的应用都会共享同一个内部的平台级注入器。 AppModule 上的注入器是全应用级注入器树的根节点，在 NvModule 中，指令级模块级的注入器会遵循组件树的结构。
+你可以为注入器树中不同的注入器分别配置提供商。
+
+所有运行中的应用都会共享同一个内部的平台级注入器。
+
+`AppModule` 上的注入器是全应用级注入器树的根节点，在 `NvModule` 中，指令级模块级的注入器会遵循组件树的结构。
 
 至此，配置依赖提供商的地方有4个
 
@@ -174,14 +114,51 @@ class TestComponent {
 伟大的分割线
 ***
 
-注意：**跟 angular 的注入器冒泡不同！**
+1. 当一个子组件申请获得一个依赖时，`InDiv` 先尝试用 **该组件自己的注入器** 来满足它
+2. 如果组件自己的注入器并不存在对应的依赖时，将向 **父元素的注入器** 中请求依赖
+3. 一路沿着组件树向上请求依赖，如果直到顶层组件都没有时，将向 **初始化组件的模块的注入器** 中请求依赖
+4. 懒加载的模块拥有 **自己的模块级注入器** ，而从根模块开始的模块都 **共享全局注入器`rootInjector`**
+5. 如果仍旧没找到需要的依赖，最终 `InDiv` 会去 **全局注入器`rootInjector`** 中寻找依赖
+6. 如果最终都没找到，则会抛出一个异常。
 
-当一个组件申请获得一个依赖时，InDiv 先尝试用 该组件自己的注入器 来满足它。**跟 angular 的冒泡不同，并不会上其父组件注入器去寻找依赖**
+其实推荐将服务直接写入根模块 `AppModule` 或是指定服务的 `providedIn: root`。
 
-如果组件自己的注入器并不存在对应的注入器并且该组件来自懒加载的模块，则工厂方法会向上一级别的注入器 **懒加载的模块注入器** 来满足该需求。
 
-如果仍旧没找到需要的依赖，最终 InDiv 会去 全局注入器`rootInjector` 中寻找依赖。
 
-如果最终都没找到，则会抛出一个异常。
+## 干预注入器冒泡
 
-最后其实推荐将服务直接写入根模块`AppModule`或是指定服务的`providedIn: root`。
+**v3.0.0新增**
+
+indiv 模仿 angular 提供了4种可以**干预注入器冒泡优先级**的**构造函数参数装饰器**：
+
+1. `@SkipSelf()` ：寻找被注解的依赖时将**跳过本组件的注入器容器**，直接像父级请求依赖
+2. `@Self()` ：寻找该被注解的依赖时只能**在本组件的注入器容器**请求依赖
+3. `@Host()` ：寻找该被注解的依赖时只能**在本组件的注入器容器和父组件的注入器中**请求依赖
+4. `@Optional()` ：声明该依赖即使找不到也不抛出错误，并返回个 `null`
+
+干预等级依次为 `@SkipSelf()` > `@Self()` > `@Host()` > `@Optional()`
+
+下面来实现个简单的需求：组件请求一个依赖 `PrivateService` 时，跳过组件的容器，并只能像父组件的注入器请求，并且在未实例化时（既注入器里并不存在该实例）时返回 `null`
+
+> components/test-component/test-component.component.ts
+
+```typescript
+import { Component, SkipSelf, Host, Optional } from '@indiv/core';
+import { PrivateService } from '../../services/private.services';
+
+@Component({
+  selector: 'test-component',
+  template: (`
+    <p>test-component</p>
+  `),
+  providers: [ PrivateService ],
+})
+class TestComponent {
+  constructor(
+    @Optional() @Host() @SkipSelf() private privateService: PrivateService
+  ) {
+  }
+}
+```
+
+利用三个注入器注解：`@Optional() @Host() @SkipSelf()`，将冒泡范围定义在子组件和父组件并跳过子组件的注入器就可以实现！

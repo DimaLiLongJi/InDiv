@@ -12,7 +12,7 @@ export function classPropertyCompiler(templateInfo: { templateString: string; cl
     types.builders.genericTypeAnnotation(types.builders.identifier('string'), null),
   ) : null;
   templateInfo.classBody.body.body.push(types.builders.classProperty(
-    types.builders.identifier('template'),
+    types.builders.identifier('$template'),
     types.builders.identifier(`\`${templateInfo.templateString}\``),
     typeAnnotation,
   ));

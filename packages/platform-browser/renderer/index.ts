@@ -13,7 +13,8 @@ export function getTemplate(nativeElement: Element): string {
   let tmpNode = document.createElement('div');
   tmpNode.appendChild(copyElement);
   const template = tmpNode.innerHTML;
-  tmpNode = nativeElement = null;
+  tmpNode = null;
+  nativeElement = null;
   if (new RegExp(`^\<${tagName}.*\>\<\/${tagName}\>$`).test(template)) return template.split(`</${tagName}>`)[0];
   return template;
 }

@@ -1,3 +1,18 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.0.0) (2019-05-12)
+
+
+### Features
+
+* **package:@indiv/core** use `injector.fork()` to build `Injector`
+* **package:@indiv/platform-server** update `factoryModule`
+* **package:@indiv/router** update `factoryModule`
+* **package:@indiv/core** add `@HostListener` and `@HostBinding`
+* **package:@indiv/core** add `@Inject`, `@Host`, `@SkipSelf`, `@Self` and `@Optional` in DI
+* **package:@indiv/core** add `@Attribute` in component and directive
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/2.1.0) (2019-04-30)
 

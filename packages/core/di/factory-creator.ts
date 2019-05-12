@@ -1,103 +1,127 @@
-import { TProviders } from '../types';
-import { rootInjector, Injector } from './injector';
-import { buildPrivateInjector } from './build-private-injector';
+import 'reflect-metadata';
+import { TProviders, TInjectTokenProvider, TUseClassProvider, TUseValueProvider } from '../types';
+import { Injector } from './injector';
+import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute } from './metadata';
+import { TInjectItem } from './inject';
+import { ElementRef } from '../component';
+import { Renderer } from '../vnode';
 
 /**
- * injectionCreator: build arguments for factoryCreator
- * 
- * 1. provider constructor's providers
- * 2. provider rootInjector
- * 3. provider otherInjector
- *
- * first: check _constructor has constructor private Injector or not
- * secend: find service in otherInjector or rootInjector
- * third: find service is a singleton service or not
- * forth: if service is a singleton service, find in rootInjector. If not use factoryCreator instance and return
- * last: if service is a singleton service, and can't be found in rootInjector, then factoryCreator instance and push in rootInjector
+ * use injector to create arguments for constructor
  *
  * @export
  * @param {Function} _constructor
- * @param {Injector} [otherInjector]
- * @param {Map<any, any>} [provideAndInstanceMap]
- * @returns {{ args: any[], privateInjector?: Injector }}
+ * @param {Injector} [injector]
+ * @returns {any[]}
  */
-export function injectionCreator(_constructor: Function, otherInjector?: Injector, provideAndInstanceMap?: Map<any, any>): { args: any[], privateInjector?: Injector } {
+export function injectionCreator(_constructor: Function, injector?: Injector): any[] {
     const args: any[] = [];
 
     let _needInjectedClass: any[] = [];
-    if ((_constructor as any)._needInjectedClass) _needInjectedClass = (_constructor as any)._needInjectedClass;
     if ((_constructor as any).injectTokens) _needInjectedClass = (_constructor as any).injectTokens;
+    else _needInjectedClass = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
 
-    if (_needInjectedClass.length === 0) return { args };
-
-    // build privateInjector
-    let privateInjector: Injector;
-    if ((_constructor.prototype as any).privateProviders as TProviders) privateInjector = buildPrivateInjector((_constructor.prototype as any).privateProviders as TProviders);
-
-    _needInjectedClass.forEach((key: Function) => {
-        // inject internal type for NvModule
-        if (provideAndInstanceMap && provideAndInstanceMap.has(key)) return args.push(provideAndInstanceMap.get(key));
-
-        // private injector of instance
-        if (privateInjector) {
-            const _constructorService = privateInjector.getProvider(key);
-            if (_constructorService && !_constructorService.useClass && !_constructorService.useValue) return args.push(factoryCreator(_constructorService, otherInjector, provideAndInstanceMap));
-            if (_constructorService && _constructorService.useClass) return args.push(factoryCreator(_constructorService.useClass, otherInjector, provideAndInstanceMap));
-            if (_constructorService && _constructorService.useValue) return args.push(_constructorService.useValue);
-        }
-
-        // injector: find service Class in otherInjector or rootInjector
-        let _service = null;
-        let fromInjector = null;
-        // otherInjector first
-        if (otherInjector && otherInjector.getProvider(key)) {
-            _service = otherInjector.getProvider(key);
-            fromInjector = otherInjector;
-        } else if (rootInjector && rootInjector.getProvider(key)) {
-            _service = rootInjector.getProvider(key);
-            fromInjector = rootInjector;
-        } else throw new Error(`injector injects service error: can't find provide: ${key.name} in constructor ${_constructor}`);
-
-        let findService = null;
-        if (_service && !_service.useClass && !_service.useValue) findService = _service;
-        if (_service && _service.useClass) findService = _service.useClass;
-        if (_service && _service.useValue) return args.push(_service.useValue);
-
-        if (!findService) throw new Error(`injector injects service error: can't find provide: ${key.name} in constructor ${_constructor}`);
-
-        // if service isn't a singleton service
-        if (findService.isSingletonMode === false) return args.push(factoryCreator(findService, otherInjector, provideAndInstanceMap));
-        // if service is a singleton service
-        else {
-            const findServiceInStance = fromInjector.getInstance(key);
-            if (findServiceInStance) args.push(findServiceInStance);
-            else {
-                const serviceInStance = factoryCreator(findService, otherInjector, provideAndInstanceMap);
-                fromInjector.setInstance(key, serviceInStance);
-                args.push(serviceInStance);
+    // build $privateProviders into injector of component
+    if ((_constructor.prototype as any).$privateProviders as TProviders) {
+        const length = (_constructor.prototype as any).$privateProviders.length;
+        for (let i = 0; i < length; i++) {
+            const service = (_constructor.prototype as any).$privateProviders[i];
+            if ((service as TInjectTokenProvider).provide) {
+                if ((service as TUseClassProvider).useClass || (service as TUseValueProvider).useValue) injector.setProvider((service as TInjectTokenProvider).provide, service);
+            } else {
+                injector.setProvider(service as Function, service as Function);
             }
         }
-    });
+    }
 
-    return { args, privateInjector };
+    // 干预等级 @SkipSelf > @Self > @Host > @Optional
+    const skipSelfList: number[] = Reflect.getMetadata(metadataOfSkipSelf, _constructor) || [];
+    const selfList: number[] = Reflect.getMetadata(metadataOfSelf, _constructor) || [];
+    const hostList: number[] = Reflect.getMetadata(metadataOfHost, _constructor) || [];
+    const optionalList: number[] = Reflect.getMetadata(metadataOfOptional, _constructor) || [];
+    // 使用 @Inject 代替获取类型
+    const injectTokenList: TInjectItem[] = Reflect.getMetadata(metadataOfInject, _constructor) || [];
+    const attributeList: { index: number; attributeName: string; }[] = Reflect.getMetadata(metadataOfAttribute, _constructor) || [];
+
+    // find instance from provider
+    const needInjectedClassLength = _needInjectedClass.length;
+    for (let i = 0; i < needInjectedClassLength; i++) {
+        // 构建冒泡层数
+        let bubblingLayer: number | 'always' = 'always'; 
+        if (hostList.indexOf(i) !== -1) bubblingLayer = 1;
+        if (selfList.indexOf(i) !== -1) bubblingLayer = 0;
+
+        // 构建冒泡开始的injector
+        let findInjector = injector;
+        if (skipSelfList.indexOf(i) !== -1) findInjector = injector.parentInjector;
+
+        // 构建@Attribute
+        const findAttribute = attributeList.find((value) => value.index === i);
+        if (findAttribute && ((_constructor as any).nvType === 'nvComponent' || (_constructor as any).nvType === 'nvDirective')) {
+            const elementRef: ElementRef = findInjector.getInstance(ElementRef);
+            const renderer: Renderer = findInjector.getInstance(Renderer);
+            args.push(renderer.getAttribute(elementRef.nativeElement, findAttribute.attributeName));
+            continue;
+        }
+        
+        // @Inject 构建
+        const findInjectToken = injectTokenList.find((value) => value.index === i);
+        const key = findInjectToken ? findInjectToken.token : _needInjectedClass[i];
+
+        if (findInjector.getInstance(key, bubblingLayer)) {
+            args.push(findInjector.getInstance(key, bubblingLayer));
+            continue;
+        } else {
+            // use @Optional will return null
+            if (optionalList.indexOf(i) !== -1) {
+                args.push(null);
+                continue;
+            }
+
+            let findService = findInjector.getProvider(key, bubblingLayer);
+
+            if (findService) {
+                if (!findService.useClass && !findService.useValue) findService = findService;
+                if (findService.useClass) findService = findService.useClass;
+                if (findService.useValue) {
+                    args.push(findService.useValue);
+                    continue;
+                }
+
+                const serviceParentInjector = findInjector.getParentInjectorOfProvider(findService, bubblingLayer);
+                const serviceInjector = serviceParentInjector.fork();
+
+                if (findService.isSingletonMode === false) {
+                    args.push(factoryCreator(findService, serviceInjector));
+                    continue;
+                } else {
+                    const serviceInStance = factoryCreator(findService, serviceInjector);
+                    findInjector.setInstance(key, serviceInStance);
+                    args.push(serviceInStance);
+                    continue;
+                }
+            } else {
+                throw new Error(`In injector could'nt find ${key}`);
+            }
+        }
+    }
+
+    return args;
 }
 
 /**
  * create an instance with factory method
  * 
- * use injectedServiceCreator to create arguments from Injector
+ * use injectionCreator to get arguments from Injector
  *
  * @export
- * @template K
- * @template V
  * @param {Function} _constructor
- * @param {Injector} [otherInjector]
- * @param {Map<K, V>} [provideAndInstanceMap]
+ * @param {Injector} [injector]
  * @returns {*}
  */
-export function factoryCreator<K = any, V = any>(_constructor: Function, otherInjector?: Injector, provideAndInstanceMap?: Map<K, V>): any {
-    const { args, privateInjector } = injectionCreator(_constructor, otherInjector, provideAndInstanceMap);
+export function factoryCreator(_constructor: Function, injector?: Injector): any {
+    const args = injectionCreator(_constructor, injector);
     const factoryInstance = new (_constructor as any)(...args);
-    factoryInstance.privateInjector = privateInjector;
+    factoryInstance.$privateInjector = injector;
     return factoryInstance;
 }

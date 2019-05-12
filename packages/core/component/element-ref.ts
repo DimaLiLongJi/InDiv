@@ -8,7 +8,7 @@
  */
 export class ElementRef<R = HTMLElement> {
   public nativeElement: R;
-  constructor(node: R) {
-    this.nativeElement = node;
+  constructor(nativeElement: R) {
+    this.nativeElement = nativeElement;
   }
 }

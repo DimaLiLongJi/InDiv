@@ -25,7 +25,7 @@
     "start:js": "npm run build && webpack --watch --env=testjs --mode=development & nodemon app.js",
     "start:docs": "docsify serve ./docs --port 2334",
     "start:indiv-loader": "npm run clean && npm run build:indiv-loader && webpack --config webpack.test-loader.config.js --watch --mode=development & nodemon app.js",
-    "testartst:indiv-loader:js": "npm run build && webpack --config webpack.test-loader.config.js --watch --mode=development --env=testjs & nodemon app.js",
+    "start:indiv-loader:js": "npm run build && webpack --config webpack.test-loader.config.js --watch --mode=development --env=testjs & nodemon app.js",
     "test:ssr": "rm -rf ./ssr-demo/node_modules/@indiv && npm run build && cp -r packages ./ssr-demo/node_modules/@indiv && npm run clean",
     "clean": "rm -rf packages/core/build packages/platform-browser/build packages/common/build packages/router/build packages/platform-server/build packages/indiv-loader/build dist .rpt2_cache",
     "build": "npm run clean && npm run build:core && npm run build:platform-browser && npm run build:common && npm run build:router && npm run build:platform-server && npm run build:indiv-loader",

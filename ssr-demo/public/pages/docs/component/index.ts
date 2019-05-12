@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { Component, HasRender, DoCheck, OnInit, OnDestory,  } from '@indiv/core';
+import { Component, HasRender, DoCheck, OnInit, OnDestory, Self, SkipSelf } from '@indiv/core';
 import { RouteChange } from '@indiv/router';
 import { componentInfo } from '../../../constants/component';
 
@@ -37,8 +37,9 @@ export default class DocsComponentContainer implements OnInit, HasRender, DoChec
   public subscribeToken: Subscription;
 
   constructor(
-    private testS: TestService,
+    @SkipSelf() private testS: TestService,
   ) {
+    console.log(8888888, this.testS);
     this.subscribeToken = this.testS.subscribe(this.subscribe);
   }
 

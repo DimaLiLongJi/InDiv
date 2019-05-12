@@ -28,5 +28,5 @@ export interface INvModule {
   exports?: Function[];
   exportsList?: Function[];
   bootstrap?: Function;
-  privateInjector?: Injector;
+  $privateInjector?: Injector;
 }
