@@ -115,7 +115,7 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
 
 #### 未来
 
-该项目创建的目的是为了学习下 angular 的架构，并尝试用自己的想法实现，因为目标为实现 angular 的一些装饰器和功能。
+该项目创建的目的是为了学习下 [angular](https://www.angular.cn) 的架构，并**尝试用自己的想法实现** angular 的一些装饰器和功能。
 
 - [ ] angular decorators
   - [x] [Component](https://www.angular.cn/api/core/Component)
