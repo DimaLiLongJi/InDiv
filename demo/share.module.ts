@@ -1,4 +1,4 @@
-import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener, HostBinding } from '@indiv/core';
+import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener, HostBinding, Attribute } from '@indiv/core';
 import { RouteChange, RouteModule, TRouter } from '@indiv/router'; 
 import { HeroSearchService, HeroSearchService2 } from './service';
 
@@ -189,18 +189,21 @@ export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
   @HostBinding('style.color') private color: string = null;
   constructor(
     private hss: HeroSearchService,
-  ) {}
+    @Attribute('fuck-y') private fuck: string,
+  ) {
+    console.log(1111111, 'fuck-y', this.fuck);
+  }
 
   public nvOnInit() {
-    console.log(5555, 'init TestDirective', this.testDirective);
-    this.hss.test();
+    // console.log(5555, 'init TestDirective', this.testDirective);
+    // this.hss.test();
   }
 
   public nvRouteChange(lastRoute: string, newRoute: string) {
-    console.log(5555, 'nvRouteChange TestDirective', newRoute);
+    // console.log(5555, 'nvRouteChange TestDirective', newRoute);
   }
   public nvReceiveInputs(nextInputs: any): void {
-    console.log(33333, 'nvReceiveInputs test-directive', nextInputs);
+    // console.log(33333, 'nvReceiveInputs test-directive', nextInputs);
   }
   @HostListener('mouseover', ['$element'])
   public changeColor = (element: any) => {

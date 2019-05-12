@@ -134,7 +134,7 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
   - [x] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
   - [x] [Self](https://www.angular.cn/api/core/Self)
   - [x] [Optional](https://www.angular.cn/api/core/Optional)
-  - [ ] [Attribute](https://www.angular.cn/api/core/Attribute)
+  - [x] [Attribute](https://www.angular.cn/api/core/Attribute)
 
 
 #### 反馈

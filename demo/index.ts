@@ -317,7 +317,7 @@ class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasRender {
   <div class="fucck" nv-class="test.a" nv-id="'cc'">
   <p>{{testNumber}}</p>
   <input nv-model="test.a" nv-on:click="show(test)" />
-  <p test-directive="{test.a}" nv-id="232" nv-if="countState(a)" nv-on:click="changeInput()">{{a}}</p>
+  <p test-directive="{test.a}" fuck-y="fuckyou" nv-id="232" nv-if="countState(a)" nv-on:click="changeInput()">{{a}}</p>
   <test-component test-directive="{test.a}" nv-repeat="man in testArray" nv-key="man.id" manName="{countState(man.name)}" nv-if="a">
     <a>this is {{man.name}}</a>
     <test-content-component></test-content-component>

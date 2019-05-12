@@ -291,6 +291,51 @@ export default class ChangeColorDirective implements ReceiveInputs {
 ```
 
 
+## 属性查询
+
+**v2.2.0 新增，指令组件通用**
+
+在构造函数依赖注入的时候，不仅仅可以注入服务，在组件和指令中也可以通过**构造函数属性装饰器** `@Attribute(attributeName: string)` 注入挂载组件上的 `attribute`。
+
+**该装饰器获取的属性仅可用于原生 attribute，nv Attribute则无法获取**
+
+接受一个参数：属性名 `attributeName: string`
+
+> directives/change-color.directive.ts
+
+```typescript
+import { Directive, ReceiveInputs, Input, HostListener, HostBinding, Attribute } from '@indiv/core';
+
+@Directive({
+    selector: 'change-color',
+})
+export default class ChangeColorDirective implements ReceiveInputs {
+  @Input() public color: string;
+  @HostBinding('style.color') public styleColor: string = null;
+  
+  constructor(
+    @Attribute('some-attribute') someAttribute: string;
+  ) {
+     console.log(this.someAttribute);
+  }
+
+  public ReceiveInputs(nextInputs: string) {
+    console.log('Directive ReceiveInputs', nextInputs);
+  }
+
+  @HostListener('mouseover', ['$element'])
+  public changeColor = (element: Element) => {
+    this.styleColor = this.color;
+  }
+
+  @HostListener('mouseout', ['$element'])
+  public removeColor = (element: Element) => {
+    this.styleColor = null;
+  }
+}
+```
+
+
 ## 生命周期
 
 每个指令都有一个被 InDiv 管理的生命周期。

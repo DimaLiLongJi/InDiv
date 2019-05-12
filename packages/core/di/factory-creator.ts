@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 import { TProviders, TInjectTokenProvider, TUseClassProvider, TUseValueProvider } from '../types';
 import { Injector } from './injector';
-import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject } from './metadata';
+import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute } from './metadata';
 import { TInjectItem } from './inject';
+import { ElementRef } from '../component';
+import { Renderer } from '../vnode';
 
 /**
  * use injector to create arguments for constructor
@@ -39,6 +41,7 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
     const optionalList: number[] = Reflect.getMetadata(metadataOfOptional, _constructor) || [];
     // 使用 @Inject 代替获取类型
     const injectTokenList: TInjectItem[] = Reflect.getMetadata(metadataOfInject, _constructor) || [];
+    const attributeList: { index: number; attributeName: string; }[] = Reflect.getMetadata(metadataOfAttribute, _constructor) || [];
 
     // find instance from provider
     const needInjectedClassLength = _needInjectedClass.length;
@@ -51,9 +54,19 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
         // 构建冒泡开始的injector
         let findInjector = injector;
         if (skipSelfList.indexOf(i) !== -1) findInjector = injector.parentInjector;
+
+        // 构建@Attribute
+        const findAttribute = attributeList.find((value) => value.index === i);
+        if (findAttribute && ((_constructor as any).nvType === 'nvComponent' || (_constructor as any).nvType === 'nvDirective')) {
+            const elementRef: ElementRef = findInjector.getInstance(ElementRef);
+            const renderer: Renderer = findInjector.getInstance(Renderer);
+            args.push(renderer.getAttribute(elementRef.nativeElement, findAttribute.attributeName));
+            continue;
+        }
         
-        const findTnjectToken = injectTokenList.find((value) => value.index === i);
-        const key = findTnjectToken ? findTnjectToken.token : _needInjectedClass[i];
+        // @Inject 构建
+        const findInjectToken = injectTokenList.find((value) => value.index === i);
+        const key = findInjectToken ? findInjectToken.token : _needInjectedClass[i];
 
         if (findInjector.getInstance(key, bubblingLayer)) {
             args.push(findInjector.getInstance(key, bubblingLayer));

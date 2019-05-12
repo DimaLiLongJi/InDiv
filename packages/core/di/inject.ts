@@ -33,7 +33,7 @@ export class InjectionToken {
  */
 export function Inject(token: any): (target: Object, propertyKey: string, parameterIndex: number) => void {
   return function (target: Object, propertyKey: string, parameterIndex: number) {
-    const metadata: TInjectItem[] = Reflect.getMetadata(metadataOfInject, target) || [{ index: parameterIndex, token }];
+    const metadata: TInjectItem[] = Reflect.getMetadata(metadataOfInject, target) || [];
     metadata.push({ index: parameterIndex, token });
     Reflect.defineMetadata(metadataOfInject, metadata, target);
   };
