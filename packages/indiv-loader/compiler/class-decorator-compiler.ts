@@ -24,7 +24,7 @@ export function classDecoratorCompiler(rootPath: string, body: any, parseVnodeOp
               selector = selectorProperty.value.value;
               parseVnodeOptions.components.push(selector);
             }
-            // build template
+            // build $template
             if (templateProperty && templateProperty.value && templateProperty.value.value) {
               let templatePath = templateProperty.value.value;
               if (rootPath) {

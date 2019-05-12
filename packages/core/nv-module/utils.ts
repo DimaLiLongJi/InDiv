@@ -2,19 +2,21 @@ import { INvModule, TInjectTokenProvider, TUseClassProvider, TUseValueProvider }
 import { factoryCreator, rootInjector, Injector } from '../di';
 
 /**
- * get NvModule instance from rootInjector
+ * build NvModule instance
  *
- * use this method get NvModule instance, if want to get it from rootInjector as singleton instance
+ * use this method build NvModule instance
  * 
  * @export
  * @param {Function} FindNvModule
- * @param {Injector} [otherInjector]
+ * @param {boolean} [isRoot]
  * @returns {INvModule}
  */
-export function getModuleFromRootInjector(FindNvModule: Function, otherInjector?: Injector): INvModule {
+export function factoryModule(FindNvModule: Function, isRoot?: boolean): INvModule {
   let moduleFound: INvModule;
   if (!rootInjector.getInstance(FindNvModule)) {
-    moduleFound = factoryModule(FindNvModule, otherInjector);
+    const injector = isRoot ? rootInjector : rootInjector.fork();
+    moduleFound = factoryModuleWithInjector(FindNvModule, injector);
+    moduleFound.$privateInjector = injector;
     rootInjector.setInstance(FindNvModule, moduleFound);
   } else moduleFound = rootInjector.getInstance(FindNvModule);
   return moduleFound;
@@ -22,17 +24,13 @@ export function getModuleFromRootInjector(FindNvModule: Function, otherInjector?
 
 /**
  * build provider list in module
- * 
- * otherInjector first
- * rootInjector second
  *
  * @param {INvModule} moduleInstance
- * @param {Injector} otherInjector
+ * @param {Injector} injector
  * @returns {void}
  */
-function buildProviderList(moduleInstance: INvModule, otherInjector?: Injector): void {
+function buildProviderList(moduleInstance: INvModule, injector?: Injector): void {
   if (!moduleInstance.providers) return;
-  const injector = otherInjector ? otherInjector : rootInjector;
   const length = moduleInstance.providers.length;
   for (let i = 0; i < length; i++) {
     const service = moduleInstance.providers[i];
@@ -46,21 +44,17 @@ function buildProviderList(moduleInstance: INvModule, otherInjector?: Injector):
 
 /**
  * build imports for module
- * 
- * otherInjector first
- * rootInjector second
  *
  * @param {INvModule} moduleInstance
- * @param {Injector} [otherInjector]
  * @returns {void}
  */
-function buildImports(moduleInstance: INvModule, otherInjector?: Injector): void {
+function buildImports(moduleInstance: INvModule): void {
   if (!moduleInstance.imports) return;
   const length = moduleInstance.imports.length;
   for (let i = 0; i < length; i++) {
     const ModuleImport = moduleInstance.imports[i];
     // push InDiv instance
-    const moduleImport = getModuleFromRootInjector(ModuleImport, otherInjector);
+    const moduleImport = factoryModule(ModuleImport, true);
     // build exports
     if (moduleImport.exportsList) {
       const exportsLength = moduleImport.exportsList.length;
@@ -77,9 +71,6 @@ function buildImports(moduleInstance: INvModule, otherInjector?: Injector): void
  * 
  * set static declarations: [] in declaration
  *
- * otherInjector first
- * rootInjector second
- *
  * @param {INvModule} moduleInstance
  * @returns {void}
  */
@@ -89,7 +80,7 @@ function buildDeclarations4Declarations(moduleInstance: INvModule): void {
   for (let i = 0; i < length; i++) {
     const FindDeclaration: any = moduleInstance.declarations[i];
     moduleInstance.declarations.forEach((needInjectDeclaration: any) => {
-      if (!FindDeclaration.prototype.declarationMap.has(needInjectDeclaration.selector)) FindDeclaration.prototype.declarationMap.set(needInjectDeclaration.selector, needInjectDeclaration);
+      if (!FindDeclaration.prototype.$declarationMap.has(needInjectDeclaration.selector)) FindDeclaration.prototype.$declarationMap.set(needInjectDeclaration.selector, needInjectDeclaration);
     });
   }
 }
@@ -98,17 +89,16 @@ function buildDeclarations4Declarations(moduleInstance: INvModule): void {
  * build exportsList for module
  *
  * @param {INvModule} moduleInstance
- * @param {Injector} [otherInjector]
  * @returns {void}
  */
-function buildExports(moduleInstance: INvModule, otherInjector?: Injector): void {
+function buildExports(moduleInstance: INvModule): void {
   if (!moduleInstance.exports) return;
   const length = moduleInstance.exports.length;
   for (let i = 0; i < length; i++) {
     const ModuleExport = moduleInstance.exports[i];
     // if export is NvModule, exports from NvModule will be exported again from this module
     if ((ModuleExport as any).nvType === 'nvModule') {
-      const moduleInstanceOfExport = getModuleFromRootInjector(ModuleExport, otherInjector);
+      const moduleInstanceOfExport = factoryModule(ModuleExport);
       const moduleInstanceOfExportLength = moduleInstanceOfExport.exportsList.length;
       for (let j = 0; j < moduleInstanceOfExportLength; j++) {
         const moduleExportFromModuleOfExport = moduleInstanceOfExport.exportsList[j];
@@ -130,14 +120,13 @@ function buildExports(moduleInstance: INvModule, otherInjector?: Injector): void
  *
  * @export
  * @param {Function} NM
- * @param {Injector} [otherInjector]
+ * @param {Injector} injector
  * @returns {INvModule}
  */
-export function factoryModule(NM: Function, otherInjector?: Injector): INvModule {
-  const provideAndInstanceMap = new Map();
-  buildProviderList(NM.prototype, otherInjector);
-  buildImports(NM.prototype, otherInjector);
+export function factoryModuleWithInjector(NM: Function, injector: Injector): INvModule {
+  buildProviderList(NM.prototype, injector);
+  buildImports(NM.prototype);
   buildDeclarations4Declarations(NM.prototype);
-  buildExports(NM.prototype, otherInjector);
-  return factoryCreator(NM, otherInjector, provideAndInstanceMap);
+  buildExports(NM.prototype);
+  return factoryCreator(NM, injector);
 }

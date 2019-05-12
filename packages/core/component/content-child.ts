@@ -10,18 +10,18 @@ import { buildFoundMap } from './utils';
  * @returns {void}
  */
 function buildContentChild(component: IComponent): void {
-  if (!component.contentChildList) return;
-  component.contentChildList.forEach(({ propertyName, selector }) => {
+  if (!component.$contentChildList) return;
+  component.$contentChildList.forEach(({ propertyName, selector }) => {
     if (typeof selector === 'string') {
-      if (component.declarationMap.has(selector)) {
+      if (component.$declarationMap.has(selector)) {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
         const found = foundMap.find(value => ((value.constructorFunction as any).selector === selector) && value.isFromContent);
         if (found) component[propertyName] = found.instanceScope;
       } else {
-        const content = component.indivInstance.getRenderer.getElementByQuery('nv-content', component.nativeElement);
+        const content = component.$indivInstance.getRenderer.getElementByQuery('nv-content', component.$nativeElement);
         if (!content) return; 
-        const findElementRef = component.indivInstance.getRenderer.getElementByQuery(selector, content);
+        const findElementRef = component.$indivInstance.getRenderer.getElementByQuery(selector, content);
         if (findElementRef) component[propertyName] = new ElementRef(findElementRef);
       }
     }
@@ -39,20 +39,20 @@ function buildContentChild(component: IComponent): void {
  * @returns {void}
  */
 function buildContentChildren(component: IComponent): void {
-  if (!component.contentChildrenList) return;
-  component.contentChildrenList.forEach(({ propertyName, selector }) => {
+  if (!component.$contentChildrenList) return;
+  component.$contentChildrenList.forEach(({ propertyName, selector }) => {
     if (typeof selector === 'string') {
-      if (component.declarationMap.has(selector)) {
+      if (component.$declarationMap.has(selector)) {
         const foundMap: ComponentList[] | DirectiveList[] = buildFoundMap(component, selector);
         if (!foundMap) return;
         component[propertyName] = (foundMap as any[]).map(value => {
           if (((value.constructorFunction as any).selector === selector) && value.isFromContent) return value.instanceScope;
         });
       } else {
-        const contents: any[] = component.indivInstance.getRenderer.getAllElementsByQuery('nv-content', component.nativeElement);
+        const contents: any[] = component.$indivInstance.getRenderer.getAllElementsByQuery('nv-content', component.$nativeElement);
         const propertyValues: any[] = [];
         Array.from(contents).forEach(content => {
-          Array.from(component.indivInstance.getRenderer.getAllElementsByQuery(selector, content)).forEach((findElementRef: any) => {
+          Array.from(component.$indivInstance.getRenderer.getAllElementsByQuery(selector, content)).forEach((findElementRef: any) => {
             propertyValues.push(new ElementRef(findElementRef));
           });
         });
@@ -95,8 +95,8 @@ export function buildContentChildandChildren(component: IComponent): void {
  */
 export function ContentChild(selector: Function | string): (target: IComponent, propertyName: string) => any {
   return function (target: IComponent, propertyName: string): any {
-    if (!target.contentChildList) target.contentChildList = [];
-    target.contentChildList.push({ propertyName, selector });
+    if (!target.$contentChildList) target.$contentChildList = [];
+    target.$contentChildList.push({ propertyName, selector });
     return target[propertyName];
   };
 }
@@ -117,8 +117,8 @@ export function ContentChild(selector: Function | string): (target: IComponent, 
  */
 export function ContentChildren(selector: Function | string): (target: IComponent, propertyName: string) => any {
   return function (target: IComponent, propertyName: string): any {
-    if (!target.contentChildrenList) target.contentChildrenList = [];
-    target.contentChildrenList.push({ selector, propertyName });
+    if (!target.$contentChildrenList) target.$contentChildrenList = [];
+    target.$contentChildrenList.push({ selector, propertyName });
     return target[propertyName];
   };
 }

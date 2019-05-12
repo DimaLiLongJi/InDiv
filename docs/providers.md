@@ -37,11 +37,13 @@ src
 
 Injectable 符号，并且给服务类添加了 @Injectable() 装饰器。 它把这个类标记为依赖注入系统的参与者之一。标志着服务类类将会提供一个可注入的服务，并且它还可以拥有自己的待注入的依赖。
 
-`@Injectable` 接收 1个参数: `{ isSingletonMode?: boolean; providedIn?: Type<any> | 'root' | null; }`, 默认为 true。
+`@Injectable` 接收 1个对象: `{ isSingletonMode?: boolean; providedIn?: Type<any> | 'root' | null; }`
+
+`isSingletonMode` 默认为 true，则该服务为单例服务。
 
 当 `isSingletonMode` 为 `false`时，IOC容器将不会创建单例服务。
 
-`providedIn`: 服务被直接注入哪个 Injector。
+`providedIn`: 服务被直接注入哪个 `Injector`。
 
   1. 如果是`'root'`，该服务将直接被注入至根注入器 `rootInjector`，全局都可以直接使用该服务。
   2. 如果是一个具体的模块类，那么该服务将被注入该具体模块类的 `provides` 中。 
@@ -66,8 +68,9 @@ export class TestService {
 
 - 模块提供商
   
-把 TestService 直接在 `app.module.ts` 的 `providers` 中声明，那么现在该模块下所有的组件与指令都可以通过依赖注入的方式获得该提供者的实例。
-直接打印一下，打印出 1，然后更改一下，现在 TestService 实例上的count应该为2。
+把 `TestService` 直接在 `app.module.ts` 的 `providers` 中声明，那么现在该模块下所有的组件与指令都可以通过依赖注入的方式获得该提供者的实例。
+
+直接打印一下，打印出 1，然后更改一下，现在 `TestService` 实例上的 `count` 应该为2。
 
 > app.module.ts
 
@@ -170,7 +173,7 @@ export default class ShowAgeComponent implements nvReceiveInputs {
 
 但是我们已经在父组件`app.component.ts`将 服务实例上的count 更改为2了，为什么此时却是1呢？
 
-这是因为在非懒加载模块的`providers`里被声明的提供者会直接被注入到全局的IOC容器根Injector`rootInjector`中，而在组件的`providers`中声明的提供者会在该组件的实例上生成另外的实例。
+这是因为在非懒加载模块的`providers`里被声明的提供者会直接被注入到全局的IOC容器根 Injector `rootInjector`中，而在组件的`providers`中声明的提供者会在该组件的实例上生成另外的实例。
 
 所以两个 `testService` 并不是用一个实例。
 
@@ -212,6 +215,101 @@ export default class AppModule {}
 1. `Function`: TestService。最普通的方法，编译时会被拓展成下面的形式。
 2. `{ provide: any; useClass: Function; }` : `{ provide: TestService, useClass: TestService }`。 基本形式。
 3. `{ provide: any; useValue: any; }` : `{ provide: TestService, useValue: '111' }`。会在模块组件或服务中注入一个常量。
+
+- 非 `Class` 类型 `provide`
+
+**v3.0.0新增**
+
+当使用非 `Class` 类型的 `provide` 时，推荐使用 `@Inject(token: any)` 和 `InjectionToken`。
+
+下面指定一个url常量作为依赖注入的 `provider` 并使用：
+
+> providers/url.ts
+
+```typescript
+import { InjectionToken } from '@indiv/core';
+
+export const indivUrlToken = new InjectionToken('indivUrlToken');
+```
+
+> app.module.ts
+
+```typescript
+import { NvModule } from '@indiv/core';
+import AppComponent from './app.component';
+import ShowAgeComponent from './components/show-age/show-age.component';
+import ChangeColorDirective from './directives/change-color.directive';
+import TestService from './provides/test.service';
+import { indivUrlToken } from './provides/url';
+
+@NvModule({
+  imports: [],
+  declarations: [ AppComponent, ShowAgeComponent, ChangeColorDirective ],
+  providers: [
+    {
+      provide: TestService,
+      useClass: TestService,
+    },
+    {
+      provide: 'githubUrl',
+      useValue: 'https://github.com/DimaLiLongJi',
+    },
+    {
+      provide: indivUrlToken,
+      useValue: 'https://github.com/DimaLiLongJi/InDiv',
+    }
+  ],
+  bootstrap: AppComponent,
+  exports: [],
+})
+export default class AppModule {}
+```
+
+在 `AppComponent` 中使用下这两个 provider：
+
+> app.component.ts
+
+```typescript
+import { Component, StateSetter, SetState, Watch, Inject } from '@indiv/core';
+import TestService from './provides/test.service';
+import { indivUrlToken } from './provides/url';
+
+@Component({
+    selector: 'app-component',
+    template: (`
+        <div class="app-component-container">
+          <input nv-model="name"/>
+          <p nv-on:click="addAge()" change-color="{color}">name: {{name}}</p>
+          <show-age age="{age}" uupDateAge="{@upDateAge}"></show-age>
+        </div>
+    `),
+})
+export default class AppComponent {
+  public name: string = 'InDiv';
+  @Watch() public age: number;
+  public color: string = 'red';
+
+  @StateSetter() public setState: SetState;
+
+  constructor(
+    private testService: TestService,
+    @Inject('githubUrl') private githubUrl: string,
+    @Inject(indivUrlToken) private indivUrl: string,
+  ) {
+    console.log(this.testService.count, githubUrl, indivUrl); // 1 https://github.com/DimaLiLongJi https://github.com/DimaLiLongJi/InDiv
+    this.testService.count = 2; // 2
+  }
+
+  public addAge(): void {
+    this.setState({ age: 24 });
+  }
+
+  public upDateAge(age: number) {
+    this.age = age;
+    // this.setState({ age: 24 });
+  }
+}
+```
 
 
 ## 依赖注入
@@ -267,7 +365,7 @@ export default class ShowAgeComponent {
 
 ## 可被注入的依赖
 
-现在服务，组件，指令，模块都可以使用依赖注入系统来从 IOC容器 中获得依赖实例。
+现在服务，模块等都可以使用依赖注入系统来从 **IOC容器** 中获得依赖实例。
 
 可被注入的依赖主要分为下面几类：
 
@@ -279,7 +377,7 @@ export default class ShowAgeComponent {
 
 2. 服务，被 `Injectable` 注解过的实例，可以为单例也可以为非单例
 
-3. 模块，被`NvModule` 注解过的全局模块单例
+3. 模块，被 `NvModule` 注解过的全局模块单例
 
 4. 其他依赖
    

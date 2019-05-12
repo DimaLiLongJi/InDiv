@@ -26,8 +26,8 @@ function emitDirectiveDestory(directiveList: DirectiveList[]): void {
  */
 function emitComponentDestory(componentList: ComponentList[]): void {
   componentList.forEach(component => {
-    emitDirectiveDestory(component.instanceScope.directiveList);
-    emitComponentDestory(component.instanceScope.componentList);
+    emitDirectiveDestory(component.instanceScope.$directiveList);
+    emitComponentDestory(component.instanceScope.$componentList);
     lifecycleCaller(component.instanceScope, 'nvOnDestory');
   });
 }
@@ -40,12 +40,12 @@ function emitComponentDestory(componentList: ComponentList[]): void {
  * @param {TComAndDir} componentAndDirectives
  */
 export async function mountComponent(componentInstance: IComponent, componentAndDirectives: TComAndDir): Promise<void> {
-  const cacheComponentList: ComponentList[] = [...componentInstance.componentList];
+  const cacheComponentList: ComponentList[] = [...componentInstance.$componentList];
   const foundCacheComponentList: ComponentList[] = [];
   componentsConstructor(componentInstance, componentAndDirectives);
-  const componentListLength = componentInstance.componentList.length;
+  const componentListLength = componentInstance.$componentList.length;
   for (let i = 0; i < componentListLength; i++) {
-    const component = componentInstance.componentList[i];
+    const component = componentInstance.$componentList[i];
     // find Component from cache
     const cacheComponentIndex = cacheComponentList.findIndex(cache => cache.nativeElement === component.nativeElement);
     const cacheComponent = cacheComponentList[cacheComponentIndex];
@@ -57,15 +57,15 @@ export async function mountComponent(componentInstance: IComponent, componentAnd
     }
     if (cacheComponent) {
       component.instanceScope = cacheComponent.instanceScope;
-      // old inputs: component.instanceScope._save_inputs
+      // old inputs: component.instanceScope.$saveInputs
       // new inputs: component.inputs
-      if (!utils.isEqual(component.instanceScope._save_inputs, component.inputs)) {
+      if (!utils.isEqual(component.instanceScope.$saveInputs, component.inputs)) {
         if (component.instanceScope.nvReceiveInputs) component.instanceScope.nvReceiveInputs({ ...component.inputs });
-        component.instanceScope._save_inputs = component.inputs;
+        component.instanceScope.$saveInputs = component.inputs;
 
         for (const key in component.inputs) {
-          if (component.instanceScope.inputsList) {
-            component.instanceScope.inputsList.forEach(({ propertyName, inputName }) => {
+          if (component.instanceScope.$inputsList) {
+            component.instanceScope.$inputsList.forEach(({ propertyName, inputName }) => {
               if (inputName === key) (component.instanceScope as any)[propertyName] = component.inputs[key];
             });
           }
@@ -77,9 +77,9 @@ export async function mountComponent(componentInstance: IComponent, componentAnd
       component.instanceScope = buildComponentScope(component.constructorFunction, component.inputs, component.nativeElement, componentInstance);
     }
 
-    component.instanceScope.indivInstance = componentInstance.indivInstance;
-    // 赋值 <nv-content>的 Vnode[] 给组件实例nvContent
-    component.instanceScope.nvContent = component.nvContent;
+    component.instanceScope.$indivInstance = componentInstance.$indivInstance;
+    // 赋值 <nv-content>的 Vnode[] 给组件实 $nvContent
+    component.instanceScope.$nvContent = component.content;
 
     if (!cacheComponent) {
       lifecycleCaller(component.instanceScope, 'nvOnInit');
@@ -91,24 +91,24 @@ export async function mountComponent(componentInstance: IComponent, componentAnd
   const cacheComponentListLength = cacheComponentList.length;
   for (let i = 0; i < cacheComponentListLength; i++) {
     const cache = cacheComponentList[i];
-    emitDirectiveDestory(cache.instanceScope.directiveList);
-    emitComponentDestory(cache.instanceScope.componentList);
+    emitDirectiveDestory(cache.instanceScope.$directiveList);
+    emitComponentDestory(cache.instanceScope.$componentList);
     lifecycleCaller(cache.instanceScope, 'nvOnDestory');
   }
 
   // render, only component which isn't rendered will be rendered and called 
   for (let i = 0; i < componentListLength; i++) {
-    const component = componentInstance.componentList[i];
+    const component = componentInstance.$componentList[i];
     // 如果没找到该组件
     if (!foundCacheComponentList.find(cache => cache.nativeElement === component.nativeElement)) {
       await component.instanceScope.render();
       // in ssr env indiv won't call nvAfterMount
-      if (!component.instanceScope.indivInstance.getIndivEnv.isServerRendering) lifecycleCaller(component.instanceScope, 'nvAfterMount');
+      if (!component.instanceScope.$indivInstance.getIndivEnv.isServerRendering) lifecycleCaller(component.instanceScope, 'nvAfterMount');
     } else {
       // 如果找到该组件 并且为脏组件
       if (component.isDirty) {
         // 如果是 OnPush 模式的话，则需要触发一次更新
-        if (component.instanceScope.nvChangeDetection === ChangeDetectionStrategy.OnPush) {
+        if (component.instanceScope.$nvChangeDetection === ChangeDetectionStrategy.OnPush) {
           if (component.instanceScope.nvDoCheck) component.instanceScope.nvDoCheck();
           await component.instanceScope.render();
         }
@@ -131,16 +131,16 @@ export async function mountComponent(componentInstance: IComponent, componentAnd
  * @param {TComAndDir} componentAndDirectives
  */
 export function componentsConstructor(componentInstance: IComponent, componentAndDirectives: TComAndDir): void {
-  componentInstance.componentList = [];
+  componentInstance.$componentList = [];
 
   componentAndDirectives.components.forEach(component => {
-    const declaration = componentInstance.declarationMap.get(component.name);
-    componentInstance.componentList.push({
+    const declaration = componentInstance.$declarationMap.get(component.name);
+    componentInstance.$componentList.push({
       nativeElement: component.nativeElement,
       inputs: component.inputs,
       instanceScope: null,
       constructorFunction: declaration,
-      nvContent: component.nvContent,
+      content: component.content,
       isFromContent: component.isFromContent,
       isDirty: false,
     });
@@ -188,7 +188,7 @@ export function buildComponentsAndDirectives(vnode: Vnode, componentAndDirective
       nativeElement: vnode.nativeElement,
       inputs: componentInputs,
       name: vnode.tagName,
-      nvContent: vnode.childNodes,
+      content: vnode.childNodes,
       isFromContent: fromContent,
     });
   }
@@ -206,29 +206,29 @@ export function buildComponentsAndDirectives(vnode: Vnode, componentAndDirective
  * @returns {Promise<IComponent>}
  */
 export async function componentCompiler(nativeElement: any, componentInstance: IComponent): Promise<IComponent> {
-  // for compile, @Component must init parseVnodeOptions, templateVnode and compileInstance
-  if (!componentInstance.parseVnodeOptions) {
-    componentInstance.parseVnodeOptions = {
+  // for compile, @Component must init $parseVnodeOptions, templateVnode and $compileInstance
+  if (!componentInstance.$parseVnodeOptions) {
+    componentInstance.$parseVnodeOptions = {
       components: [],
       directives: [],
     };
-    componentInstance.declarationMap.forEach((value, key) => {
-      if (componentInstance.parseVnodeOptions.components.indexOf(key) === -1 && (value as any).nvType === 'nvComponent') componentInstance.parseVnodeOptions.components.push(key);
-      if (componentInstance.parseVnodeOptions.directives.indexOf(key) === -1 && (value as any).nvType === 'nvDirective') componentInstance.parseVnodeOptions.directives.push(key);
+    componentInstance.$declarationMap.forEach((value, key) => {
+      if (componentInstance.$parseVnodeOptions.components.indexOf(key) === -1 && (value as any).nvType === 'nvComponent') componentInstance.$parseVnodeOptions.components.push(key);
+      if (componentInstance.$parseVnodeOptions.directives.indexOf(key) === -1 && (value as any).nvType === 'nvDirective') componentInstance.$parseVnodeOptions.directives.push(key);
     });
   }
-  if (!componentInstance.templateVnode) componentInstance.templateVnode = parseTemplateToVnode(componentInstance.template, componentInstance.parseVnodeOptions);
-  if (!componentInstance.compileInstance) componentInstance.compileInstance = new Compile(nativeElement, componentInstance);
+  if (!componentInstance.$templateVnode) componentInstance.$templateVnode = parseTemplateToVnode(componentInstance.$template, componentInstance.$parseVnodeOptions);
+  if (!componentInstance.$compileInstance) componentInstance.$compileInstance = new Compile(nativeElement, componentInstance);
 
   let saveVnode: Vnode[] = [];
   try {
-    saveVnode = componentInstance.compileInstance.startCompile();
+    saveVnode = componentInstance.$compileInstance.startCompile();
   } catch (error) {
     throw new Error(`Error: ${error}, compoent ${(componentInstance.constructor as any).selector} was compiled failed!`);
   }
 
   // for save saveVnode in componentInstance
-  componentInstance.saveVnode = saveVnode;
+  componentInstance.$saveVnode = saveVnode;
   let componentAndDirectives: TComAndDir = { components: [], directives: [] };
   // 定义一个来自 <nv-content> 的 Vnode 栈
   let contentComponentStack: Vnode[] = [];

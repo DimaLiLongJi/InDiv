@@ -16,7 +16,9 @@ import './private.service';
     R2,
   ],
   providers: [
-    HeroSearchService1, HeroSearchService2, HeroSearchService,
+    HeroSearchService1,
+    HeroSearchService2,
+    HeroSearchService,
   ],
   exports: [
     TestLoadchildComponent,

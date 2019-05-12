@@ -1,4 +1,4 @@
-import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter } from '@indiv/core';
+import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener, HostBinding, Attribute } from '@indiv/core';
 import { RouteChange, RouteModule, TRouter } from '@indiv/router'; 
 import { HeroSearchService, HeroSearchService2 } from './service';
 
@@ -185,32 +185,33 @@ const routes: TRouter[] = [
   selector: 'test-directive',
 })
 export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
-  @Input('test-directive') public testDirective: string;
+  @Input('test-directive') private testDirective: string;
+  @HostBinding('style.color') private color: string = null;
   constructor(
     private hss: HeroSearchService,
-    private element: ElementRef,
-    private renderer: Renderer,
-  ) {}
+    @Attribute('fuck-y') private fuck: string,
+  ) {
+    console.log(1111111, 'fuck-y', this.fuck);
+  }
 
   public nvOnInit() {
-    console.log(5555, 'init TestDirective', this.testDirective);
-    console.log(666666, 'init TestDirective element', this.element);
-    this.hss.test();
-    this.renderer.addEventListener(this.element.nativeElement, 'mouseover', this.changeColor);
-    this.renderer.addEventListener(this.element.nativeElement, 'mouseout', this.removeColor);
-  }
-  public nvRouteChange(lastRoute: string, newRoute: string) {
-    console.log(5555, 'nvRouteChange TestDirective', newRoute);
-  }
-  public nvReceiveInputs(nextInputs: any): void {
-    console.log(33333, 'nvReceiveInputs test-directive', nextInputs);
+    // console.log(5555, 'init TestDirective', this.testDirective);
+    // this.hss.test();
   }
 
-  public changeColor = () => {
-    this.renderer.setStyle(this.element.nativeElement, 'color', 'red');
+  public nvRouteChange(lastRoute: string, newRoute: string) {
+    // console.log(5555, 'nvRouteChange TestDirective', newRoute);
   }
-  public removeColor = () => {
-    this.renderer.removeStyle(this.element.nativeElement, 'color');
+  public nvReceiveInputs(nextInputs: any): void {
+    // console.log(33333, 'nvReceiveInputs test-directive', nextInputs);
+  }
+  @HostListener('mouseover', ['$element'])
+  public changeColor = (element: any) => {
+    this.color = 'red';
+  }
+  @HostListener('mouseout', ['$element'])
+  public removeColor = (element: any) => {
+    this.color = null;
   }
 }
 

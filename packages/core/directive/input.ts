@@ -13,8 +13,8 @@ import { IComponent, IDirective } from '../types';
 export function Input(input?: string): (target: IComponent | IDirective, propertyName: string) => any {
   return function (target: IComponent | IDirective, propertyName: string): any {
       const inputName = input ? input : propertyName;
-      if (!target.inputsList) target.inputsList = [];
-      target.inputsList.push({ propertyName, inputName });
+      if (!target.$inputsList) target.$inputsList = [];
+      target.$inputsList.push({ propertyName, inputName });
       return target[propertyName];
   };
 }

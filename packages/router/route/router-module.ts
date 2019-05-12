@@ -1,4 +1,4 @@
-import { IComponent, INvModule, ComponentList, DirectiveList, factoryModule, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller } from '@indiv/core';
+import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, factoryModule } from '@indiv/core';
 import { nvRouteStatus, NvLocation } from './location';
 import { RouterTo, RouterFrom } from './directives';
 
@@ -253,7 +253,7 @@ export class RouteModule {
         const nativeElement = this.indivInstance.getRenderer.getElementsByTagName('router-render')[index - 1];
 
         let initVnode: Vnode[] = null;
-        if (this.hasRenderComponentList[index]) initVnode = this.hasRenderComponentList[index].saveVnode;
+        if (this.hasRenderComponentList[index]) initVnode = this.hasRenderComponentList[index].$saveVnode;
 
         if (!needRenderRoute.component && !needRenderRoute.redirectTo && !needRenderRoute.loadChild) throw new Error(`route error: path ${needRenderRoute.path} need a component which has children path or need a redirectTo which has't children path`);
 
@@ -373,7 +373,7 @@ export class RouteModule {
         const nativeElement = this.indivInstance.getRenderer.getElementsByTagName('router-render')[index - 1];
 
         let initVnode: Vnode[] = null;
-        if (this.hasRenderComponentList[index]) initVnode = this.hasRenderComponentList[index].saveVnode;
+        if (this.hasRenderComponentList[index]) initVnode = this.hasRenderComponentList[index].$saveVnode;
 
         let FindComponent = null;
         let component = null;
@@ -432,11 +432,11 @@ export class RouteModule {
   private routerChangeEvent(index: number): void {
     this.hasRenderComponentList.forEach((component, i) => {
       if (component.nvRouteChange) component.nvRouteChange(this.lastRoute, this.currentUrl);
-      this.emitDirectiveEvent(component.directiveList, 'nvRouteChange');
-      this.emitComponentEvent(component.componentList, 'nvRouteChange');
+      this.emitDirectiveEvent(component.$directiveList, 'nvRouteChange');
+      this.emitComponentEvent(component.$componentList, 'nvRouteChange');
       if (i >= index + 1) {
-        this.emitDirectiveEvent(component.directiveList, 'nvOnDestory');
-        this.emitComponentEvent(component.componentList, 'nvOnDestory');
+        this.emitDirectiveEvent(component.$directiveList, 'nvOnDestory');
+        this.emitComponentEvent(component.$componentList, 'nvOnDestory');
         lifecycleCaller(component, 'nvOnDestory');
       }
     });
@@ -459,8 +459,8 @@ export class RouteModule {
     }
     if (event === 'nvOnDestory') {
       componentList.forEach(component => {
-        this.emitDirectiveEvent(component.instanceScope.directiveList, event);
-        this.emitComponentEvent(component.instanceScope.componentList, event);
+        this.emitDirectiveEvent(component.instanceScope.$directiveList, event);
+        this.emitComponentEvent(component.instanceScope.$componentList, event);
         lifecycleCaller(component.instanceScope, 'nvOnDestory');
       });
     }
@@ -490,7 +490,7 @@ export class RouteModule {
   /**
    * instantiate Component
    * 
-   * use InDiv renderComponent
+   * use InDiv initComponent
    * 
    * if argument has loadModule, use loadModule
    * if argument has'nt loadModule, use rootModule in InDiv
@@ -546,7 +546,7 @@ export class RouteModule {
 
     if (!loadModule) throw new Error('load child failed, please check your routes.');
 
-    const loadModuleInstance = factoryModule(loadModule, loadModule.prototype.privateInjector);
+    const loadModuleInstance = factoryModule(loadModule);
     this.loadModuleMap.set(currentUrlPath, loadModuleInstance);
 
     return loadModuleInstance;
