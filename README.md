@@ -5,6 +5,8 @@
 
 @indiv 2.0.5以下版本 已经废除，请使用 @indiv v2.0.5+
 
+**最新版本：v3.0.0**
+
 ## 什么是InDiv
 
 #### InDiv 是一个类 angular mvvm库

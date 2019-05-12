@@ -218,7 +218,7 @@ export default class AppModule {}
 
 - 非 `Class` 类型 `provide`
 
-**v2.2.0新增**
+**v3.0.0新增**
 
 当使用非 `Class` 类型的 `provide` 时，推荐使用 `@Inject(token: any)` 和 `InjectionToken`。
 
