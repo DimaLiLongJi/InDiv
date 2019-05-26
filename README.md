@@ -24,6 +24,31 @@ InDiv 采用与 angular 类似的项目结构，提供相似的概念和 api 以
 * 本文档假设你已经熟悉了 JavaScript，TypeScript，和来自最新标准的一些知识，比如 class 和 模块
 * 下列代码范例都是用最新版本的 TypeScript 写的，利用 类型 实现依赖注入，并使用装饰器来提供元数据
 
+#### 实现的angular装饰器
+
+该项目创建的目的是为了学习下 [angular](https://www.angular.cn) 的架构，并**尝试用自己的想法实现** angular 的一些装饰器和功能。
+
+- [ ] angular decorators
+  - [x] [Component](https://www.angular.cn/api/core/Component)
+  - [x] [Directive](https://www.angular.cn/api/core/Pipe)
+  - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
+  - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
+  - [x] [Inject](https://www.angular.cn/api/core/Inject)
+  - [x] [NgModule as NvModule](https://www.angular.cn/api/core/NgModule)
+  - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
+  - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
+  - [x] [ViewChild](https://www.angular.cn/api/core/ViewChild)
+  - [x] [ViewChildren](https://www.angular.cn/api/core/ViewChildren)
+  - [x] [Input](https://www.angular.cn/api/core/Input)
+  - [ ] [Output](https://www.angular.cn/api/core/Output)
+  - [x] [HostBinding](https://www.angular.cn/api/core/HostBinding)
+  - [x] [HostListener](https://www.angular.cn/api/core/HostListener)
+  - [x] [Host](https://www.angular.cn/api/core/Host)
+  - [x] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
+  - [x] [Self](https://www.angular.cn/api/core/Self)
+  - [x] [Optional](https://www.angular.cn/api/core/Optional)
+  - [x] [Attribute](https://www.angular.cn/api/core/Attribute)
+
 #### Demo
 
 逻辑文件
@@ -40,8 +65,7 @@ import { TestDirective } from '@/directives/test-directive';
   templateUrl: './template.html',
 })
 export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasRender {
-  public state: any;
-  @Input() public manName: any;
+  @Input() public manName: string;
 
   public man: {name: string} = {
     name: 'ajiaxi',
@@ -89,7 +113,7 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
 
 ```html
 <!-- container: {{countState(color)}} -->
-<div class="fucck" nv-class="test.b" nv-id="'cc'">
+<div class="container" nv-class="test.b" nv-id="'cc'">
   <p>{{testNumber}}</p>
   <input nv-model="test.a" nv-on:click="show(test)" />
   <p test-directive="{test.a}" nv-id="232" nv-if="countState(a)" nv-on:click="changeInput()">{{a}}</p>
@@ -111,33 +135,6 @@ export class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasR
   <router-render></router-render>
 </div>
 ```
-
-
-#### 未来
-
-该项目创建的目的是为了学习下 [angular](https://www.angular.cn) 的架构，并**尝试用自己的想法实现** angular 的一些装饰器和功能。
-
-- [ ] angular decorators
-  - [x] [Component](https://www.angular.cn/api/core/Component)
-  - [x] [Directive](https://www.angular.cn/api/core/Pipe)
-  - [ ] [Pipe](https://www.angular.cn/api/core/Pipe)
-  - [x] [Injectable](https://www.angular.cn/api/core/NgModule)
-  - [x] [Inject](https://www.angular.cn/api/core/Inject)
-  - [x] [NgModule as NvModule](https://www.angular.cn/api/core/NgModule)
-  - [x] [ContentChild](https://www.angular.cn/api/core/ContentChild)
-  - [x] [ContentChildren](https://www.angular.cn/api/core/ContentChildren)
-  - [x] [ViewChild](https://www.angular.cn/api/core/ViewChild)
-  - [x] [ViewChildren](https://www.angular.cn/api/core/ViewChildren)
-  - [x] [Input](https://www.angular.cn/api/core/Input)
-  - [ ] [Output](https://www.angular.cn/api/core/Output)
-  - [x] [HostBinding](https://www.angular.cn/api/core/HostBinding)
-  - [x] [HostListener](https://www.angular.cn/api/core/HostListener)
-  - [x] [Host](https://www.angular.cn/api/core/Host)
-  - [x] [SkipSelf](https://www.angular.cn/api/core/SkipSelf)
-  - [x] [Self](https://www.angular.cn/api/core/Self)
-  - [x] [Optional](https://www.angular.cn/api/core/Optional)
-  - [x] [Attribute](https://www.angular.cn/api/core/Attribute)
-
 
 #### 反馈
 
