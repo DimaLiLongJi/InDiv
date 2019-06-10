@@ -236,7 +236,7 @@ export class InDiv {
   public bootstrapModule(Nvmodule: Function): void {
     if (!Nvmodule) throw new Error('must send a root module');
     this.rootModule = factoryModule(Nvmodule, true);
-    this.declarations = [...this.rootModule.declarations];
+    this.declarations = [...this.rootModule.$declarations];
   }
 
   /**
@@ -272,11 +272,11 @@ export class InDiv {
     component.$indivInstance = this;
 
     if (otherModule) {
-      otherModule.declarations.forEach((findDeclaration: Function) => {
+      otherModule.$declarations.forEach((findDeclaration: Function) => {
         if (!component.$declarationMap.has((findDeclaration as any).selector)) component.$declarationMap.set((findDeclaration as any).selector, findDeclaration);
       });
     } else {
-      this.rootModule.declarations.forEach((findDeclaration: Function) => {
+      this.rootModule.$declarations.forEach((findDeclaration: Function) => {
         if (!component.$declarationMap.has((findDeclaration as any).selector)) component.$declarationMap.set((findDeclaration as any).selector, findDeclaration);
       });
     }
@@ -342,8 +342,8 @@ export class InDiv {
    * @memberof InDiv
    */
   private async renderModuleBootstrap<R = Element>(): Promise<IComponent> {
-    if (!this.rootModule.bootstrap) throw new Error('need bootstrap for render Module Bootstrap');
-    const BootstrapComponent = this.rootModule.bootstrap;
+    if (!this.rootModule.$bootstrap) throw new Error('need bootstrap for render Module Bootstrap');
+    const BootstrapComponent = this.rootModule.$bootstrap;
     this.bootstrapComponent = await this.renderComponent<R>(BootstrapComponent, this.rootElement);
     return this.bootstrapComponent;
   }

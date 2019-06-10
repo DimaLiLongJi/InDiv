@@ -22,11 +22,11 @@ export type TProvider = Function | TUseClassProvider | TUseValueProvider;
 export type TProviders = TProvider[];
 
 export interface INvModule {
-  imports?: Function[];
-  declarations?: Function[];
-  providers?: TProviders;
-  exports?: Function[];
-  exportsList?: Function[];
-  bootstrap?: Function;
+  $imports?: Function[];
+  $declarations?: Function[];
+  $providers?: TProviders;
+  $exports?: Function[];
+  $exportsList?: Function[];
+  $bootstrap?: Function;
   $privateInjector?: Injector;
 }

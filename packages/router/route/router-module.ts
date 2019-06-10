@@ -277,7 +277,7 @@ export class RouteModule {
         }
         if (needRenderRoute.loadChild) {
           const loadModule = await this.NvModuleFactoryLoader(needRenderRoute.loadChild as TChildModule | TLoadChild, currentUrlPath);
-          FindComponent = loadModule.bootstrap;
+          FindComponent = loadModule.$bootstrap;
           component = this.initComponent(FindComponent, nativeElement, loadModule);
         }
 
@@ -391,7 +391,7 @@ export class RouteModule {
         }
         if (route.loadChild) {
           const loadModule = await this.NvModuleFactoryLoader(route.loadChild as TChildModule | TLoadChild, currentUrlPath);
-          FindComponent = loadModule.bootstrap;
+          FindComponent = loadModule.$bootstrap;
           component = this.initComponent(FindComponent, nativeElement, loadModule);
         }
 
@@ -575,7 +575,7 @@ export class RouteModule {
     let loadModule = null;
     this.loadModuleMap.forEach((value, key) => {
       if (new RegExp(`^${key}.*`).test(currentUrlPath)) {
-        component = value.declarations.find((component: any) => component.selector === selector && component.nvType === 'nvComponent');
+        component = value.$declarations.find((component: any) => component.selector === selector && component.nvType === 'nvComponent');
         loadModule = value;
       }
     });

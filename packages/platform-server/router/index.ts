@@ -79,7 +79,7 @@ export async function generalDistributeRoutes(routeConfig: RouteCongfig, routesL
       }
       if (route.loadChild) {
         const loadModule = NvModuleFactoryLoader((route.loadChild as Function), currentUrlPath, loadModuleMap);
-        FindComponent = loadModule.bootstrap;
+        FindComponent = loadModule.$bootstrap;
         component = indiv.initComponent(FindComponent, nativeElement, loadModule);
       }
 
@@ -127,7 +127,7 @@ export function findComponentFromModule(selector: string, currentUrlPath: string
   let loadModule = null;
   loadModuleMap.forEach((value, key) => {
     if (new RegExp(`^${key}.*`).test(currentUrlPath)) {
-      component = value.declarations.find((component: any) => component.selector === selector && component.nvType === 'nvComponent');
+      component = value.$declarations.find((component: any) => component.selector === selector && component.nvType === 'nvComponent');
       loadModule = value;
     }
   });
