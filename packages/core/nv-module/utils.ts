@@ -1,4 +1,4 @@
-import { INvModule, TInjectTokenProvider, TUseClassProvider, TUseValueProvider } from '../types';
+import { INvModule, TInjectTokenProvider } from '../types';
 import { factoryCreator, rootInjector, Injector } from '../di';
 
 /**
@@ -34,11 +34,8 @@ function buildProviderList(moduleInstance: INvModule, injector?: Injector): void
   const length = moduleInstance.$providers.length;
   for (let i = 0; i < length; i++) {
     const service = moduleInstance.$providers[i];
-    if ((service as TInjectTokenProvider).provide) {
-      if ((service as TUseClassProvider).useClass || (service as TUseValueProvider).useValue) injector.setProvider((service as TInjectTokenProvider).provide, service);
-    } else {
-      injector.setProvider(service as Function, service as Function);
-    }
+    if ((service as TInjectTokenProvider).provide) injector.setProvider((service as TInjectTokenProvider).provide, service);
+    else injector.setProvider(service as Function, service as Function);
   }
 }
 
