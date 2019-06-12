@@ -1,3 +1,14 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.0) (2019-06-12)
+
+
+### Features
+
+* **all packages** all private properties start with `$`
+* **package:@indiv/core** add `useFactory` in DI
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.0.0) (2019-05-12)
 

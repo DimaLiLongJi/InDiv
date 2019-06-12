@@ -5,6 +5,8 @@ export type TInjectTokenProvider = {
   provide: any;
   useClass?: Function;
   useValue?: any;
+  useFactory?: any;
+  deps?: any[];
 };
 
 export type TUseClassProvider = {
@@ -17,16 +19,22 @@ export type TUseValueProvider = {
   useValue: any;
 };
 
-export type TProvider = Function | TUseClassProvider | TUseValueProvider;
+export type TUseFactoryProvider = {
+  provide: any;
+  useFactory: Function;
+  deps?: any[];
+};
+
+export type TProvider = Function | TUseClassProvider | TUseValueProvider | TUseFactoryProvider;
 
 export type TProviders = TProvider[];
 
 export interface INvModule {
-  imports?: Function[];
-  declarations?: Function[];
-  providers?: TProviders;
-  exports?: Function[];
-  exportsList?: Function[];
-  bootstrap?: Function;
+  $imports?: Function[];
+  $declarations?: Function[];
+  $providers?: TProviders;
+  $exports?: Function[];
+  $exportsList?: Function[];
+  $bootstrap?: Function;
   $privateInjector?: Injector;
 }

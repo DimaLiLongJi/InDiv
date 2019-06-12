@@ -26,14 +26,14 @@ export function NvModule(options: TNvModuleOptions): (_constructor: Function) =>
     rootInjector.setProvider(_constructor, _constructor);
     (_constructor as any).nvType = 'nvModule';
     const vm: INvModule = _constructor.prototype;
-    if (!vm.providers) vm.providers = [];
-    if (options.imports) vm.imports = options.imports;
-    if (options.declarations) vm.declarations = options.declarations;
-    if (options.providers) vm.providers = vm.providers.concat(options.providers);
+    if (!vm.$providers) vm.$providers = [];
+    if (options.imports) vm.$imports = options.imports;
+    if (options.declarations) vm.$declarations = options.declarations;
+    if (options.providers) vm.$providers = vm.$providers.concat(options.providers);
     if (options.exports) {
-      vm.exports = options.exports;
-      vm.exportsList = [];
+      vm.$exports = options.exports;
+      vm.$exportsList = [];
     }
-    if (options.bootstrap) vm.bootstrap = options.bootstrap;
+    if (options.bootstrap) vm.$bootstrap = options.bootstrap;
   };
 }
