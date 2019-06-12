@@ -51,7 +51,7 @@ export default class AppModule {}
 
 * `imports?: Function[];` 导入模块，告诉 InDiv 哪些其它的模块是当前模块所需的，可以将一些在各个模块经常导入的模块抽离成为 共享模块 。被导入的模块一定要有 exports，否则将无效。
 * `declarations?: Function[];` 声明组件和指令。在该模块中被声明的组件里，可以直接使用该模块中 声明过的组件和指令 和 被导入模块导出的 组件和指令。
-* `providers?: (Function | TUseClassProvider | TUseValueProvider)[];` providers 用来声明被提供的服务。在非懒加载的模块中声明的服务将直接被注入 根Injector。此处涉及到 InDiv的依赖注入 不详细讲解。
+* `providers?: (Function | TUseClassProvider | TUseValueProvider | TUseFactoryProvider)[];` providers 用来声明被提供的服务。在非懒加载的模块中声明的服务将直接被注入 根Injector。此处涉及到 InDiv的依赖注入 不详细讲解。
 * `exports?: Function[];` 声明模块被导出的组件和指令。
 * `bootstrap?: Function;` 引导启动，只有在根模块中才会被用到，声明启动是被渲染的组件。之后我们会把 `app.component.ts` 导出的组件放在这里。
 

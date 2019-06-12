@@ -21,7 +21,7 @@ export type TUseValueProvider = {
 
 export type TUseFactoryProvider = {
   provide: any;
-  useFactory: Function
+  useFactory: Function;
   deps?: any[];
 };
 

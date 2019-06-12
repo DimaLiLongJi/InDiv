@@ -210,11 +210,12 @@ import TestService from './provides/test.service';
 export default class AppModule {}
 ```
 
-模块和组件的`providers`可以接受三种依赖提供商：
+模块和组件的`providers`可以接受4种依赖提供商：
 
 1. `Function`: TestService。最普通的方法，编译时会被拓展成下面的形式。
 2. `{ provide: any; useClass: Function; }` : `{ provide: TestService, useClass: TestService }`。 基本形式。
 3. `{ provide: any; useValue: any; }` : `{ provide: TestService, useValue: '111' }`。会在模块组件或服务中注入一个常量。
+4. `{  provide: any; useFactory: Function; deps?: any[]; }` : 可以使用工厂函数并接受 `deps` 依次作为函数参数。
 
 - 非 `Class` 类型 `provide`
 
@@ -309,6 +310,44 @@ export default class AppComponent {
     // this.setState({ age: 24 });
   }
 }
+```
+
+- useFactory注入工厂函数的返回值
+
+使用 `useFactory` 配合 `deps` 来使用工厂依赖商
+
+每次会**根据 `deps` 查找依赖并注入到函数参数中**，最终**注入工厂函数的返回值**
+
+```typescript
+export class ProvideFactoryService {
+  public data: number;
+}
+
+
+export function factoryService(testS: TestService) {
+  return {
+    data: testS.data
+  };
+}
+
+@Component({
+  selector: 'docs-component-container',
+  templateUrl: './template.html',
+  providers: [
+    {
+      provide: TestService,
+      useClass: TestService,
+    },
+  ],
+})
+export default class FactoryDemo {
+  public content: Info[] = componentInfo();
+  public subscribeToken: Subscription;
+
+  constructor(
+    private factoryService: ProvideFactoryService,
+  ) {}
+」
 ```
 
 

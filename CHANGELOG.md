@@ -5,6 +5,7 @@
 ### Features
 
 * **all packages** all private properties start with `$`
+* **package:@indiv/core** add `useFactory` in DI
 
 
 
