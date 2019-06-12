@@ -1,4 +1,4 @@
-import { INvModule, TInjectTokenProvider, TUseClassProvider, TUseValueProvider } from '../types';
+import { INvModule, TInjectTokenProvider } from '../types';
 import { factoryCreator, rootInjector, Injector } from '../di';
 
 /**
@@ -30,15 +30,12 @@ export function factoryModule(FindNvModule: Function, isRoot?: boolean): INvModu
  * @returns {void}
  */
 function buildProviderList(moduleInstance: INvModule, injector?: Injector): void {
-  if (!moduleInstance.providers) return;
-  const length = moduleInstance.providers.length;
+  if (!moduleInstance.$providers) return;
+  const length = moduleInstance.$providers.length;
   for (let i = 0; i < length; i++) {
-    const service = moduleInstance.providers[i];
-    if ((service as TInjectTokenProvider).provide) {
-      if ((service as TUseClassProvider).useClass || (service as TUseValueProvider).useValue) injector.setProvider((service as TInjectTokenProvider).provide, service);
-    } else {
-      injector.setProvider(service as Function, service as Function);
-    }
+    const service = moduleInstance.$providers[i];
+    if ((service as TInjectTokenProvider).provide) injector.setProvider((service as TInjectTokenProvider).provide, service);
+    else injector.setProvider(service as Function, service as Function);
   }
 }
 
@@ -49,18 +46,18 @@ function buildProviderList(moduleInstance: INvModule, injector?: Injector): void
  * @returns {void}
  */
 function buildImports(moduleInstance: INvModule): void {
-  if (!moduleInstance.imports) return;
-  const length = moduleInstance.imports.length;
+  if (!moduleInstance.$imports) return;
+  const length = moduleInstance.$imports.length;
   for (let i = 0; i < length; i++) {
-    const ModuleImport = moduleInstance.imports[i];
+    const ModuleImport = moduleInstance.$imports[i];
     // push InDiv instance
     const moduleImport = factoryModule(ModuleImport, true);
     // build exports
-    if (moduleImport.exportsList) {
-      const exportsLength = moduleImport.exportsList.length;
+    if (moduleImport.$exportsList) {
+      const exportsLength = moduleImport.$exportsList.length;
       for (let i = 0; i < exportsLength; i++) {
-        const exportFromModule = moduleImport.exportsList[i];
-        if (moduleInstance.declarations && !moduleInstance.declarations.find((declaration: any) => declaration.selector === (exportFromModule as any).selector)) moduleInstance.declarations.push(exportFromModule);
+        const exportFromModule = moduleImport.$exportsList[i];
+        if (moduleInstance.$declarations && !moduleInstance.$declarations.find((declaration: any) => declaration.selector === (exportFromModule as any).selector)) moduleInstance.$declarations.push(exportFromModule);
       }
     }
   }
@@ -75,11 +72,11 @@ function buildImports(moduleInstance: INvModule): void {
  * @returns {void}
  */
 function buildDeclarations4Declarations(moduleInstance: INvModule): void {
-  if (!moduleInstance.declarations) return;
-  const length = moduleInstance.declarations.length;
+  if (!moduleInstance.$declarations) return;
+  const length = moduleInstance.$declarations.length;
   for (let i = 0; i < length; i++) {
-    const FindDeclaration: any = moduleInstance.declarations[i];
-    moduleInstance.declarations.forEach((needInjectDeclaration: any) => {
+    const FindDeclaration: any = moduleInstance.$declarations[i];
+    moduleInstance.$declarations.forEach((needInjectDeclaration: any) => {
       if (!FindDeclaration.prototype.$declarationMap.has(needInjectDeclaration.selector)) FindDeclaration.prototype.$declarationMap.set(needInjectDeclaration.selector, needInjectDeclaration);
     });
   }
@@ -92,22 +89,22 @@ function buildDeclarations4Declarations(moduleInstance: INvModule): void {
  * @returns {void}
  */
 function buildExports(moduleInstance: INvModule): void {
-  if (!moduleInstance.exports) return;
-  const length = moduleInstance.exports.length;
+  if (!moduleInstance.$exports) return;
+  const length = moduleInstance.$exports.length;
   for (let i = 0; i < length; i++) {
-    const ModuleExport = moduleInstance.exports[i];
+    const ModuleExport = moduleInstance.$exports[i];
     // if export is NvModule, exports from NvModule will be exported again from this module
     if ((ModuleExport as any).nvType === 'nvModule') {
       const moduleInstanceOfExport = factoryModule(ModuleExport);
-      const moduleInstanceOfExportLength = moduleInstanceOfExport.exportsList.length;
+      const moduleInstanceOfExportLength = moduleInstanceOfExport.$exportsList.length;
       for (let j = 0; j < moduleInstanceOfExportLength; j++) {
-        const moduleExportFromModuleOfExport = moduleInstanceOfExport.exportsList[j];
-        if (!moduleInstance.exportsList.find((declaration: any) => declaration.selector === (moduleExportFromModuleOfExport as any).selector)) moduleInstance.exportsList.push(moduleExportFromModuleOfExport);
+        const moduleExportFromModuleOfExport = moduleInstanceOfExport.$exportsList[j];
+        if (!moduleInstance.$exportsList.find((declaration: any) => declaration.selector === (moduleExportFromModuleOfExport as any).selector)) moduleInstance.$exportsList.push(moduleExportFromModuleOfExport);
       }
     }
 
     if ((ModuleExport as any).nvType !== 'nvModule') {
-      if (!moduleInstance.exportsList.find((declaration: any) => declaration.selector === (ModuleExport as any).selector)) moduleInstance.exportsList.push(ModuleExport);
+      if (!moduleInstance.$exportsList.find((declaration: any) => declaration.selector === (ModuleExport as any).selector)) moduleInstance.$exportsList.push(ModuleExport);
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { TProviders, TInjectTokenProvider, TUseClassProvider, TUseValueProvider } from '../types';
+import { TProviders, TInjectTokenProvider } from '../types';
 import { Injector } from './injector';
 import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute } from './metadata';
 import { TInjectItem } from './inject';
@@ -7,33 +7,17 @@ import { ElementRef } from '../component';
 import { Renderer } from '../vnode';
 
 /**
- * use injector to create arguments for constructor
+ * Create arguments for injectionCreator with injector and deps
  *
- * @export
  * @param {Function} _constructor
  * @param {Injector} [injector]
+ * @param {any[]} [deps]
  * @returns {any[]}
  */
-export function injectionCreator(_constructor: Function, injector?: Injector): any[] {
-    const args: any[] = [];
+function argumentsCreator(_constructor: Function, injector?: Injector, deps?: any[]): any[] {
+    if (!deps || (Array.isArray(deps) && deps.length === 0)) return [];
 
-    let _needInjectedClass: any[] = [];
-    if ((_constructor as any).injectTokens) _needInjectedClass = (_constructor as any).injectTokens;
-    else _needInjectedClass = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
-
-    // build $privateProviders into injector of component
-    if ((_constructor.prototype as any).$privateProviders as TProviders) {
-        const length = (_constructor.prototype as any).$privateProviders.length;
-        for (let i = 0; i < length; i++) {
-            const service = (_constructor.prototype as any).$privateProviders[i];
-            if ((service as TInjectTokenProvider).provide) {
-                if ((service as TUseClassProvider).useClass || (service as TUseValueProvider).useValue) injector.setProvider((service as TInjectTokenProvider).provide, service);
-            } else {
-                injector.setProvider(service as Function, service as Function);
-            }
-        }
-    }
-
+    const args = [];
     // 干预等级 @SkipSelf > @Self > @Host > @Optional
     const skipSelfList: number[] = Reflect.getMetadata(metadataOfSkipSelf, _constructor) || [];
     const selfList: number[] = Reflect.getMetadata(metadataOfSelf, _constructor) || [];
@@ -44,7 +28,7 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
     const attributeList: { index: number; attributeName: string; }[] = Reflect.getMetadata(metadataOfAttribute, _constructor) || [];
 
     // find instance from provider
-    const needInjectedClassLength = _needInjectedClass.length;
+    const needInjectedClassLength = deps.length;
     for (let i = 0; i < needInjectedClassLength; i++) {
         // 构建冒泡层数
         let bubblingLayer: number | 'always' = 'always'; 
@@ -66,7 +50,7 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
         
         // @Inject 构建
         const findInjectToken = injectTokenList.find((value) => value.index === i);
-        const key = findInjectToken ? findInjectToken.token : _needInjectedClass[i];
+        const key = findInjectToken ? findInjectToken.token : deps[i];
 
         if (findInjector.getInstance(key, bubblingLayer)) {
             args.push(findInjector.getInstance(key, bubblingLayer));
@@ -78,15 +62,19 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
                 continue;
             }
 
-            let findService = findInjector.getProvider(key, bubblingLayer);
+            const findProvider: TInjectTokenProvider = findInjector.getProvider(key, bubblingLayer);
 
-            if (findService) {
-                if (!findService.useClass && !findService.useValue) findService = findService;
-                if (findService.useClass) findService = findService.useClass;
-                if (findService.useValue) {
-                    args.push(findService.useValue);
+            if (findProvider) {
+                let findService: any;
+                if (findProvider.useClass) findService = findProvider.useClass;
+                else if (findProvider.useValue) {
+                    args.push(findProvider.useValue);
                     continue;
-                }
+                } else if (findProvider.useFactory) {
+                    const factoryArgs = argumentsCreator(_constructor, injector, findProvider.deps);
+                    args.push(findProvider.useFactory(...factoryArgs));
+                    continue;
+                } else findService = findProvider;
 
                 const serviceParentInjector = findInjector.getParentInjectorOfProvider(findService, bubblingLayer);
                 const serviceInjector = serviceParentInjector.fork();
@@ -107,6 +95,32 @@ export function injectionCreator(_constructor: Function, injector?: Injector): a
     }
 
     return args;
+}
+
+/**
+ * use injector to create arguments for constructor
+ *
+ * @export
+ * @param {Function} _constructor
+ * @param {Injector} [injector]
+ * @returns {any[]}
+ */
+export function injectionCreator(_constructor: Function, injector?: Injector): any[] {
+    let deps: any[] = [];
+    if ((_constructor as any).injectTokens) deps = (_constructor as any).injectTokens;
+    else deps = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
+
+    // build $privateProviders into injector of component
+    if ((_constructor.prototype as any).$privateProviders as TProviders) {
+        const length = (_constructor.prototype as any).$privateProviders.length;
+        for (let i = 0; i < length; i++) {
+            const service = (_constructor.prototype as any).$privateProviders[i];
+            if ((service as TInjectTokenProvider).provide) injector.setProvider((service as TInjectTokenProvider).provide, service);
+            else injector.setProvider(service as Function, service as Function);
+        }
+    }
+
+    return argumentsCreator(_constructor, injector, deps);
 }
 
 /**
