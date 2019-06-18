@@ -34,8 +34,10 @@ function buildProviderList(moduleInstance: INvModule, injector?: Injector): void
   const length = moduleInstance.$providers.length;
   for (let i = 0; i < length; i++) {
     const service = moduleInstance.$providers[i];
-    if ((service as TInjectTokenProvider).provide) injector.setProvider((service as TInjectTokenProvider).provide, service);
-    else injector.setProvider(service as Function, service as Function);
+    if ((service as TInjectTokenProvider).provide) {
+      if (!(service as TInjectTokenProvider).useClass && !(service as TInjectTokenProvider).useValue && !(service as TInjectTokenProvider).useFactory) injector.setProvider((service as TInjectTokenProvider).provide, {...service, useClass: (service as TInjectTokenProvider).provide});
+      else injector.setProvider((service as TInjectTokenProvider).provide, service);
+    } else injector.setProvider(service as Function, service as Function);
   }
 }
 

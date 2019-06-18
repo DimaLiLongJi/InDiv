@@ -11,12 +11,14 @@ export type TInjectTokenProvider = {
 
 export type TUseClassProvider = {
   provide: any;
-  useClass: Function;
+  useClass?: Function;
+  deps?: any[];
 };
 
 export type TUseValueProvider = {
   provide: any;
   useValue: any;
+  deps?: any[];
 };
 
 export type TUseFactoryProvider = {
