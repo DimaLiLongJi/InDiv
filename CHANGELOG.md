@@ -5,6 +5,10 @@
 ### Features
 
 * **package:@indiv/core** let all `provider` of `@Directive`, `@Component` and `@NvModule` can use `deps`
+
+
+### Fix
+
 * **package:@indiv/core** fix `provider` of `@Directive` and `@Component`
 
 
