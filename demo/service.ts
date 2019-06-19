@@ -46,3 +46,8 @@ export class HeroSearchService {
     console.log(444422, 'this.testValue', this.testValue);
   }
 }
+
+@Injectable()
+export class TestService {
+  constructor(heroSearchService: HeroSearchService) {}
+}

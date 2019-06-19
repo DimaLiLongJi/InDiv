@@ -1,3 +1,14 @@
+<a name="3.1.1"></a>
+# [3.1.1](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.1) (2019-06-19)
+
+
+### Features
+
+* **package:@indiv/core** let all `provider` of `@Directive`, `@Component` and `@NvModule` can use `deps`
+* **package:@indiv/core** fix `provider` of `@Directive` and `@Component`
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.0) (2019-06-12)
 
