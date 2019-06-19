@@ -5,7 +5,7 @@ import { HttpClient, HttpClientResponse } from '@indiv/common';
 import { Observable } from 'rxjs';
 
 import { SharedModule, TestDirective } from './share.module';
-import { HeroSearchService, HeroSearchService1, HeroSearchService2 } from './service';
+import { HeroSearchService, HeroSearchService1, HeroSearchService2, TestService } from './service';
 import { PrivateService } from './private.service';
 
 class ValueType { }
@@ -253,7 +253,13 @@ class R2 implements OnInit, BeforeMount, AfterMount, DoCheck, RouteChange, OnDes
     <nv-content></nv-content>
 `),
   providers: [
-    HeroSearchService,
+    {
+      provide: HeroSearchService,
+    },
+    {
+      provide: TestService,
+      deps: [ HeroSearchService ],
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -277,8 +283,9 @@ class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasRender {
     private indiv: InDiv,
     private element: ElementRef,
     private heroSearchService: HeroSearchService,
+    private testService: TestService,
   ) {
-    console.log(55544333, 'init TestComponent', this.indiv, this.element);
+    console.log(55544333, 'init TestComponent', this.testService, this.indiv, this.element);
     this.heroSearchService.test(988);
     this.httpClient.get('/success').subscribe({
       next: (value: any) => { console.log(4444, value); },

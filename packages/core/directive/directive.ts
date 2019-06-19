@@ -1,5 +1,5 @@
 import { IDirective, TProviders } from '../types';
-import { injected } from '../di';
+import { injected, providersFormater } from '../di';
 
 export type TDirectiveOptions = {
   selector: string;
@@ -21,7 +21,7 @@ export function Directive(options: TDirectiveOptions): (_constructor: Function) 
     (_constructor as any).nvType = 'nvDirective';
     (_constructor as any).selector = options.selector;
     const vm: IDirective = _constructor.prototype;
-    if (options.providers) vm.$privateProviders = [...options.providers];
+    if (options.providers) vm.$privateProviders = providersFormater(options.providers);
 
     vm.$declarationMap = new Map();
   };

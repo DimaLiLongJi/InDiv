@@ -1,10 +1,27 @@
 import 'reflect-metadata';
-import { TInjectTokenProvider, IDirective } from '../types';
+import { TInjectTokenProvider, IDirective, TProviders } from '../types';
 import { Injector } from './injector';
 import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute } from './metadata';
 import { TInjectItem } from './inject';
 import { ElementRef } from '../component';
 import { Renderer } from '../vnode';
+
+/**
+ * format providers for @NvModule @Directive @Component
+ *
+ * @export
+ * @param {TProviders} [providers]
+ * @returns {TProviders}
+ */
+export function providersFormater(providers: TProviders): TProviders {
+    if (!providers) return [];
+    return providers.map(provider => {
+        if ((provider as TInjectTokenProvider).provide) {
+            if (!(provider as TInjectTokenProvider).useClass && !(provider as TInjectTokenProvider).useValue && !(provider as TInjectTokenProvider).useFactory) return { ...provider, useClass: (provider as TInjectTokenProvider).provide };
+            else return provider;
+        } else return { provide: provider as Function, useClass: provider as Function };
+    });
+}
 
 /**
  * Create arguments for injectionCreator with injector and deps
@@ -31,7 +48,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
     const needInjectedClassLength = deps.length;
     for (let i = 0; i < needInjectedClassLength; i++) {
         // 构建冒泡层数
-        let bubblingLayer: number | 'always' = 'always'; 
+        let bubblingLayer: number | 'always' = 'always';
         if (hostList.indexOf(i) !== -1) bubblingLayer = 1;
         if (selfList.indexOf(i) !== -1) bubblingLayer = 0;
 
@@ -47,7 +64,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
             args.push(renderer.getAttribute(elementRef.nativeElement, findAttribute.attributeName));
             continue;
         }
-        
+
         // @Inject 构建
         const findInjectToken = injectTokenList.find((value) => value.index === i);
         const key = findInjectToken ? findInjectToken.token : deps[i];

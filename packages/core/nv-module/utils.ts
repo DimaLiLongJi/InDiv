@@ -23,7 +23,7 @@ export function factoryModule(FindNvModule: Function, isRoot?: boolean): INvModu
 }
 
 /**
- * build provider list in module
+ * build provider list in injector
  *
  * @param {INvModule} moduleInstance
  * @param {Injector} injector
@@ -34,10 +34,7 @@ function buildProviderList(moduleInstance: INvModule, injector?: Injector): void
   const length = moduleInstance.$providers.length;
   for (let i = 0; i < length; i++) {
     const service = moduleInstance.$providers[i];
-    if ((service as TInjectTokenProvider).provide) {
-      if (!(service as TInjectTokenProvider).useClass && !(service as TInjectTokenProvider).useValue && !(service as TInjectTokenProvider).useFactory) injector.setProvider((service as TInjectTokenProvider).provide, {...service, useClass: (service as TInjectTokenProvider).provide});
-      else injector.setProvider((service as TInjectTokenProvider).provide, service);
-    } else injector.setProvider(service as Function, service as Function);
+    injector.setProvider((service as TInjectTokenProvider).provide, service);
   }
 }
 

@@ -67,7 +67,7 @@ export default class ChangeColorDirective {
 `@Directive` 接收两个参数，`selector: string;` `providers?: (Function | TUseClassProvider | TUseValueProvider | TUseFactoryProvider)[];`
 
 * `selector: string;`  作为指令被渲染成 DOM 的属性，类似于 `<div change-color="{color}"></div>`
-* `providers?: (Function | { provide: any; useClass: Function; } | { provide: any; useValue: any; } | { provide: any; useFactory: Function; deps?: any[]; })[];` 声明可以被指令注入的服务，这个我们放到服务再讲
+* `providers?: (Function | { provide: any; useClass: Function; deps?: any[]; } | { provide: any; useValue: any; deps?: any[]; } | { provide: any; useFactory: Function; deps?: any[]; })[];` 声明可以被指令注入的服务，这个我们放到服务再讲
 
 > app.module.ts
 
