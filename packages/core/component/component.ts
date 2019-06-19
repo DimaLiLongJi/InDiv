@@ -1,7 +1,7 @@
 import { IComponent, TProviders } from '../types';
 
 import { WatcherDependences } from './watch';
-import { injected } from '../di';
+import { injected, providersFormater } from '../di';
 import { collectDependencesFromViewModel } from './utils';
 import { componentCompiler } from '../compile';
 import { ChangeDetectionStrategy } from './change-detection';
@@ -36,7 +36,7 @@ export function Component(options: TComponentOptions): (_constructor: Function) 
     const vm: IComponent = _constructor.prototype;
     if (options.template) vm.$template = options.template;
     if (options.templateUrl) vm.$templateUrl = options.templateUrl;
-    if (options.providers) vm.$privateProviders = [...options.providers];
+    if (options.providers) vm.$privateProviders = providersFormater(options.providers);
 
     // 变更策略
     if (options.changeDetection === ChangeDetectionStrategy.Default) {

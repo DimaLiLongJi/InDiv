@@ -49,7 +49,7 @@ export default class AppComponent {}
 * `selector: string;`  作为组件被渲染成 DOM 的标签，类似于 `<div></div>`
 * `template?: string;` 字符串模板，用来声明被渲染的视图
 * `templateUrl?: string;` **v2.0.5新增** HTML模板，用来声明被渲染的视图，`template` 与 `templateUrl` 需要二选一使用
-* `providers?: (Function | { provide: any; useClass: Function; } | { provide: any; useValue: any; })[];` 声明可以被组件注入的服务，这个我们放到服务再讲
+* `providers?: (Function | { provide: any; useClass: Function; deps?: any[]; } | { provide: any; useValue: any; deps?: any[]; } | { provide: any; useFactory: Function; deps?: any[]; })[];` 声明可以被组件注入的服务，这个我们放到服务再讲
 
 **特别说明：`templateUrl?: string;` 可为相对路径和绝对路径**
 
@@ -510,7 +510,7 @@ export default class ShowAgeComponent implements nvReceiveInputs {
 
 ## 视图插槽查询（v2.0.6）
 
-像试图查询一样，InDiv 也提供了一组 `@ContentChild` `@ContentChildren` 来查询视图插槽中的组件，指令和元素。
+像视图查询一样，InDiv 也提供了一组 `@ContentChild` `@ContentChildren` 来查询视图插槽中的组件，指令和元素。
 
 当render阶段结束后，在 `HasRender `和 `nvAfterMount` 生命周期可以获得被修饰的属性。
 

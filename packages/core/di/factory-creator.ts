@@ -1,10 +1,27 @@
 import 'reflect-metadata';
-import { TProviders, TInjectTokenProvider } from '../types';
+import { TInjectTokenProvider, IDirective, TProviders } from '../types';
 import { Injector } from './injector';
 import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute } from './metadata';
 import { TInjectItem } from './inject';
 import { ElementRef } from '../component';
 import { Renderer } from '../vnode';
+
+/**
+ * format providers for @NvModule @Directive @Component
+ *
+ * @export
+ * @param {TProviders} [providers]
+ * @returns {TProviders}
+ */
+export function providersFormater(providers: TProviders): TProviders {
+    if (!providers) return [];
+    return providers.map(provider => {
+        if ((provider as TInjectTokenProvider).provide) {
+            if (!(provider as TInjectTokenProvider).useClass && !(provider as TInjectTokenProvider).useValue && !(provider as TInjectTokenProvider).useFactory) return { ...provider, useClass: (provider as TInjectTokenProvider).provide };
+            else return provider;
+        } else return { provide: provider as Function, useClass: provider as Function };
+    });
+}
 
 /**
  * Create arguments for injectionCreator with injector and deps
@@ -31,7 +48,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
     const needInjectedClassLength = deps.length;
     for (let i = 0; i < needInjectedClassLength; i++) {
         // 构建冒泡层数
-        let bubblingLayer: number | 'always' = 'always'; 
+        let bubblingLayer: number | 'always' = 'always';
         if (hostList.indexOf(i) !== -1) bubblingLayer = 1;
         if (selfList.indexOf(i) !== -1) bubblingLayer = 0;
 
@@ -47,7 +64,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
             args.push(renderer.getAttribute(elementRef.nativeElement, findAttribute.attributeName));
             continue;
         }
-        
+
         // @Inject 构建
         const findInjectToken = injectTokenList.find((value) => value.index === i);
         const key = findInjectToken ? findInjectToken.token : deps[i];
@@ -80,10 +97,10 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
                 const serviceInjector = serviceParentInjector.fork();
 
                 if (findService.isSingletonMode === false) {
-                    args.push(factoryCreator(findService, serviceInjector));
+                    args.push(factoryCreator(findService, serviceInjector, findProvider.deps));
                     continue;
                 } else {
-                    const serviceInStance = factoryCreator(findService, serviceInjector);
+                    const serviceInStance = factoryCreator(findService, serviceInjector, findProvider.deps);
                     findInjector.setInstance(key, serviceInStance);
                     args.push(serviceInStance);
                     continue;
@@ -99,42 +116,47 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
 
 /**
  * use injector to create arguments for constructor
+ * 
+ * only building provider need deps
  *
  * @export
  * @param {Function} _constructor
  * @param {Injector} [injector]
+ * @param {any[]} [deps]
  * @returns {any[]}
  */
-export function injectionCreator(_constructor: Function, injector?: Injector): any[] {
-    let deps: any[] = [];
-    if ((_constructor as any).injectTokens) deps = (_constructor as any).injectTokens;
-    else deps = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
+export function injectionCreator(_constructor: Function, injector?: Injector, deps?: any[]): any[] {
+    let _deps: any[] = deps || [];
+    if ((_constructor as any).injectTokens) _deps = (_constructor as any).injectTokens;
+    else _deps = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
 
-    // build $privateProviders into injector of component
-    if ((_constructor.prototype as any).$privateProviders as TProviders) {
-        const length = (_constructor.prototype as any).$privateProviders.length;
+    // build $privateProviders into injector of @Component and @Directive
+    if ((_constructor.prototype as IDirective).$privateProviders) {
+        const length = (_constructor.prototype as IDirective).$privateProviders.length;
         for (let i = 0; i < length; i++) {
-            const service = (_constructor.prototype as any).$privateProviders[i];
+            const service = (_constructor.prototype as IDirective).$privateProviders[i];
             if ((service as TInjectTokenProvider).provide) injector.setProvider((service as TInjectTokenProvider).provide, service);
             else injector.setProvider(service as Function, service as Function);
         }
     }
 
-    return argumentsCreator(_constructor, injector, deps);
+    return argumentsCreator(_constructor, injector, _deps);
 }
 
 /**
  * create an instance with factory method
  * 
  * use injectionCreator to get arguments from Injector
+ * only building provider need deps
  *
  * @export
  * @param {Function} _constructor
  * @param {Injector} [injector]
+ * @param {any[]} [deps]
  * @returns {*}
  */
-export function factoryCreator(_constructor: Function, injector?: Injector): any {
-    const args = injectionCreator(_constructor, injector);
+export function factoryCreator(_constructor: Function, injector?: Injector, deps?: any[]): any {
+    const args = injectionCreator(_constructor, injector, deps);
     const factoryInstance = new (_constructor as any)(...args);
     factoryInstance.$privateInjector = injector;
     return factoryInstance;

@@ -1,5 +1,5 @@
 import { INvModule, TProviders } from '../types';
-import { injected, rootInjector } from '../di';
+import { injected, rootInjector, providersFormater } from '../di';
 
 export type TNvModuleOptions = {
   imports?: Function[];
@@ -29,7 +29,7 @@ export function NvModule(options: TNvModuleOptions): (_constructor: Function) =>
     if (!vm.$providers) vm.$providers = [];
     if (options.imports) vm.$imports = options.imports;
     if (options.declarations) vm.$declarations = options.declarations;
-    if (options.providers) vm.$providers = vm.$providers.concat(options.providers);
+    if (options.providers) vm.$providers = providersFormater([...vm.$providers, ...options.providers]);
     if (options.exports) {
       vm.$exports = options.exports;
       vm.$exportsList = [];
