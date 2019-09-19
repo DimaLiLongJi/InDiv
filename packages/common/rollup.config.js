@@ -1,9 +1,9 @@
-import { uglify } from "rollup-plugin-uglify";
+import { uglify } from 'rollup-plugin-uglify';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 
-import pkg from './package.json'
+import pkg from './package.json';
 
 export default {
   input: 'packages/common/build/bundle.js',
@@ -11,15 +11,15 @@ export default {
     file: 'packages/common/build/index.js',
     format: 'cjs',
     exports: 'named',
-  }, ],
+  }],
   external: [
     ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.peerDependencies || {})
+    ...Object.keys(pkg.peerDependencies || {}),
   ],
   plugins: [
     resolve({
       jsnext: true,
-      main: true
+      main: true,
     }),
     commonjs(),
     babel({
@@ -31,8 +31,8 @@ export default {
             targets: {
               ie: '10',
             },
-          }
-        ]
+          },
+        ],
       ],
       sourceMap: true,
       plugins: [
@@ -40,15 +40,15 @@ export default {
           '@babel/plugin-transform-runtime',
           {
             corejs: 2,
-          }
-        ]
+          },
+        ],
       ],
       ignore: [
         /core-js/,
-        /@babel\/runtime/
+        /@babel\/runtime/,
       ],
       runtimeHelpers: true,
     }),
     uglify(),
   ],
-}
+};
