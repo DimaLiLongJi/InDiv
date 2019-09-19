@@ -26,6 +26,7 @@ export function NvModule(options: TNvModuleOptions): (_constructor: Function) =>
     rootInjector.setProvider(_constructor, _constructor);
     (_constructor as any).nvType = 'nvModule';
     const vm: INvModule = _constructor.prototype;
+    vm.$declarationMap = new Map();
     if (!vm.$providers) vm.$providers = [];
     if (options.imports) vm.$imports = options.imports;
     if (options.declarations) vm.$declarations = options.declarations;
