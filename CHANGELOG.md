@@ -1,3 +1,13 @@
+<a name="3.1.2"></a>
+# [3.1.2](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.2) (2019-09-19)
+
+
+### Fix
+
+* **package:@indiv/core** fix `$declarationMap` is `undefined` in `@NvModule`
+
+
+
 <a name="3.1.1"></a>
 # [3.1.1](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.1) (2019-06-19)
 
