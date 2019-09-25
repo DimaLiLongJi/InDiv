@@ -370,6 +370,8 @@ export default class PageALazyModule {}
 
 最后我们回到根模块来修改下路由的配置
 
+1. v0.0.0-v3.1.2以前的路由懒加载：
+
 > app.module.ts
 
 ```typescript
@@ -438,6 +440,58 @@ loadChild: {
   child: () => import('./components/page-a/page-a.component'),
 },
 ```
+
+2. v4.0.0同步angular的路由懒加载：
+
+> app.module.ts
+
+```typescript
+import { NvModule } from '@indiv/core';
+import { TRouter, RouteModule } from '@indiv/router';
+import AppComponent from './app.component';
+import ShowAgeComponent from './components/show-age/show-age.component';
+import ChangeColorDirective from './directives/change-color.directive';
+import TestService from './provides/test.service';
+
+const routes: TRouter[] = [
+  {
+    path: '/',
+    redirectTo: '/a',
+    children: [
+      path: '/a',
+      // 使用 export default 打包
+      loadChild: () => import('./components/page-a/page-a.component').then(mod => mod.default),
+      // 使用 export 打包 需要指定导出的模块名
+      // loadChild: () => import('./components/page-a/page-a.component').then(mod => mod.PageAComponent),
+    ]
+  },
+];
+
+@NvModule({
+  imports: [
+    RouteModule.forRoot({
+      routes,
+      rootPath: '/demo',
+      routeChange: (lastRoute?: string, nextRoute?: string) => {},
+    }),
+  ],
+  declarations: [
+    AppComponent, 
+    ShowAgeComponent,
+    ChangeColorDirective,
+  ],
+  providers: [
+    {
+      provide: TestService,
+      useClass: TestService,
+    }
+  ],
+  bootstrap: AppComponent,
+  exports: [],
+})
+export default class AppModule {}
+```
+
 
 最后懒加载模块之后的 `children`子路 由可以继续像普通的方法（定义`component`等方式）定义，但如果懒加载模块之后的子路由中并不存在对应的组件，则 `RouteModule` 会去 **根模块中寻找对应的组件** 渲染路由，并从 **根模块和根注入器** 寻找组件，指令及依赖提供商。
 

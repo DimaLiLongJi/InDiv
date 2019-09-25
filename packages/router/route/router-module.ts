@@ -1,8 +1,8 @@
-import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, factoryModule } from '@indiv/core';
+import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, factoryModule, Type } from '@indiv/core';
 import { nvRouteStatus, NvLocation } from './location';
 import { RouterTo, RouterFrom } from './directives';
 
-export type TChildModule = () => Promise<any>;
+export type TChildModule = () => Promise<Type<INvModule>>;
 
 export interface IComponentWithRoute extends IComponent {
   nvRouteCanActive?: (lastRoute: string, newRoute: string) => boolean;

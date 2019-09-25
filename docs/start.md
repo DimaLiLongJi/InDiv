@@ -106,7 +106,9 @@ src
 | app.style.less | 根模块的根组件的样式文件。     |   
 
 
- `main.ts` 负责引导创建我们的应用程序：
+`main.ts` 负责引导创建我们的应用程序
+
+1. v0.0.0 - v3.1.2 的用法：
 
 > main.ts
 
@@ -130,3 +132,24 @@ inDiv.init();
 `use()` 方法实例插件，比如实现一个浏览器应用，我们必须实现`PlatformBrowser`这个插件。
 
 `init()` 将在创建完根模块之后初始化整个应用并将组件渲染到页面中，在后面的章节中将对此进行详细描述。
+
+2. v4.0.0推荐新的用法：
+
+> main.ts
+
+```typescript
+import { InDiv } from from '@indiv/core';
+import { PlatformBrowser } from '@indiv/platform-browser';
+
+import RootModule from './modules';
+
+InDiv.bootstrap(RootModule, {
+  plugins: [
+    PlatformBrowser,
+  ],
+});
+```
+
+`InDiv` 的静态方法 `bootstrap` 会创建 `Indiv` 实例，挂在插件，初始化根模块。
+
+

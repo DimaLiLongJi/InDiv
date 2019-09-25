@@ -32,7 +32,8 @@ export type TProvider = Function | TUseClassProvider | TUseValueProvider | TUseF
 export type TProviders = TProvider[];
 
 export interface INvModule {
-  $declarationMap: Map<string, Function>;
+  [key: string]: any;
+  $declarationMap?: Map<string, Function>;
   $imports?: Function[];
   $declarations?: Function[];
   $providers?: TProviders;

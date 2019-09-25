@@ -1,13 +1,9 @@
-import { INvModule, IComponent } from '../types';
+import { INvModule, IComponent, Type } from '../types';
 import { factoryCreator, rootInjector } from '../di';
 import { factoryModule } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';
 import { lifecycleCaller } from '../lifecycle';
-
-interface Type<T = any> extends Function {
-  new(...args: any[]): T;
-}
 
 export interface IPlugin {
   bootstrap(vm: InDiv): void;
@@ -19,6 +15,8 @@ export interface IPlugin {
  * @class InDiv
  */
 export class InDiv {
+  private static globalApplication: InDiv;
+
   private readonly pluginList: IPlugin[] = [];
   private rootElement: any;
   private routeDOMKey: string = 'router-render';
@@ -39,6 +37,27 @@ export class InDiv {
    */
   constructor() {
     rootInjector.setProviderAndInstance(InDiv, InDiv, this);
+  }
+
+  /**
+   * static method for bootstrap an InDiv application
+   *
+   * @static
+   * @param {Type<INvModule>} Nvmodule
+   * @param {{
+   *     plugins?: Type<IPlugin>[],
+   *   }} [bootstrapOptions={}]
+   * @returns {Promise<IComponent>}
+   * @memberof InDiv
+   */
+  public static bootstrap(Nvmodule: Type<INvModule>, bootstrapOptions: {
+    plugins?: Type<IPlugin>[],
+  } = {}): Promise<IComponent> {
+    if (!InDiv.globalApplication) InDiv.globalApplication = new InDiv();
+    else return;
+    InDiv.globalApplication.bootstrapModule(Nvmodule);
+    if (bootstrapOptions.plugins) bootstrapOptions.plugins.forEach(plugin => InDiv.globalApplication.use(plugin));
+    return InDiv.globalApplication.init();
   }
 
   /**
