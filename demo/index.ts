@@ -662,7 +662,7 @@ class M1 {
 // inDiv.bootstrapModule(M1);
 // inDiv.use(PlatformBrowser);
 // inDiv.init();
-InDiv.bootstrap(M1, {
+InDiv.bootstrapFactory(M1, {
   plugins: [
     PlatformBrowser,
   ],

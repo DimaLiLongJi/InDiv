@@ -41,23 +41,31 @@ export class InDiv {
 
   /**
    * static method for bootstrap an InDiv application
+   * 
+   * options:
+   *  1. plugins?: Type<IPlugin>[] indiv plugins
+   *  2. ssrTemplateRootPath?: string for ssr env to set templateRootPath
    *
    * @static
    * @param {Type<INvModule>} Nvmodule
    * @param {{
    *     plugins?: Type<IPlugin>[],
-   *   }} [bootstrapOptions={}]
-   * @returns {Promise<IComponent>}
+   *     ssrTemplateRootPath?: string,
+   *   }} [options={}]
+   * @returns {Promise<InDiv>}
    * @memberof InDiv
    */
-  public static bootstrap(Nvmodule: Type<INvModule>, bootstrapOptions: {
+  public static async bootstrapFactory(Nvmodule: Type<INvModule>, options: {
     plugins?: Type<IPlugin>[],
-  } = {}): Promise<IComponent> {
+    ssrTemplateRootPath?: string,
+  } = {}): Promise<InDiv> {
     if (!InDiv.globalApplication) InDiv.globalApplication = new InDiv();
-    else return;
+    else return InDiv.globalApplication;
     InDiv.globalApplication.bootstrapModule(Nvmodule);
-    if (bootstrapOptions.plugins) bootstrapOptions.plugins.forEach(plugin => InDiv.globalApplication.use(plugin));
-    return InDiv.globalApplication.init();
+    if (options.plugins) options.plugins.forEach(plugin => InDiv.globalApplication.use(plugin));
+    if (options.ssrTemplateRootPath) InDiv.globalApplication.setTemplateRootPath(options.ssrTemplateRootPath);
+    await InDiv.globalApplication.init();
+    return InDiv.globalApplication;
   }
 
   /**

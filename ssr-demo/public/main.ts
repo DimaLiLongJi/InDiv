@@ -11,10 +11,15 @@ import RootModule from './modules';
 // inDiv.use(PlatformBrowser);
 // inDiv.init();
 
-InDiv.bootstrap(RootModule, {
-  plugins: [
-    PlatformBrowser,
-  ],
-});
+async function main() {
+  const indiv = await InDiv.bootstrapFactory(RootModule, {
+    plugins: [
+      PlatformBrowser,
+    ],
+  });
 
-// console.log('indiv', inDiv);
+  console.log(4444, indiv);
+}
+
+main();
+

@@ -51,7 +51,7 @@ import { PlatformBrowser } from '@indiv/platform-browser';
 
 import RootModule from './modules';
 
-InDiv.bootstrap(RootModule, {
+InDiv.bootstrapFactory(RootModule, {
   plugins: [
     PlatformBrowser,
   ],

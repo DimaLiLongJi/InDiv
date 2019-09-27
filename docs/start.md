@@ -143,13 +143,12 @@ import { PlatformBrowser } from '@indiv/platform-browser';
 
 import RootModule from './modules';
 
-InDiv.bootstrap(RootModule, {
+InDiv.bootstrapFactory(RootModule, {
   plugins: [
     PlatformBrowser,
   ],
 });
 ```
 
-`InDiv` 的静态方法 `bootstrap` 会创建 `Indiv` 实例，挂在插件，初始化根模块。
-
+`InDiv` 的静态方法 `bootstrap` 会创建 `Indiv` 实例，挂在插件，初始化根模块并返回 `Promise<Indiv>`。
 

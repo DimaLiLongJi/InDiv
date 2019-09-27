@@ -20,31 +20,31 @@ const routes: IndivRouter.TRouter[] = [
             {
                 path: '/docs',
                 redirectTo: '/docs/component',
-                loadChild: require('./public/modules/docs.module').default,
+                loadChild: require('./public/modules/docs.module').DocsModule,
                 children: [
                     {
                         path: '/component',
                         component: 'docs-component-container',
-                        children: [
-                            {
-                                path: '/:id',
-                                component: 'docs-template-container',
-                                children: [
-                                    {
-                                        path: '/1docs',
-                                        redirectTo: '/ssr',
-                                    }
-                                ]
-                            }
-                        ]
+                        // children: [
+                        //     {
+                        //         path: '/:id',
+                        //         component: 'docs-template-container',
+                        //         children: [
+                        //             {
+                        //                 path: '/1docs',
+                        //                 redirectTo: '/ssr',
+                        //             }
+                        //         ]
+                        //     }
+                        // ]
                     },
                     {
                         path: '/template',
                         component: 'docs-template-container',
-                        routeCanActive: () => {
-                            // console.log(9999999, 'docs-template-container')
-                            return true;
-                        },
+                        // routeCanActive: () => {
+                        //     // console.log(9999999, 'docs-template-container')
+                        //     return true;
+                        // },
                     },
                     {
                         path: '/service',

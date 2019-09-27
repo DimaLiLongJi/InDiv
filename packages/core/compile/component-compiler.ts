@@ -167,7 +167,9 @@ export function buildComponentsAndDirectives(vnode: Vnode, componentAndDirective
     hasPushStack = true;
   }
 
-  if (vnode.childNodes && vnode.childNodes.length > 0) vnode.childNodes.forEach(child => buildComponentsAndDirectives(child, componentAndDirectives, contentComponentStack));
+  if (vnode.childNodes && vnode.childNodes.length > 0) vnode.childNodes.forEach(child => {
+    buildComponentsAndDirectives(child, componentAndDirectives, contentComponentStack);
+  });
 
   if (vnode.attributes && vnode.attributes.length > 0) {
     vnode.attributes.forEach(attr => {

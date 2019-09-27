@@ -46,4 +46,4 @@ import TestService from '../service/test.service';
     ],
     bootstrap: DocsContainer,
 })
-export default class DocsModule {}
+export class DocsModule {}
