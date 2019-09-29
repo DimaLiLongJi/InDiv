@@ -1,3 +1,13 @@
+<a name="3.1.3"></a>
+# [3.1.3](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.3) (2019-09-29)
+
+
+### Fix
+
+* **package:@indiv/core** fix `cacheDirectiveList` in `directive-compiler`
+
+
+
 <a name="3.1.2"></a>
 # [3.1.2](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.2) (2019-09-19)
 
