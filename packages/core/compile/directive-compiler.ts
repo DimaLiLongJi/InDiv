@@ -35,6 +35,7 @@ export function directivesConstructor(componentInstance: IComponent, componentAn
  */
 export function mountDirective(componentInstance: IComponent, componentAndDirectives: TComAndDir): void {
   const cacheDirectiveList: DirectiveList[] = [...componentInstance.$directiveList];
+  const foundCacheDirectiveList: DirectiveList[] = [];
   directivesConstructor(componentInstance, componentAndDirectives);
   const directiveListLength = componentInstance.$directiveList.length;
   for (let i = 0; i < directiveListLength; i++) {
@@ -44,7 +45,10 @@ export function mountDirective(componentInstance: IComponent, componentAndDirect
     const cacheDirective = cacheDirectiveList[cacheDirectiveIndex];
 
     // clear cache and the rest need to be destoried
-    if (cacheDirectiveIndex !== -1) cacheDirectiveList.splice(cacheDirectiveIndex, 1);
+    if (cacheDirectiveIndex !== -1) {
+      cacheDirectiveList.splice(cacheDirectiveIndex, 1);
+      foundCacheDirectiveList.push(cacheDirective);
+    }
     if (cacheDirective) {
       directive.instanceScope = cacheDirective.instanceScope;
       // old inputs: directive.instanceScope.$saveInputs
@@ -82,7 +86,7 @@ export function mountDirective(componentInstance: IComponent, componentAndDirect
   for (let i = 0; i < directiveListLength; i++) {
     const directive = componentInstance.$directiveList[i];
     lifecycleCaller(directive.instanceScope, 'nvHasRender');
-    if (!cacheDirectiveList.find(cache => cache.nativeElement === directive.nativeElement)) {
+    if (!foundCacheDirectiveList.find(cache => cache.nativeElement === directive.nativeElement)) {
       if (!directive.instanceScope.$indivInstance.getIndivEnv.isServerRendering) lifecycleCaller(directive.instanceScope, 'nvAfterMount');
     }
   }
