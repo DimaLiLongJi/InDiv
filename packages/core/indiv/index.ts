@@ -1,13 +1,9 @@
-import { INvModule, IComponent } from '../types';
-import { factoryCreator, rootInjector } from '../di';
-import { factoryModule } from '../nv-module';
+import { INvModule, IComponent, Type } from '../types';
+import { NvInstanceFactory, rootInjector } from '../di';
+import { NvModuleFactory } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';
 import { lifecycleCaller } from '../lifecycle';
-
-interface Type<T = any> extends Function {
-  new(...args: any[]): T;
-}
 
 export interface IPlugin {
   bootstrap(vm: InDiv): void;
@@ -19,6 +15,8 @@ export interface IPlugin {
  * @class InDiv
  */
 export class InDiv {
+  private static globalApplication: InDiv;
+
   private readonly pluginList: IPlugin[] = [];
   private rootElement: any;
   private routeDOMKey: string = 'router-render';
@@ -39,6 +37,35 @@ export class InDiv {
    */
   constructor() {
     rootInjector.setProviderAndInstance(InDiv, InDiv, this);
+  }
+
+  /**
+   * static method for bootstrap an InDiv application
+   * 
+   * options:
+   *  1. plugins?: Type<IPlugin>[] indiv plugins
+   *  2. ssrTemplateRootPath?: string for ssr env to set templateRootPath
+   *
+   * @static
+   * @param {Type<INvModule>} Nvmodule
+   * @param {{
+   *     plugins?: Type<IPlugin>[],
+   *     ssrTemplateRootPath?: string,
+   *   }} [options={}]
+   * @returns {Promise<InDiv>}
+   * @memberof InDiv
+   */
+  public static async bootstrapFactory(Nvmodule: Type<INvModule>, options: {
+    plugins?: Type<IPlugin>[],
+    ssrTemplateRootPath?: string,
+  } = {}): Promise<InDiv> {
+    if (!InDiv.globalApplication) InDiv.globalApplication = new InDiv();
+    else return InDiv.globalApplication;
+    InDiv.globalApplication.bootstrapModule(Nvmodule);
+    if (options.plugins) options.plugins.forEach(plugin => InDiv.globalApplication.use(plugin));
+    if (options.ssrTemplateRootPath) InDiv.globalApplication.setTemplateRootPath(options.ssrTemplateRootPath);
+    await InDiv.globalApplication.init();
+    return InDiv.globalApplication;
   }
 
   /**
@@ -235,7 +262,7 @@ export class InDiv {
    */
   public bootstrapModule(Nvmodule: Function): void {
     if (!Nvmodule) throw new Error('must send a root module');
-    this.rootModule = factoryModule(Nvmodule, true);
+    this.rootModule = NvModuleFactory(Nvmodule, true);
     this.declarations = [...this.rootModule.$declarations];
   }
 
@@ -267,7 +294,7 @@ export class InDiv {
   public initComponent<R = Element>(BootstrapComponent: Function, nativeElement: R, otherModule?: INvModule): IComponent {
     const injector = otherModule ? otherModule.$privateInjector.fork() : this.rootModule.$privateInjector.fork();
     injector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef<R>(nativeElement));
-    const component: IComponent = factoryCreator(BootstrapComponent, injector);
+    const component: IComponent = NvInstanceFactory(BootstrapComponent, injector);
 
     component.$indivInstance = this;
 

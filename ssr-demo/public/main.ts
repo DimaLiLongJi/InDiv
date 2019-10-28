@@ -6,9 +6,20 @@ import { InDiv } from '@indiv/core';
 import { PlatformBrowser } from '@indiv/platform-browser';
 import RootModule from './modules';
 
-export const inDiv = new InDiv();
-inDiv.bootstrapModule(RootModule);
-inDiv.use(PlatformBrowser);
-inDiv.init();
+// export const inDiv = new InDiv();
+// inDiv.bootstrapModule(RootModule);
+// inDiv.use(PlatformBrowser);
+// inDiv.init();
 
-console.log('indiv', inDiv);
+async function main() {
+  const indiv = await InDiv.bootstrapFactory(RootModule, {
+    plugins: [
+      PlatformBrowser,
+    ],
+  });
+
+  console.log(4444, indiv);
+}
+
+main();
+

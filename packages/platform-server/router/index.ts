@@ -1,5 +1,5 @@
 import { TRouter, NvLocation, IComponentWithRoute } from '@indiv/router';
-import { InDiv, INvModule, factoryModule } from '@indiv/core';
+import { InDiv, INvModule, NvModuleFactory } from '@indiv/core';
 
 export type RouteCongfig = {
   path?: string,
@@ -155,7 +155,7 @@ export function NvModuleFactoryLoader(loadChild: Function, currentUrlPath: strin
 
   if (!loadModule) throw new Error('load child failed, please check your routes.');
 
-  const loadModuleInstance = factoryModule(loadModule);
+  const loadModuleInstance = NvModuleFactory(loadModule);
   loadModuleMap.set(currentUrlPath, loadModuleInstance);
 
   return loadModuleInstance;

@@ -44,3 +44,5 @@
 16. `initComponent<R = Element>(BootstrapComponent: Function, nativeElement: R, otherModule?: INvModule): IComponent` 实例化组件，并开启数据监听， 触发`OnInit`
 
 17. `async runComponentRenderer<R = Element>(component: IComponent, nativeElement: R, initVnode?: Vnode[]): Promise<IComponent>` 异步渲染组件，`BeforeMount HasRender AfterMount`
+
+18. v4.0.0新增静态方法：`public static bootstrap(Nvmodule: Type<INvModule>, bootstrapOptions: { plugins?: Type<IPlugin>[], } = {}): Promise<IComponent>` 初始化 InDiv 应用，挂在根模块和插件
