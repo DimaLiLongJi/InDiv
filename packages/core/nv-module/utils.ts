@@ -1,5 +1,5 @@
 import { INvModule, TInjectTokenProvider } from '../types';
-import { factoryCreator, rootInjector, Injector } from '../di';
+import { NvInstanceFactory, rootInjector, Injector } from '../di';
 
 /**
  * build NvModule instance
@@ -11,11 +11,11 @@ import { factoryCreator, rootInjector, Injector } from '../di';
  * @param {boolean} [isRoot]
  * @returns {INvModule}
  */
-export function factoryModule(FindNvModule: Function, isRoot?: boolean): INvModule {
+export function NvModuleFactory(FindNvModule: Function, isRoot?: boolean): INvModule {
   let moduleFound: INvModule;
   if (!rootInjector.getInstance(FindNvModule)) {
     const injector = isRoot ? rootInjector : rootInjector.fork();
-    moduleFound = factoryModuleWithInjector(FindNvModule, injector);
+    moduleFound = ModuleWithInjectorFactory(FindNvModule, injector);
     moduleFound.$privateInjector = injector;
     rootInjector.setInstance(FindNvModule, moduleFound);
   } else moduleFound = rootInjector.getInstance(FindNvModule);
@@ -50,7 +50,7 @@ function buildImports(moduleInstance: INvModule): void {
   for (let i = 0; i < length; i++) {
     const ModuleImport = moduleInstance.$imports[i];
     // push InDiv instance
-    const moduleImport = factoryModule(ModuleImport, true);
+    const moduleImport = NvModuleFactory(ModuleImport, true);
     // build exports
     if (moduleImport.$exportsList) {
       const exportsLength = moduleImport.$exportsList.length;
@@ -94,7 +94,7 @@ function buildExports(moduleInstance: INvModule): void {
     const ModuleExport = moduleInstance.$exports[i];
     // if export is NvModule, exports from NvModule will be exported again from this module
     if ((ModuleExport as any).nvType === 'nvModule') {
-      const moduleInstanceOfExport = factoryModule(ModuleExport);
+      const moduleInstanceOfExport = NvModuleFactory(ModuleExport);
       const moduleInstanceOfExportLength = moduleInstanceOfExport.$exportsList.length;
       for (let j = 0; j < moduleInstanceOfExportLength; j++) {
         const moduleExportFromModuleOfExport = moduleInstanceOfExport.$exportsList[j];
@@ -112,17 +112,17 @@ function buildExports(moduleInstance: INvModule): void {
  * create an NvModule instance with factory method
  * 
  * first build service and components in Function.prototype
- * then use factoryCreator create and NvModule instance
+ * then use NvInstanceFactory create and NvModule instance
  *
  * @export
  * @param {Function} NM
  * @param {Injector} injector
  * @returns {INvModule}
  */
-export function factoryModuleWithInjector(NM: Function, injector: Injector): INvModule {
+export function ModuleWithInjectorFactory(NM: Function, injector: Injector): INvModule {
   buildProviderList(NM.prototype, injector);
   buildImports(NM.prototype);
   buildDeclarations4Declarations(NM.prototype);
   buildExports(NM.prototype);
-  return factoryCreator(NM, injector);
+  return NvInstanceFactory(NM, injector);
 }

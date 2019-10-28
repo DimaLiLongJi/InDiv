@@ -1,6 +1,6 @@
 import { INvModule, IComponent, Type } from '../types';
-import { factoryCreator, rootInjector } from '../di';
-import { factoryModule } from '../nv-module';
+import { NvInstanceFactory, rootInjector } from '../di';
+import { NvModuleFactory } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';
 import { lifecycleCaller } from '../lifecycle';
@@ -262,7 +262,7 @@ export class InDiv {
    */
   public bootstrapModule(Nvmodule: Function): void {
     if (!Nvmodule) throw new Error('must send a root module');
-    this.rootModule = factoryModule(Nvmodule, true);
+    this.rootModule = NvModuleFactory(Nvmodule, true);
     this.declarations = [...this.rootModule.$declarations];
   }
 
@@ -294,7 +294,7 @@ export class InDiv {
   public initComponent<R = Element>(BootstrapComponent: Function, nativeElement: R, otherModule?: INvModule): IComponent {
     const injector = otherModule ? otherModule.$privateInjector.fork() : this.rootModule.$privateInjector.fork();
     injector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef<R>(nativeElement));
-    const component: IComponent = factoryCreator(BootstrapComponent, injector);
+    const component: IComponent = NvInstanceFactory(BootstrapComponent, injector);
 
     component.$indivInstance = this;
 

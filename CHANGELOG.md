@@ -5,7 +5,8 @@
 ### Features
 
 * **package:@indiv/router** add new method for `loadChild`
-* **package:@indiv/core** add new static method `bootstrap` for bootstrap Indiv application
+* **package:@indiv/core** add new static method `bootstrapFactory` for bootstraping Indiv application and creating Indiv instance
+* **package:@indiv/core** format and rename Factory method
 
 
 
