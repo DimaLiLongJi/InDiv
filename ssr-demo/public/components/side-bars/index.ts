@@ -44,7 +44,7 @@ export default class SideBar implements OnInit, AfterMount, RouteChange, OnDesto
 
     public nvOnInit() {
         this.showColor();
-        console.log('SideBar onInit', this.navs);
+        // console.log('SideBar onInit', this.navs);
     }
 
     public nvAfterMount() {

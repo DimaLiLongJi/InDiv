@@ -1,3 +1,15 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.0.0) (2019-10-19)
+
+
+### Features
+
+* **package:@indiv/router** add new method for `loadChild`
+* **package:@indiv/core** add new static method `bootstrapFactory` for bootstraping Indiv application and creating Indiv instance
+* **package:@indiv/core** format and rename Factory method
+
+
+
 <a name="3.1.3"></a>
 # [3.1.3](https://github.com/DimaLiLongJi/InDiv/releases/tag/3.1.3) (2019-09-29)
 

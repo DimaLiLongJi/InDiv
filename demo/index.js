@@ -1,55 +1,55 @@
 import {
-    InDiv,
-    Component,
-    Utils,
-    NvModule,
-    Injectable,
-    StateSetter,
-    Input,
-    Watch,
-  } from '../packages/core/build';
-  import {
-    NvLocation,
-    RouteModule
-  } from '../packages/router/build';
-  import {
-    HttpClient
-  } from '../packages/common/build';
-  import {
-    PlatformBrowser
-  } from '../packages/platform-browser/build';
-  
-  
+  InDiv,
+  Component,
+  Utils,
+  NvModule,
+  Injectable,
+  StateSetter,
+  Input,
+  Watch,
+} from '../packages/core/build';
+import {
+  NvLocation,
+  RouteModule,
+} from '../packages/router/build';
+import {
+  HttpClient,
+} from '../packages/common/build';
+import {
+  PlatformBrowser,
+} from '../packages/platform-browser/build';
+
+
   @Injectable({
-    isSingletonMode: true
+    isSingletonMode: true,
   })
-  class HeroSearchService1 {
+class HeroSearchService1 {
     constructor() {
       console.log('js HeroSearchService1 is comming');
     }
-  
+
     test() {
       console.log('HeroSearchService !!!1111');
     }
   }
-  
+
   @Injectable({
     isSingletonMode: false,
   })
-  class HeroSearchService2 {
+class HeroSearchService2 {
     test() {
       console.log('HeroSearchService !!!2222');
     }
   }
-  
+
   @Injectable({
     isSingletonMode: false,
   })
-  class HeroSearchService {
+class HeroSearchService {
     static injectTokens = [
-      HeroSearchService1
+      HeroSearchService1,
     ];
-  
+
     constructor(
       heroSearchService1,
     ) {
@@ -57,12 +57,12 @@ import {
       this.hsr = heroSearchService1;
       this.hsr.test();
     }
-  
+
     test() {
       console.log('HeroSearchService !!!000000000');
     }
   }
-  
+
   @Component({
     selector: 'route-child',
     template: (`
@@ -71,9 +71,9 @@ import {
         <pp-childs ax="{b}"></pp-childs>
       </div>`),
   })
-  class RouteChild {
+class RouteChild {
     static injectTokens = [
-      HeroSearchService2
+      HeroSearchService2,
     ];
     @StateSetter() setState;
     @Input('aa') b;
@@ -82,20 +82,20 @@ import {
       this.heroSearchService.test();
       this.a = 'a';
       this.d = [{
-          z: 111111111111111,
-          b: 'a',
-        },
-        {
-          z: 33333333333333,
-          b: 'a',
-        },
+        z: 111111111111111,
+        b: 'a',
+      },
+      {
+        z: 33333333333333,
+        b: 'a',
+      },
       ];
     }
     nvReceiveInputs(nextInputs) {
       this.b = nextInputs.a;
     }
   }
-  
+
   @Component({
     selector: 'pp-childs',
     template: (`
@@ -106,19 +106,19 @@ import {
       </div>
     `),
   })
-  class PCChild {
+class PCChild {
     @Input() ax;
     @StateSetter() setState;
     constructor() {
       this.a = 'a';
       this.d = [{
-          z: 111111111111111,
-          b: 'a',
-        },
-        {
-          z: 33333333333333,
-          b: 'a',
-        },
+        z: 111111111111111,
+        b: 'a',
+      },
+      {
+        z: 33333333333333,
+        b: 'a',
+      },
       ];
     }
     nvHasRender() {
@@ -127,7 +127,7 @@ import {
     sendProps(i) {
       this.ax = i;
     }
-  
+
     nvReceiveInputs(nextInputs) {
       console.log(4444, nextInputs);
     }
@@ -141,7 +141,7 @@ import {
         <p nv-on:click="sendProps(5)">props from component.state.a: {{ax}}</p>
       </div>`),
   })
-  class PComponent {
+class PComponent {
     @Input('ax') ax;
     @Input('getProps') getProps;
     @StateSetter() setState;
@@ -149,20 +149,20 @@ import {
       this.a = 'a子组件';
       this.c = '<p>1111</p>';
       this.d = [{
-          z: 111111111111111,
-          b: 'a',
-        },
-        {
-          z: 33333333333333,
-          b: 'a',
-        },
+        z: 111111111111111,
+        b: 'a',
+      },
+      {
+        z: 33333333333333,
+        b: 'a',
+      },
       ];
       this.e = true;
     }
     nvBeforeMount() {
       console.log('nvBeforeMount props11', this.props);
     }
-  
+
     nvAfterMount() {
       console.log('nvAfterMount props11', this.props);
     }
@@ -180,12 +180,12 @@ import {
     getProps(a) {
       alert('子组件里 里面传出来了');
       this.setState({
-        a: a
+        a: a,
       });
       this.getProps(a);
     }
   }
-  
+
   @Component({
     selector: 'R1',
     template: (`
@@ -204,13 +204,13 @@ import {
     </div>
     `),
   })
-  class R1 {
+class R1 {
     @StateSetter() setState;
     @Watch() aaaa;
     static injectTokens = [
       HeroSearchService,
       Utils,
-      NvLocation
+      NvLocation,
     ];
     constructor(
       heroSearchService,
@@ -224,27 +224,27 @@ import {
       this.a = 'a11';
       this.b = 2;
       this.d = [{
-          z: 111111111111111,
-          b: 'a',
-          show: true,
-        },
-        {
-          z: 33333333333333,
-          b: 'a',
-          show: true,
-        }
+        z: 111111111111111,
+        b: 'a',
+        show: true,
+      },
+      {
+        z: 33333333333333,
+        b: 'a',
+        show: true,
+      },
       ];
       this.c = 'c';
       this.e = [{
-          z: 232323,
-          b: 'a',
-          show: true,
-        },
-        {
-          z: 1111,
-          b: 'a',
-          show: false,
-        }
+        z: 232323,
+        b: 'a',
+        show: true,
+      },
+      {
+        z: 1111,
+        b: 'a',
+        show: false,
+      },
       ];
       this.f = true;
     }
@@ -256,7 +256,7 @@ import {
     }
     showAlert(a) {
       this.location.set('/R1/C1', {
-        a: '1'
+        a: '1',
       });
       console.log('this.$location', this.location.get());
     }
@@ -264,11 +264,11 @@ import {
       // alert('里面传出来了');
       console.log('被触发了！', a, this);
       this.setState({
-        a: a
+        a: a,
       });
     }
   }
-  
+
   @Component({
     selector: 'R2',
     template: (`
@@ -283,7 +283,7 @@ import {
     </div>
     `),
   })
-  class R2 {
+class R2 {
     static injectTokens = [
       HeroSearchService1,
       NvLocation,
@@ -306,7 +306,7 @@ import {
     nvRouteChange(lastRoute, newRoute) {
       console.log('R2 is nvRouteChange', lastRoute, newRoute);
     }
-  
+
     nvDoCheck() {}
     showAlert() {
       console.log('this.a', this.a);
@@ -318,11 +318,11 @@ import {
     }
     showLocation() {
       this.location.set('/R1/C1/D1', {
-        b: '1'
+        b: '1',
       });
     }
   }
-  
+
   @Component({
     selector: 'test-component',
     template: (`
@@ -330,14 +330,14 @@ import {
         <p nv-on:click="click()">测试repeat组件: {{man}}</p>
       </div>`),
   })
-  class TestComponent {
+class TestComponent {
     @Input('man') man = '';
     click() {
       console.log('this.man', this.man);
       this.man = 'fuck!';
     }
   }
-  
+
   @Component({
     selector: 'container-wrap',
     template: (`
@@ -363,9 +363,9 @@ import {
     providers: [{
       provide: HeroSearchService2,
       useClass: HeroSearchService2,
-    }]
+    }],
   })
-  class Container {
+class Container {
     static injectTokens = [
       HeroSearchService,
       HeroSearchService1,
@@ -385,40 +385,40 @@ import {
       this.a = 1;
       this.b = 3;
       this.testArray = [{
-          name: 'gerry',
-          sex: '男',
-          job: [{
-              id: 1,
-              name: '程序员',
-            },
-            {
-              id: 2,
-              name: '码农',
-            },
-            {
-              id: 3,
-              name: '帅',
-            },
-          ],
+        name: 'gerry',
+        sex: '男',
+        job: [{
+          id: 1,
+          name: '程序员',
         },
         {
-          name: 'nina',
-          sex: '女',
-          // job: ['老师', '英语老师', '美1'],
-          job: [{
-              id: 1,
-              name: '老师',
-            },
-            {
-              id: 2,
-              name: '英语老师',
-            },
-            {
-              id: 3,
-              name: '美',
-            },
-          ],
-        }
+          id: 2,
+          name: '码农',
+        },
+        {
+          id: 3,
+          name: '帅',
+        },
+        ],
+      },
+      {
+        name: 'nina',
+        sex: '女',
+        // job: ['老师', '英语老师', '美1'],
+        job: [{
+          id: 1,
+          name: '老师',
+        },
+        {
+          id: 2,
+          name: '英语老师',
+        },
+        {
+          id: 3,
+          name: '美',
+        },
+        ],
+      },
       ];
       this.testArray2 = ['程序员3', '码农3', '帅3'];
     }
@@ -428,83 +428,83 @@ import {
     nvOnDestory() {
       console.log('TestComponent OnDestory');
     }
-  
+
     go() {
       this.location.set('/R1', {
-        b: '1'
+        b: '1',
       });
       console.log('R1 nvOnInit', this.location.get());
     }
-  
+
     show(a, index) {
       console.log('aaaa', a);
       console.log('index', index);
     }
-  
+
     showInput(event, index) {
       console.log('aaaa', event.target.value);
       const testArray2 = this.testArray2;
       testArray2[index] = event.target.value;
       console.log('this.state.testArray2', this.testArray2);
     }
-  
+
     changeInput() {
       this.a = 4;
       this.testArray = [{
-          name: 'gerry',
-          sex: '男',
-          job: [{
-              id: 1,
-              name: '程序员',
-            },
-            {
-              id: 2,
-              name: '码农',
-            },
-            {
-              id: 3,
-              name: '帅',
-            },
-          ],
+        name: 'gerry',
+        sex: '男',
+        job: [{
+          id: 1,
+          name: '程序员',
         },
         {
-          name: 'gerry2',
-          sex: '男2',
-          job: [{
-              id: 1,
-              name: '程序员2',
-            },
-            {
-              id: 2,
-              name: '码农2',
-            },
-            {
-              id: 3,
-              name: '帅2',
-            },
-          ],
+          id: 2,
+          name: '码农',
         },
         {
-          name: 'nina',
-          sex: '女',
-          job: [{
-              id: 1,
-              name: '老师',
-            },
-            {
-              id: 2,
-              name: '英语老师',
-            },
-            {
-              id: 3,
-              name: '美',
-            },
-          ],
-        }
+          id: 3,
+          name: '帅',
+        },
+        ],
+      },
+      {
+        name: 'gerry2',
+        sex: '男2',
+        job: [{
+          id: 1,
+          name: '程序员2',
+        },
+        {
+          id: 2,
+          name: '码农2',
+        },
+        {
+          id: 3,
+          name: '帅2',
+        },
+        ],
+      },
+      {
+        name: 'nina',
+        sex: '女',
+        job: [{
+          id: 1,
+          name: '老师',
+        },
+        {
+          id: 2,
+          name: '英语老师',
+        },
+        {
+          id: 3,
+          name: '美',
+        },
+        ],
+      },
       ];
     }
   }
-  
+
   @NvModule({
     declarations: [
       R2,
@@ -514,57 +514,57 @@ import {
     providers: [{
       provide: HeroSearchService2,
       useClass: HeroSearchService2,
-    }, ],
+    }],
     exports: [
       R2,
       RouteChild,
     ],
   })
-  class M2 {}
-  
-  const routes = [{
-    path: '/',
-    // redirectTo: '/R1',
+class M2 {}
+
+const routes = [{
+  path: '/',
+  // redirectTo: '/R1',
+  children: [{
+    path: '/R1',
+    component: 'R1',
+    // redirectTo: '/R2',
     children: [{
-        path: '/R1',
-        component: 'R1',
-        // redirectTo: '/R2',
-        children: [{
-            path: '/C1',
-            component: 'R2',
-            children: [{
-              path: '/D1',
-              redirectTo: '/R2',
-            }, ],
-          },
-          {
-            path: '/C2',
-            redirectTo: '/R2',
-          },
-        ],
-      },
-      {
-        path: '/R2',
-        component: 'R2',
-        children: [{
-          path: '/:id',
-          component: 'R1',
-          children: [{
-            path: '/D1',
-            redirectTo: '/R1/C1',
-          }, ],
-        }, ],
-      },
+      path: '/C1',
+      component: 'R2',
+      children: [{
+        path: '/D1',
+        redirectTo: '/R2',
+      }],
+    },
+    {
+      path: '/C2',
+      redirectTo: '/R2',
+    },
     ],
-  }, ];
-  
+  },
+  {
+    path: '/R2',
+    component: 'R2',
+    children: [{
+      path: '/:id',
+      component: 'R1',
+      children: [{
+        path: '/D1',
+        redirectTo: '/R1/C1',
+      }],
+    }],
+  },
+  ],
+}];
+
   @NvModule({
     imports: [
       M2,
       RouteModule.forRoot({
         routes: routes,
-        rootPath: '/demo'
-      })
+        rootPath: '/demo',
+      }),
     ],
     declarations: [
       Container,
@@ -584,9 +584,11 @@ import {
     ],
     bootstrap: Container,
   })
-  class M1 {}
-  
-  const inDiv = new InDiv();
-  inDiv.bootstrapModule(M1);
-  inDiv.use(PlatformBrowser);
-  inDiv.init();
+class M1 {}
+
+
+InDiv.bootstrapFactory(M1, {
+  plugins: [
+    PlatformBrowser,
+  ],
+});

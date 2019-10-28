@@ -97,10 +97,10 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
                 const serviceInjector = serviceParentInjector.fork();
 
                 if (findService.isSingletonMode === false) {
-                    args.push(factoryCreator(findService, serviceInjector, findProvider.deps));
+                    args.push(NvInstanceFactory(findService, serviceInjector, findProvider.deps));
                     continue;
                 } else {
-                    const serviceInStance = factoryCreator(findService, serviceInjector, findProvider.deps);
+                    const serviceInStance = NvInstanceFactory(findService, serviceInjector, findProvider.deps);
                     findInjector.setInstance(key, serviceInStance);
                     args.push(serviceInStance);
                     continue;
@@ -155,7 +155,7 @@ export function injectionCreator(_constructor: Function, injector?: Injector, de
  * @param {any[]} [deps]
  * @returns {*}
  */
-export function factoryCreator(_constructor: Function, injector?: Injector, deps?: any[]): any {
+export function NvInstanceFactory(_constructor: Function, injector?: Injector, deps?: any[]): any {
     const args = injectionCreator(_constructor, injector, deps);
     const factoryInstance = new (_constructor as any)(...args);
     factoryInstance.$privateInjector = injector;

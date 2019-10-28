@@ -1,4 +1,4 @@
-import { InDiv, INvModule } from '@indiv/core';
+import { InDiv, INvModule, Type } from '@indiv/core';
 import { TRouter, NvLocation } from '@indiv/router';
 import { _document } from '../renderer';
 import { PlatformServer } from './platform-server';
@@ -10,19 +10,19 @@ import { buildPath, generalDistributeRoutes, RouteCongfig } from '../router';
  * if has routeConfig, will await route render
  *
  * @export
- * @param {Function} rootModule
+ * @param {Type<INvModule>} rootModule
  * @param {RouteCongfig} [routeConfig]
  * @param {string} [templateRootPath]
  * @returns {Promise<string>}
  */
-export async function renderToString(rootModule: Function, routeConfig?: RouteCongfig, templateRootPath?: string): Promise<string> {
+export async function renderToString(rootModule: Type<INvModule>, routeConfig?: RouteCongfig, templateRootPath?: string): Promise<string> {
   if (_document.getElementById('root')) _document.getElementById('root').innerHTML = '';
-  const inDiv = new InDiv();
-  inDiv.bootstrapModule(rootModule);
-  inDiv.use(PlatformServer);
-  // 设置 SSR 编译的模板根路径
-  if (templateRootPath) inDiv.setTemplateRootPath(templateRootPath);
-  await inDiv.init();
+  const inDiv = await InDiv.bootstrapFactory(rootModule, {
+    plugins: [
+      PlatformServer,
+    ],
+    ssrTemplateRootPath: templateRootPath,
+  });
   if (routeConfig) {
     const nvLocatiton = new NvLocation(inDiv);
     nvLocatiton.set(routeConfig.path, routeConfig.query);

@@ -1,11 +1,6 @@
-import { INvModule } from '../types';
+import { INvModule, Type } from '../types';
 import { injected } from './injected';
 import { rootInjector } from './injector';
-
-export interface Type<T = any> extends Function {
-  [key: string]: any;
-  new (...args: any[]): T;
-}
 
 export type TInjectableOptions = {
   isSingletonMode?: boolean;

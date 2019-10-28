@@ -1,8 +1,8 @@
-import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, factoryModule } from '@indiv/core';
+import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, NvModuleFactory, Type } from '@indiv/core';
 import { nvRouteStatus, NvLocation } from './location';
 import { RouterTo, RouterFrom } from './directives';
 
-export type TChildModule = () => Promise<any>;
+export type TChildModule = () => Promise<Type<INvModule>>;
 
 export interface IComponentWithRoute extends IComponent {
   nvRouteCanActive?: (lastRoute: string, newRoute: string) => boolean;
@@ -12,17 +12,12 @@ export interface IDirectiveWithRoute extends IDirective {
   nvRouteChange?: (lastRoute?: string, newRoute?: string) => void;
 }
 
-export type TLoadChild = {
-  name: string;
-  child: TChildModule;
-};
-
 export type TRouter = {
   path: string;
   redirectTo?: string;
   component?: string;
   children?: TRouter[];
-  loadChild?: TLoadChild | TChildModule | Function;
+  loadChild?: TChildModule;
   routeCanActive?: (lastRoute: string, newRoute: string) => boolean;
   routeChange?: (lastRoute?: string, newRoute?: string) => void;
 };
@@ -276,7 +271,7 @@ export class RouteModule {
           component = this.initComponent(FindComponent, nativeElement, findComponentFromModuleResult.loadModule);
         }
         if (needRenderRoute.loadChild) {
-          const loadModule = await this.NvModuleFactoryLoader(needRenderRoute.loadChild as TChildModule | TLoadChild, currentUrlPath);
+          const loadModule = await this.NvModuleFactoryLoader(needRenderRoute.loadChild as TChildModule, currentUrlPath);
           FindComponent = loadModule.$bootstrap;
           component = this.initComponent(FindComponent, nativeElement, loadModule);
         }
@@ -390,7 +385,7 @@ export class RouteModule {
           component = this.initComponent(FindComponent, nativeElement, findComponentFromModuleResult.loadModule);
         }
         if (route.loadChild) {
-          const loadModule = await this.NvModuleFactoryLoader(route.loadChild as TChildModule | TLoadChild, currentUrlPath);
+          const loadModule = await this.NvModuleFactoryLoader(route.loadChild as TChildModule, currentUrlPath);
           FindComponent = loadModule.$bootstrap;
           component = this.initComponent(FindComponent, nativeElement, loadModule);
         }
@@ -527,26 +522,18 @@ export class RouteModule {
    * build Module and return Component for route.loadChild
    *
    * @private
-   * @param {(TChildModule | TLoadChild)} loadChild
+   * @param {(TChildModule)} loadChild
    * @returns {Promise<INvModule>}
    * @memberof Router
    */
-  private async NvModuleFactoryLoader(loadChild: TChildModule | TLoadChild, currentUrlPath: string): Promise<INvModule> {
+  private async NvModuleFactoryLoader(loadChild: TChildModule, currentUrlPath: string): Promise<INvModule> {
     if (this.loadModuleMap.has(currentUrlPath)) return this.loadModuleMap.get(currentUrlPath);
 
-    let loadModule = null;
-
-    // export default
-    if ((loadChild as TChildModule) instanceof Function && !(loadChild as TLoadChild).child)
-      loadModule = (await (loadChild as TChildModule)()).default;
-
-    // export
-    if (loadChild instanceof Object && (loadChild as TLoadChild).child)
-      loadModule = (await (loadChild as TLoadChild).child())[loadChild.name];
+    const loadModule = await loadChild();
 
     if (!loadModule) throw new Error('load child failed, please check your routes.');
 
-    const loadModuleInstance = factoryModule(loadModule);
+    const loadModuleInstance = NvModuleFactory(loadModule);
     this.loadModuleMap.set(currentUrlPath, loadModuleInstance);
 
     return loadModuleInstance;

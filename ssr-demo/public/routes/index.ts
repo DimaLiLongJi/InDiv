@@ -9,16 +9,16 @@ const routes: TRouter[] = [
         children: [
             {
                 path: '/introduction',
-                loadChild: () => import('../modules/introduction.module'),
+                loadChild: () => import('../modules/introduction.module').then(mod => mod.default),
             },
             {
                 path: '/architecture',
-                loadChild: () => import('../modules/architecture.module'),
+                loadChild: () => import('../modules/architecture.module').then(mod => mod.default),
             },
             {
                 path: '/docs',
                 redirectTo: '/docs/component',
-                loadChild: () => import('../modules/docs.module'),
+                loadChild: () => import('../modules/docs.module').then(mod => mod.DocsModule),
                 children: [
                     {
                         path: '/component',
@@ -56,11 +56,11 @@ const routes: TRouter[] = [
             },
             {
                 path: '/ssr',
-                loadChild: () => import('../modules/ssr.module'),
+                loadChild: () => import('../modules/ssr.module').then(mod => mod.default),
             },
             {
                 path: '/middleware',
-                loadChild: () => import('../modules/middleware.module'),
+                loadChild: () => import('../modules/middleware.module').then(mod => mod.default),
             },
         ],
     },
