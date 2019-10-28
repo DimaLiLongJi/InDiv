@@ -1,5 +1,5 @@
 <a name="4.0.0"></a>
-# [4.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.0.0) (2019-10-19)
+# [4.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.0.0) (2019-10-28)
 
 
 ### Features
