@@ -10,4 +10,6 @@ export const metadataOfSkipSelf = 'nvMetadataOfSkipSelf';
 
 export const metadataOfInject = 'nvMetadataOfInject';
 
+export const metadataOfAutowired = 'nvMetadataOfAutowired';
+
 export const metadataOfAttribute = 'nvMetadataOfAttribute';

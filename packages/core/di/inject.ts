@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfInject } from './metadata';
+import { metadataOfInject, metadataOfAutowired } from './metadata';
 
 export type TInjectItem = {
   index: number,
@@ -28,13 +28,19 @@ export class InjectionToken {
  * A parameter decorator on a dependency parameter of a class constructor that specifies a custom provider of the dependency.
  *
  * @export
- * @param {InjectionToken} token
- * @returns {(target: Object, propertyKey: string, parameterIndex: number) => void}
+ * @param {*} token
+ * @returns {(target: any, propertyKey: string, parameterIndex?: number) => void}
  */
-export function Inject(token: any): (target: Object, propertyKey: string, parameterIndex: number) => void {
-  return function (target: Object, propertyKey: string, parameterIndex: number) {
-    const metadata: TInjectItem[] = Reflect.getMetadata(metadataOfInject, target) || [];
-    metadata.push({ index: parameterIndex, token });
-    Reflect.defineMetadata(metadataOfInject, metadata, target);
+export function Inject(token: any): (target: Object, propertyKey: string, parameterIndex?: number) => void {
+  return function (target: any, propertyKey: string, parameterIndex?: number) {
+    if (!parameterIndex && parameterIndex !== 0) {
+      const metadata: any[] = Reflect.getMetadata(metadataOfAutowired, target.constructor) || [];
+      metadata.push({ property: propertyKey, token });
+      Reflect.defineMetadata(metadataOfAutowired, metadata, target.constructor);
+    } else {
+      const metadata: TInjectItem[] = Reflect.getMetadata(metadataOfInject, target) || [];
+      metadata.push({ index: parameterIndex, token });
+      Reflect.defineMetadata(metadataOfInject, metadata, target);
+    }
   };
 }

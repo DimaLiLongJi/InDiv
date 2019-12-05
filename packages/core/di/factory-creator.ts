@@ -1,10 +1,38 @@
 import 'reflect-metadata';
 import { TInjectTokenProvider, IDirective, TProviders } from '../types';
 import { Injector } from './injector';
-import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute } from './metadata';
+import { metadataOfInjectable, metadataOfOptional, metadataOfHost, metadataOfSelf, metadataOfSkipSelf, metadataOfInject, metadataOfAttribute, metadataOfAutowired } from './metadata';
 import { TInjectItem } from './inject';
 import { ElementRef } from '../component';
 import { Renderer } from '../vnode';
+
+function getService(injector?: Injector, key?: any, _constructor?: any, bubblingLayer: number | 'always' = 'always') {
+    const findProvider: TInjectTokenProvider = injector.getProvider(key, bubblingLayer);
+
+    if (findProvider) {
+        let findService: any;
+        if (findProvider.useClass) findService = findProvider.useClass;
+        else if (findProvider.useValue) {
+            return findProvider.useValue;
+        } else if (findProvider.useFactory) {
+            const factoryArgs = argumentsCreator(_constructor, injector, findProvider.deps);
+            return findProvider.useFactory(...factoryArgs);
+        } else findService = findProvider;
+
+        const serviceParentInjector = injector.getParentInjectorOfProvider(findService, bubblingLayer);
+        const serviceInjector = serviceParentInjector.fork();
+
+        if (findService.isSingletonMode === false) {
+            return NvInstanceFactory(findService, serviceInjector, findProvider.deps);
+        } else {
+            const serviceInStance = NvInstanceFactory(findService, serviceInjector, findProvider.deps);
+            injector.setInstance(key, serviceInStance);
+            return serviceInStance;
+        }
+    } else {
+        throw new Error(`In injector could'nt find ${key}`);
+    }
+}
 
 /**
  * format providers for @NvModule @Directive @Component
@@ -79,6 +107,9 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
                 continue;
             }
 
+            // const findService = getService(findInjector, _constructor, key, bubblingLayer);
+            // args.push(findService);
+            // continue;
             const findProvider: TInjectTokenProvider = findInjector.getProvider(key, bubblingLayer);
 
             if (findProvider) {
@@ -159,5 +190,14 @@ export function NvInstanceFactory(_constructor: Function, injector?: Injector, d
     const args = injectionCreator(_constructor, injector, deps);
     const factoryInstance = new (_constructor as any)(...args);
     factoryInstance.$privateInjector = injector;
+    // @Inject 属性注入
+    const autowiredList: {property: string, token: any}[] = Reflect.getMetadata(metadataOfAutowired, _constructor) || [];
+    if (autowiredList && autowiredList.length > 0) {
+        autowiredList.forEach(autowired => {
+            let findProvider = injector.getInstance(autowired.token);
+            if (!findProvider) findProvider = getService(injector, autowired.token, _constructor);
+            factoryInstance[autowired.property] = findProvider;
+        });
+    }
     return factoryInstance;
 }
