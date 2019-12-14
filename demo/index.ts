@@ -1,4 +1,4 @@
-import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Injector, Optional, Inject } from '@indiv/core';
+import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Injector, Optional, Inject, Self } from '@indiv/core';
 import { RouteChange, NvLocation, RouteModule, RouteCanActive } from '@indiv/router';
 import { PlatformBrowser } from '@indiv/platform-browser';
 import { HttpClient, HttpClientResponse } from '@indiv/common';
@@ -431,7 +431,10 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
   @ViewChildren('test-directive') private testDirectiveString: TestDirective[];
   @ViewChildren(TestDirective) private testDirective: TestDirective[];
 
-  @Inject(ValueType) private value: ValueType;
+  @Optional()
+  @Self()
+  @Inject(ValueType)
+  private value: ValueType;
 
   constructor(
     private hss: HeroSearchService,
