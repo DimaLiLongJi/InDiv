@@ -1,3 +1,13 @@
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.1.0) (2019-12-14)
+
+
+### Features
+
+* **package:@indiv/core** now `@Inject()` `@SkipSelf()` `@Self()` `@Host()` `@Optional()` can be used in `Property Injection`
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.0.0) (2019-10-28)
 

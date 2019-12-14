@@ -1,4 +1,4 @@
-import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Injector, Optional } from '@indiv/core';
+import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Injector, Optional, Inject, Self } from '@indiv/core';
 import { RouteChange, NvLocation, RouteModule, RouteCanActive } from '@indiv/router';
 import { PlatformBrowser } from '@indiv/platform-browser';
 import { HttpClient, HttpClientResponse } from '@indiv/common';
@@ -431,9 +431,14 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
   @ViewChildren('test-directive') private testDirectiveString: TestDirective[];
   @ViewChildren(TestDirective) private testDirective: TestDirective[];
 
+  @Optional()
+  @Self()
+  @Inject(ValueType)
+  private value: ValueType;
+
   constructor(
     private hss: HeroSearchService,
-    private value: ValueType,
+    @Inject(ValueType) private value2: ValueType,
     private location: NvLocation,
     private httpClient: HttpClient,
     private element: ElementRef,
@@ -454,7 +459,6 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
     //   next: this.httpHandler,
     // });
     this.hss.test();
-    console.log('value', this.value);
     setTimeout(() => {
       this.setState({
         test: {
@@ -470,6 +474,7 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
 
   public nvOnInit() {
     console.log('nvOnInit Container', this.location.get());
+    console.log('value =>', this.value, this.value2);
   }
 
   public nvBeforeMount() {

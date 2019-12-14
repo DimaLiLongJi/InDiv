@@ -31,7 +31,7 @@
     "axios": "^0.18.0"
   },
   "peerDependencies": {
-    "@indiv/core": "4.0.0",
+    "@indiv/core": "4.1.0",
     "rxjs": "^6.3.3"
   }
 }
