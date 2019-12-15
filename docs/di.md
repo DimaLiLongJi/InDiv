@@ -19,6 +19,68 @@
 本章节介绍了 DI 在 InDiv 中的工作原理。
 
 
+## 构造器注入与属性注入
+
+一般来说依赖注入的几种注入方式主要就是 **构造器注入与属性注入**
+
+- 构造器注入
+
+上述通过在 `constructor` 中声明参数的方式，被称为构造器注入。
+
+构造器注入通过在类实例化之前从 `IOC` 容器中获取依赖并通过参数的方式传入类构造函数实现注入。
+
+```typescript
+@Component({
+  selector: 'docs-component-container',
+  templateUrl: './template.html',
+  providers: [
+    {
+      provide: TestService,
+      useClass: TestService,
+    },
+  ],
+})
+export default class FactoryDemo {
+  public content: Info[] = componentInfo();
+  public subscribeToken: Subscription;
+
+  constructor(
+    private testService: TestService,
+  ) {}
+」
+```
+
+- 属性注入
+
+**v4.1.0开始 `@Inject()` `@SkipSelf()` `@Self()` `@Host()` `@Optional()` 可以用作属性注入**
+
+直接在属性上使用上述注解，在**类实例化之后**通过对属性赋值的方式实现注入。
+
+所以上述的代码也可以这么写：
+
+```typescript
+@Component({
+  selector: 'docs-component-container',
+  templateUrl: './template.html',
+  providers: [
+    {
+      provide: TestService,
+      useClass: TestService,
+    },
+  ],
+})
+export default class FactoryDemo {
+  public content: Info[] = componentInfo();
+  public subscribeToken: Subscription;
+
+  @Inject(TestService)
+  private testService: TestService;
+
+  constructor() {}
+}
+```
+
+
 ## IOC容器
 
 相对于 IOC容器 和 需求资源的对象 来说，理解依赖注入（DI）的关键是：“谁依赖谁，为什么需要依赖，谁注入谁，注入了什么”：
