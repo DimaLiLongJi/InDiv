@@ -311,10 +311,13 @@ export class CompileUtil {
         });
 
       }
-      // first compile key for all child
-      if (newVnode.childNodes && newVnode.childNodes.length > 0 && this.fragment.indexOf(newVnode) !== -1) this.repeatChildrenUpdaterByKey(newVnode, val, expFather, index, vm, value);
-      // then compile repeat child
-      if (newVnode.childNodes && newVnode.childNodes.length > 0 && this.fragment.indexOf(newVnode) !== -1) this.repeatChildrenUpdater(newVnode, vm);
+
+      if (newVnode.childNodes && newVnode.childNodes.length > 0 && this.fragment.indexOf(newVnode) !== -1) {
+         // 先根据此次循环的key编译一遍
+        this.repeatChildrenUpdaterByKey(newVnode, val, expFather, index, vm, value);
+        // 然后再编译子节点
+        this.repeatChildrenUpdater(newVnode, vm);
+      } 
     });
   }
 
