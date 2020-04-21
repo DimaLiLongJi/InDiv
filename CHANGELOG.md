@@ -1,3 +1,13 @@
+<a name="4.2.0"></a>
+# [4.2.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.2.0) (2020-05-14)
+
+
+### Features
+
+* **package:@indiv/indiv-loader** use `recast.visit` to rebuild `Declaration` of `Class`
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.1.0) (2019-12-14)
 
