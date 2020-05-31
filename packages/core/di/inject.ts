@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { metadataOfInject, metadataOfPropInject } from './metadata';
+import { Type } from '../types';
 
 export type TInjectItem = {
   index: number,
@@ -12,9 +13,12 @@ export type TInjectItem = {
  * @export
  * @class InjectionToken
  */
-export class InjectionToken {
+export class InjectionToken<T = any> {
   private _desc: string;
-  constructor(_desc: string) {
+  constructor(_desc: string, options?: {
+    providedIn?: Type<any> | 'root' | null;
+    factory: () => T;
+  }) {
     this._desc = _desc;
   }
   public toString(): string {

@@ -5,6 +5,7 @@
 ### Features
 
 * **package:@indiv/indiv-loader** use `recast.visit` to rebuild `Declaration` of `Class`
+* **package:@indiv/core** fix `@Injectable({providedIn: 'root'})` can't be injected into injector
 
 
 
