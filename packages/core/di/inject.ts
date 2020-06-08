@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 import { metadataOfInject, metadataOfPropInject } from './metadata';
+import { Type, INvModule } from '../types';
+import { rootInjector } from './injector';
 
 export type TInjectItem = {
   index: number,
@@ -12,10 +14,22 @@ export type TInjectItem = {
  * @export
  * @class InjectionToken
  */
-export class InjectionToken {
+export class InjectionToken<T = any> {
   private _desc: string;
-  constructor(_desc: string) {
+  constructor(_desc: string, options?: {
+    providedIn?: Type<any> | 'root' | null;
+    factory: () => T;
+  }) {
     this._desc = _desc;
+    if (options && options.factory) {
+      if (options.providedIn === 'root') rootInjector.setProvider(this, { provide: this, useFactory: options.factory });
+      if (options.providedIn && (options.providedIn as any).nvType === 'nvModule') {
+        ((options.providedIn as any).prototype as INvModule).$providers.push({ provide: this, useFactory: options.factory });
+      }
+      if (!options.providedIn) {
+        rootInjector.setProvider(this, { provide: this, useFactory: options.factory });
+      }
+    }
   }
   public toString(): string {
     return `InjectionToken ${this._desc}`;

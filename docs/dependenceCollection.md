@@ -160,3 +160,131 @@ export default class AppComponent {
   }
 }
 ```
+
+**注意⚠️**
+
+关于依赖收集，会先判断属性是否在实例中存在，因此**未初始化的属性在实例中不存在，因此无法加入依赖收集，将导致无法更新**
+
+举个例子🌰： 属性 `public name: string;` 不初始化的情况下，视图无法显示 `name`
+
+> app.component.ts
+
+```typescript
+import { Component, StateSetter, SetState, Watch } from '@indiv/core';
+
+@Component({
+    selector: 'app-component',
+    template: (`
+        <div class="app-component-container">
+          <input nv-model="name"/>
+          <p nv-on:click="addAge()" nv-repeat="li in list">id{{li}}name: {{name}}</p>
+          <show-age age="{age}" upDateAge="{upDateAge}"></show-age>
+        </div>
+    `),
+})
+export default class AppComponent {
+  public name: string; // 改行我不初始化
+  @Watch() public age: number;
+  public list: number[] = [1, 2, 3, 4];
+
+  @StateSetter() public setState: SetState;
+
+  constructor() {}
+
+  public addAge(): void {
+    this.setState({
+      age: 24,
+      list: this.list.push(5),
+    });
+  }
+
+  public upDateAge(age: number) {
+    this.age = age;
+    // this.setState({ age: 24 });
+  }
+}
+```
+
+解决这个问题有2种方法：
+
+1. 给属性初始化一个 `null` 或者其他值
+
+> app.component.ts
+
+```typescript
+import { Component, StateSetter, SetState, Watch } from '@indiv/core';
+
+@Component({
+    selector: 'app-component',
+    template: (`
+        <div class="app-component-container">
+          <input nv-model="name"/>
+          <p nv-on:click="addAge()" nv-repeat="li in list">id{{li}}name: {{name}}</p>
+          <show-age age="{age}" upDateAge="{upDateAge}"></show-age>
+        </div>
+    `),
+})
+export default class AppComponent {
+  public name: string = 'InDiv'; // 改行初始化
+  @Watch() public age: number;
+  public list: number[] = [1, 2, 3, 4];
+
+  @StateSetter() public setState: SetState;
+
+  constructor() {}
+
+  public addAge(): void {
+    this.setState({
+      age: 24,
+      list: this.list.push(5),
+    });
+  }
+
+  public upDateAge(age: number) {
+    this.age = age;
+    // this.setState({ age: 24 });
+  }
+}
+```
+
+2. 给属性添加 `@Watch` 主动告知要观察该属性
+
+> app.component.ts
+
+```typescript
+import { Component, StateSetter, SetState, Watch } from '@indiv/core';
+
+@Component({
+    selector: 'app-component',
+    template: (`
+        <div class="app-component-container">
+          <input nv-model="name"/>
+          <p nv-on:click="addAge()" nv-repeat="li in list">id{{li}}name: {{name}}</p>
+          <show-age age="{age}" upDateAge="{upDateAge}"></show-age>
+        </div>
+    `),
+})
+export default class AppComponent {
+  @Watch() public name: string; // 改行添加 @Watch()
+  @Watch() public age: number;
+  public list: number[] = [1, 2, 3, 4];
+
+  @StateSetter() public setState: SetState;
+
+  constructor() {}
+
+  public addAge(): void {
+    this.setState({
+      age: 24,
+      list: this.list.push(5),
+    });
+  }
+
+  public upDateAge(age: number) {
+    this.age = age;
+    // this.setState({ age: 24 });
+  }
+}
+```
+
+
