@@ -1,5 +1,5 @@
 {
-  "name": "indiv",
+  "name": "@indiv/core",
   "description": "一个 web mvvm 库。A web mvvm library.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
