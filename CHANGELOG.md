@@ -1,11 +1,12 @@
-<a name="4.1.1"></a>
-# [4.1.1](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.1.1) (2020-06-08)
+<a name="4.2.0"></a>
+# [4.2.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.2.0) (2020-06-08)
 
 
 ### Features
 
 * **package:@indiv/indiv-loader** use `recast.visit` to rebuild `Declaration` of `Class`
 * **package:@indiv/core** fix `@Injectable({providedIn: 'root'})` can't be injected into injector
+* **package:@indiv/core** `InjectionToken` now can set `providedIn` and `factory`
 
 
 

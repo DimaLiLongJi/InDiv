@@ -1,6 +1,6 @@
 {
   "name": "@indiv/platform-server",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -36,7 +36,7 @@
     "@types/jsdom": "^12.2.1"
   },
   "peerDependencies": {
-    "@indiv/core": "4.1.1",
-    "@indiv/router": "4.1.1"
+    "@indiv/core": "4.2.0",
+    "@indiv/router": "4.2.0"
   }
 }
