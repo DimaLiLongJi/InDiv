@@ -1,12 +1,8 @@
 import 'reflect-metadata';
-import { metadataOfInject, metadataOfPropInject } from './metadata';
-import { Type, INvModule } from '../types';
-import { rootInjector } from './injector';
+import { Type, IProviderClass, TInjectItem } from '../types';
+import { metadataOfInject, metadataOfPropInject } from '../core';
+import { rootInjector } from '../core';
 
-export type TInjectItem = {
-  index: number,
-  token: any,
-};
 
 /**
  * Creates a token that can be used in a DI Provider.
@@ -24,7 +20,7 @@ export class InjectionToken<T = any> {
     if (options && options.factory) {
       if (options.providedIn === 'root') rootInjector.setProvider(this, { provide: this, useFactory: options.factory });
       if (options.providedIn && (options.providedIn as any).nvType === 'nvModule') {
-        ((options.providedIn as any).prototype as INvModule).$providers.push({ provide: this, useFactory: options.factory });
+        ((options.providedIn as any).prototype as IProviderClass).$providers.push({ provide: this, useFactory: options.factory });
       }
       if (!options.providedIn) {
         rootInjector.setProvider(this, { provide: this, useFactory: options.factory });

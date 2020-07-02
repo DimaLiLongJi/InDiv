@@ -1,6 +1,11 @@
 import 'reflect-metadata';
-import { TInjectTokenProvider, IDirective, TProviders } from '../types';
 import { Injector } from './injector';
+import {
+    TInjectTokenProvider,
+    IProviderClass,
+    TProviders,
+    TInjectItem,
+} from '../types';
 import {
     metadataOfInjectable,
     metadataOfOptional,
@@ -15,9 +20,7 @@ import {
     metadataOfPropSelf,
     metadataOfPropSkipSelf,
 } from './metadata';
-import { TInjectItem } from './inject';
-import { ElementRef } from '../component';
-import { Renderer } from '../vnode';
+import { ElementRef, Renderer } from '@indiv/core';
 
 function bindProperty(_constructor: Function, factoryInstance: any, injector?: Injector) {
     // @Inject 属性注入
@@ -176,10 +179,10 @@ export function injectionCreator(_constructor: Function, injector?: Injector, de
     else _deps = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
 
     // build $privateProviders into injector of @Component and @Directive
-    if ((_constructor.prototype as IDirective).$privateProviders) {
-        const length = (_constructor.prototype as IDirective).$privateProviders.length;
+    if ((_constructor.prototype as IProviderClass).$privateProviders) {
+        const length = (_constructor.prototype as IProviderClass).$privateProviders.length;
         for (let i = 0; i < length; i++) {
-            const service = (_constructor.prototype as IDirective).$privateProviders[i];
+            const service = (_constructor.prototype as IProviderClass).$privateProviders[i];
             if ((service as TInjectTokenProvider).provide) injector.setProvider((service as TInjectTokenProvider).provide, service);
             else injector.setProvider(service as Function, service as Function);
         }

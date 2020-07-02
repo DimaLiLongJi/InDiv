@@ -1,5 +1,5 @@
-import { INvModule, IComponent, Type } from '../types';
-import { NvInstanceFactory, rootInjector } from '../di';
+import { INvModule, IComponent } from '../types';
+import { NvInstanceFactory, rootInjector, Type } from '@indiv/di';
 import { NvModuleFactory } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';

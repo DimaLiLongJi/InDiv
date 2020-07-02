@@ -1,6 +1,6 @@
 import { IComponent, IDirective } from '../types';
 import { ElementRef } from '../component';
-import { NvInstanceFactory } from '../di';
+import { NvInstanceFactory } from '@indiv/di';
 
 /**
  * build scope for Components in Component

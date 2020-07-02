@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfSkipSelf, metadataOfPropSkipSelf } from './metadata';
+import { metadataOfSkipSelf, metadataOfPropSkipSelf } from '../core';
 
 
 /**

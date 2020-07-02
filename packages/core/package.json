@@ -32,6 +32,6 @@
   },
   "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
   "dependencies": {
-    "reflect-metadata": "^0.1.12"
+    "@indiv/di": "5.0.0"
   }
 }

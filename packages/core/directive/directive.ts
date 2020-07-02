@@ -1,5 +1,5 @@
-import { IDirective, TProviders } from '../types';
-import { injected, providersFormater } from '../di';
+import { IDirective } from '../types';
+import { injected, providersFormater, TProviders } from '@indiv/di';
 
 export type TDirectiveOptions = {
   selector: string;

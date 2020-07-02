@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfSelf, metadataOfPropSelf } from './metadata';
+import { metadataOfSelf, metadataOfPropSelf } from '../core';
 
 
 /**

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfHost, metadataOfPropHost } from './metadata';
+import { metadataOfHost, metadataOfPropHost } from '../core';
 
 
 /**

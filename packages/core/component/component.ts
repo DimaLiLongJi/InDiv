@@ -1,7 +1,7 @@
-import { IComponent, TProviders } from '../types';
+import { IComponent } from '../types';
 
 import { WatcherDependences } from './watch';
-import { injected, providersFormater } from '../di';
+import { injected, providersFormater, TProviders } from '@indiv/di';
 import { collectDependencesFromViewModel } from './utils';
 import { componentCompiler } from '../compile';
 import { ChangeDetectionStrategy } from './change-detection';

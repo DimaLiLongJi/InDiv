@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfInjectable } from './metadata';
+import { metadataOfInjectable } from '../core';
 
 /**
  * Decorator @injected or Function injected

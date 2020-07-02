@@ -1,5 +1,5 @@
-import { INvModule, TInjectTokenProvider } from '../types';
-import { NvInstanceFactory, rootInjector, Injector } from '../di';
+import { INvModule } from '../types';
+import { NvInstanceFactory, rootInjector, Injector, TInjectTokenProvider } from '@indiv/di';
 
 /**
  * build NvModule instance

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfAttribute } from '../di';
+import { metadataOfAttribute } from '../core';
 
 
 /**

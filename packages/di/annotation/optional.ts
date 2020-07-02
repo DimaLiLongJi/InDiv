@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { metadataOfOptional, metadataOfPropOptional } from './metadata';
+import { metadataOfOptional, metadataOfPropOptional } from '../core';
 
 
 /**

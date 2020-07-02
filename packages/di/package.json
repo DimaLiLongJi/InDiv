@@ -1,23 +1,21 @@
 {
-  "name": "@indiv/platform-server",
+  "name": "@indiv/di",
   "version": "4.2.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "一个 web mvvm 库。A web mvvm library.",
+  "description": "A dependency injection library for typescript and javascript.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
     "build"
   ],
   "keywords": [
-    "mvvm",
-    "view",
-    "front-end",
-    "DOM",
-    "render",
-    "Virtual DOM",
-    "platform server"
+    "DI",
+    "Dependency Injection",
+    "IOC",
+    "Inversion of Control",
+    "@indiv"
   ],
   "repository": {
     "type": "git",
@@ -29,14 +27,7 @@
     "url": "https://github.com/DimaLiLongJi/InDiv/issues"
   },
   "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
-  "dependencies": {
-    "jsdom": "^13.1.0"
-  },
-  "devDependencies": {
-    "@types/jsdom": "^12.2.1"
-  },
   "peerDependencies": {
-    "@indiv/core": "5.0.0",
-    "@indiv/router": "5.0.0"
+    "reflect-metadata": "^0.1.12"
   }
 }
