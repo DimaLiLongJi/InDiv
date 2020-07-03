@@ -13,14 +13,13 @@ import {
     metadataOfSelf,
     metadataOfSkipSelf,
     metadataOfInject,
-    metadataOfAttribute,
     metadataOfPropInject,
     metadataOfPropHost,
     metadataOfPropOptional,
     metadataOfPropSelf,
     metadataOfPropSkipSelf,
 } from './metadata';
-import { ElementRef, Renderer } from '@indiv/core';
+import { resolveParameterInjectMap, resolvePropertyInjectMap } from './base-inject-factory';
 
 function bindProperty(_constructor: Function, factoryInstance: any, injector?: Injector) {
     // @Inject 属性注入
@@ -30,11 +29,45 @@ function bindProperty(_constructor: Function, factoryInstance: any, injector?: I
     const selfList: string[] = Reflect.getMetadata(metadataOfPropSelf, _constructor) || [];
     const hostList: string[] = Reflect.getMetadata(metadataOfPropHost, _constructor) || [];
     const optionalList: string[] = Reflect.getMetadata(metadataOfPropOptional, _constructor) || [];
+
+    // 使用自定义注解，还可以定义是否解决注入
+    resolvePropertyInjectMap.forEach((resolveInject, key) => {
+        const list: { property: string, decoratorArgument: any }[] = Reflect.getMetadata(key, _constructor) || [];
+
+        list.forEach(inject => {
+            let bubblingLayer: number | 'always' = 'always';
+            if (hostList.indexOf(inject.property) !== -1) bubblingLayer = 1;
+            if (selfList.indexOf(inject.property) !== -1) bubblingLayer = 0;
+
+            let findInjector = injector;
+            if (skipSelfList.indexOf(inject.property) !== -1) findInjector = injector.parentInjector;
+
+            const findProvider = resolveInject({
+                key,
+                property: inject.property,
+                decoratorArgument: inject.decoratorArgument,
+                bubblingLayer,
+            }, findInjector);
+
+            if (!findProvider) {
+                // use @Optional will return null
+                if (optionalList.indexOf(inject.property) !== -1) {
+                    factoryInstance[inject.property] = null;
+                    return;
+                }
+                throw new Error(`Instance of ${key} can't be ${findProvider}`);
+            }
+
+            factoryInstance[inject.property] = findProvider;
+        });
+    });
+    
     if (injectList && injectList.length > 0) {
         injectList.forEach(inject => {
             let bubblingLayer: number | 'always' = 'always';
             if (hostList.indexOf(inject.property) !== -1) bubblingLayer = 1;
             if (selfList.indexOf(inject.property) !== -1) bubblingLayer = 0;
+
             // 构建冒泡开始的injector
             let findInjector = injector;
             if (skipSelfList.indexOf(inject.property) !== -1) findInjector = injector.parentInjector;
@@ -48,6 +81,7 @@ function bindProperty(_constructor: Function, factoryInstance: any, injector?: I
                 }
                 findProvider = getService(findInjector, inject.token, _constructor, bubblingLayer);
             }
+
             factoryInstance[inject.property] = findProvider;
         });
     }
@@ -109,7 +143,7 @@ export function providersFormater(providers: TProviders): TProviders {
 function argumentsCreator(_constructor: Function, injector?: Injector, deps?: any[]): any[] {
     if (!deps || (Array.isArray(deps) && deps.length === 0)) return [];
 
-    const args = [];
+    const args: any[] = [];
     // 干预等级 @SkipSelf > @Self > @Host > @Optional
     const skipSelfList: number[] = Reflect.getMetadata(metadataOfSkipSelf, _constructor) || [];
     const selfList: number[] = Reflect.getMetadata(metadataOfSelf, _constructor) || [];
@@ -117,7 +151,6 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
     const optionalList: number[] = Reflect.getMetadata(metadataOfOptional, _constructor) || [];
     // 使用 @Inject 代替获取类型
     const injectTokenList: TInjectItem[] = Reflect.getMetadata(metadataOfInject, _constructor) || [];
-    const attributeList: { index: number; attributeName: string; }[] = Reflect.getMetadata(metadataOfAttribute, _constructor) || [];
 
     // find instance from provider
     const needInjectedClassLength = deps.length;
@@ -131,29 +164,44 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
         let findInjector = injector;
         if (skipSelfList.indexOf(i) !== -1) findInjector = injector.parentInjector;
 
-        // 构建@Attribute
-        const findAttribute = attributeList.find((value) => value.index === i);
-        if (findAttribute && ((_constructor as any).nvType === 'nvComponent' || (_constructor as any).nvType === 'nvDirective')) {
-            const elementRef: ElementRef = findInjector.getInstance(ElementRef);
-            const renderer: Renderer = findInjector.getInstance(Renderer);
-            args.push(renderer.getAttribute(elementRef.nativeElement, findAttribute.attributeName));
+        const findInjectToken = injectTokenList.find((value) => value.index === i);
+        const key = findInjectToken ? findInjectToken.token : deps[i];
+        const isOptional = optionalList.indexOf(i) !== -1;
+
+        let findProvider = null;
+
+        // 使用自定义注解，还可以定义是否解决注入
+        let canJump = false;
+        resolveParameterInjectMap.forEach((resolveInject, key) => {
+            const list: { argumentIndex: number; decoratorArgument: string; }[] = Reflect.getMetadata(key, _constructor) || [];
+            const findInject = list.find((value) => value.argumentIndex === i);
+            if (findInject) {
+                findProvider = resolveInject({
+                    key,
+                    argumentIndex: findInject.argumentIndex,
+                    decoratorArgument: findInject.decoratorArgument,
+                    bubblingLayer,
+                }, findInjector);
+                canJump = true;
+            }
+        });
+        if (canJump) {
+            if (!isOptional && (findProvider === undefined || findProvider === null)) throw new Error(`Instance of ${key} can't be ${findProvider}`);
+            args.push(findProvider);
             continue;
         }
 
-        // @Inject 构建
-        const findInjectToken = injectTokenList.find((value) => value.index === i);
-        const key = findInjectToken ? findInjectToken.token : deps[i];
-
+        // 默认注解，使用构造函数或@Inject
         if (findInjector.getInstance(key, bubblingLayer)) {
             args.push(findInjector.getInstance(key, bubblingLayer));
             continue;
         } else {
             // use @Optional will return null
-            if (optionalList.indexOf(i) !== -1) {
+            if (isOptional) {
                 args.push(null);
                 continue;
             }
-            const findProvider = getService(findInjector, key, _constructor, bubblingLayer);
+            findProvider = getService(findInjector, key, _constructor, bubblingLayer);
             args.push(findProvider);
             continue;
         }

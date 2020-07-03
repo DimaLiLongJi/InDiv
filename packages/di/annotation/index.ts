@@ -1,4 +1,3 @@
-export * from './attribute';
 export * from './injected';
 export * from './self';
 export * from './skip-self';
