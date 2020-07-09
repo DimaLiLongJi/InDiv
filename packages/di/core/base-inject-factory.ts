@@ -1,23 +1,25 @@
 import { Injector } from './injector';
 
+export type ParameterInjectInfoType = {
+  key: any,
+  argumentIndex?: number,
+  decoratorArgument: any,
+  bubblingLayer: number | 'always',
+};
+
+export type PropertyInjectInfoType = {
+  key: any,
+  property?: string,
+  decoratorArgument: any,
+  bubblingLayer: number | 'always',
+};
+
 export const resolveParameterInjectMap: Map<String, ((
-  inject: {
-    key: any,
-    argumentIndex?: number,
-    property?: string,
-    decoratorArgument: any,
-    bubblingLayer: number | 'always',
-  },
+  inject: ParameterInjectInfoType,
   injector: Injector) => any)> = new Map();
 
 export const resolvePropertyInjectMap: Map<String, ((
-  inject: {
-    key: any,
-    argumentIndex?: number,
-    property?: string,
-    decoratorArgument: any,
-    bubblingLayer: number | 'always',
-  },
+  inject: PropertyInjectInfoType,
   injector: Injector) => any)> = new Map();
 
 export abstract class InjectDecoratorFactory {
@@ -34,35 +36,39 @@ export abstract class InjectDecoratorFactory {
   constructor(parameterName?: string, propertyName?: string) {
     if (parameterName) {
       this.parameterName = new String(parameterName);
-      resolveParameterInjectMap.set(this.parameterName, this.resolveInject);
+      resolveParameterInjectMap.set(this.parameterName, this.resolveParameterInject);
     }
     if (propertyName) {
       this.propertyName = new String(propertyName);
-      resolvePropertyInjectMap.set(this.propertyName, this.resolveInject);
+      resolvePropertyInjectMap.set(this.propertyName, this.resolvePropertyInject);
     }
   }
 
   /**
-   * resolve inject for decorator
+   *
    *
    * @abstract
-   * @param {({
-   *       key: any,
-   *       argumentIndex: number,
-   *       decoratorArgument: any,
-   *       bubblingLayer: number | 'always',
-   *     })} injectInfo
+   * @param {ParameterInjectInfoType} injectInfo
    * @param {Injector} injector
    * @returns {*}
    * @memberof InjectDecoratorFactory
    */
-  public abstract resolveInject(
-    injectInfo: {
-      key: any,
-      argumentIndex: number,
-      decoratorArgument: any,
-      bubblingLayer: number | 'always',
-    },
+  public abstract resolveParameterInject(
+    injectInfo: ParameterInjectInfoType,
+    injector: Injector,
+  ): any;
+
+  /**
+   *
+   *
+   * @abstract
+   * @param {PropertyInjectInfoType} injectInfo
+   * @param {Injector} injector
+   * @returns {*}
+   * @memberof InjectDecoratorFactory
+   */
+  public abstract resolvePropertyInject(
+    injectInfo: PropertyInjectInfoType,
     injector: Injector,
   ): any;
 
