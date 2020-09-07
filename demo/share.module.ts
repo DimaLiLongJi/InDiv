@@ -1,6 +1,7 @@
 import { Component, NvModule, HasRender, OnInit, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, Directive, ElementRef, Input, Renderer, StateSetter, ContentChild, ContentChildren, HostListener, HostBinding, Attribute } from '@indiv/core';
 import { RouteChange, RouteModule, TRouter } from '@indiv/router'; 
 import { HeroSearchService, HeroSearchService2 } from './service';
+import { Optional } from '@indiv/di';
 
 @Component({
   selector: 'route-child',
@@ -186,7 +187,9 @@ export class TestDirective implements OnInit, RouteChange, ReceiveInputs {
   @HostBinding('style.color') private color: string = null;
   constructor(
     private hss: HeroSearchService,
-    @Attribute('fuck-y') private fuck: string,
+    @Optional()
+    @Attribute('fuck-y')
+    private fuck: string,
   ) {
     console.log(1111111, 'fuck-y', this.fuck);
   }

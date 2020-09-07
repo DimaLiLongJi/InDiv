@@ -1,4 +1,5 @@
-import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Injector, Optional, Inject, Self } from '@indiv/core';
+import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
+import { Injector, Optional, Inject, Self } from '@indiv/di';
 import { RouteChange, NvLocation, RouteModule, RouteCanActive } from '@indiv/router';
 import { PlatformBrowser } from '@indiv/platform-browser';
 import { HttpClient, HttpClientResponse } from '@indiv/common';

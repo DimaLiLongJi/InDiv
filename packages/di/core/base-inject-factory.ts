@@ -35,11 +35,11 @@ export abstract class InjectDecoratorFactory {
    */
   constructor(parameterName?: string, propertyName?: string) {
     if (parameterName) {
-      this.parameterName = new String(parameterName);
+      this.parameterName = String(parameterName);
       resolveParameterInjectMap.set(this.parameterName, this.resolveParameterInject);
     }
     if (propertyName) {
-      this.propertyName = new String(propertyName);
+      this.propertyName = String(propertyName);
       resolvePropertyInjectMap.set(this.propertyName, this.resolvePropertyInject);
     }
   }
