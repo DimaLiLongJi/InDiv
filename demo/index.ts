@@ -434,12 +434,12 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
 
   @Optional()
   @Self()
-  @Inject(ValueType)
+  @Inject()
   private value: ValueType;
 
   constructor(
     private hss: HeroSearchService,
-    @Inject(ValueType) private value2: ValueType,
+    @Inject() private value2: ValueType,
     private location: NvLocation,
     private httpClient: HttpClient,
     private element: ElementRef,

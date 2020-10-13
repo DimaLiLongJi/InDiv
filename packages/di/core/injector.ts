@@ -119,6 +119,7 @@ export class Injector {
    * @memberof Injector
    */
   public getParentInjectorOfProvider(key: any, bubblingLayer: number | 'always' = 'always'): Injector {
+    console.log(3213, bubblingLayer);
     if (this.providerMap.has(key)) return this;
     else if (bubblingLayer !== 0 && this.parentInjector) return this.parentInjector.getParentInjectorOfProvider(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
     else {

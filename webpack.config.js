@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = (env) => ({
   entry: {
     app: env === 'testjs' ? './demo/index.js' : './demo/index.ts',
+    di: './demo/di.ts',
   },
 
   output: {

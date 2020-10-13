@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Injector } from './injector';
+import { Injector, rootInjector } from './injector';
 import {
     TInjectTokenProvider,
     IProviderClass,
@@ -23,7 +23,7 @@ import { resolveParameterInjectMap, resolvePropertyInjectMap } from './base-inje
 
 function bindProperty(_constructor: Function, factoryInstance: any, injector?: Injector) {
     // @Inject 属性注入
-    const injectList: { property: string, token: any }[] = Reflect.getMetadata(metadataOfPropInject, _constructor) || [];
+    const injectList: TInjectItem[] = Reflect.getMetadata(metadataOfPropInject, _constructor) || [];
     // 干预等级 @SkipSelf > @Self > @Host > @Optional
     const skipSelfList: string[] = Reflect.getMetadata(metadataOfPropSkipSelf, _constructor) || [];
     const selfList: string[] = Reflect.getMetadata(metadataOfPropSelf, _constructor) || [];
@@ -71,6 +71,7 @@ function bindProperty(_constructor: Function, factoryInstance: any, injector?: I
             // 构建冒泡开始的injector
             let findInjector = injector;
             if (skipSelfList.indexOf(inject.property) !== -1) findInjector = injector.parentInjector;
+            if (inject && inject.injector) findInjector = inject.injector;
 
             let findProvider = findInjector.getInstance(inject.token, bubblingLayer);
             if (!findProvider) {
@@ -88,6 +89,7 @@ function bindProperty(_constructor: Function, factoryInstance: any, injector?: I
 }
 
 function getService(injector?: Injector, key?: any, _constructor?: any, bubblingLayer: number | 'always' = 'always') {
+    console.log(3123123, injector, key);
     const findProvider: TInjectTokenProvider = injector.getProvider(key, bubblingLayer);
 
     if (findProvider) {
@@ -160,12 +162,14 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
         if (hostList.indexOf(i) !== -1) bubblingLayer = 1;
         if (selfList.indexOf(i) !== -1) bubblingLayer = 0;
 
+        const findInjectToken = injectTokenList.find((value) => value.index === i);
+
         // 构建冒泡开始的injector
         let findInjector = injector;
         if (skipSelfList.indexOf(i) !== -1) findInjector = injector.parentInjector;
+        if (findInjectToken && findInjectToken.injector) findInjector = findInjectToken.injector;
 
-        const findInjectToken = injectTokenList.find((value) => value.index === i);
-        const key = findInjectToken ? findInjectToken.token : deps[i];
+        const key = (findInjectToken && findInjectToken.token) ? findInjectToken.token : deps[i];
         const isOptional = optionalList.indexOf(i) !== -1;
 
         let findProvider = null;
@@ -201,6 +205,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
                 args.push(null);
                 continue;
             }
+            console.log(22223333, findInjectToken, deps[i]);
             findProvider = getService(findInjector, key, _constructor, bubblingLayer);
             args.push(findProvider);
             continue;
@@ -252,9 +257,11 @@ export function injectionCreator(_constructor: Function, injector?: Injector, de
  * @returns {*}
  */
 export function NvInstanceFactory(_constructor: Function, injector?: Injector, deps?: any[]): any {
-    const args = injectionCreator(_constructor, injector, deps);
+    let findInjector = injector;
+    if (!injector) findInjector =  rootInjector;
+    const args = injectionCreator(_constructor, findInjector, deps);
     const factoryInstance = new (_constructor as any)(...args);
-    factoryInstance.$privateInjector = injector;
-    bindProperty(_constructor, factoryInstance, injector);
+    factoryInstance.$privateInjector = findInjector;
+    bindProperty(_constructor, factoryInstance, findInjector);
     return factoryInstance;
 }

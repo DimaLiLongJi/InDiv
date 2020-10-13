@@ -20,6 +20,11 @@ app.use('/demo_js', (req, res, next) => {
   res.render('index.html');
 });
 
+app.use('/di', (req, res, next) => {
+  res.render('di.html');
+});
+
+
 app.get('/success', (req, res, next) => {
   setTimeout(() => {
     res.send({

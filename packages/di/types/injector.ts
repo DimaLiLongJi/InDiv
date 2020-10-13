@@ -43,6 +43,8 @@ export interface IProviderClass {
 }
 
 export type TInjectItem = {
-  index: number,
-  token: any,
+  property?: string,
+  index?: number,
+  token?: any,
+  injector?: Injector,
 };
