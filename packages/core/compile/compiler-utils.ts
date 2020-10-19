@@ -15,7 +15,7 @@ import { NvInstanceFactory } from '@indiv/di';
 export function buildComponentScope(ComponentClass: Function, inputs: any, nativeElement: any, componentInstance: IComponent): IComponent {
   const componentInjector = componentInstance.$privateInjector.fork();
   componentInjector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef(nativeElement));
-  const _component: IComponent = NvInstanceFactory(ComponentClass, componentInjector);
+  const _component: IComponent = NvInstanceFactory(ComponentClass, null, componentInjector);
 
   // $saveInputs in @Component for save props states
   _component.$saveInputs = inputs;
@@ -49,7 +49,7 @@ export function buildComponentScope(ComponentClass: Function, inputs: any, nativ
 export function buildDirectiveScope(DirectiveClass: Function, inputs: any, nativeElement: any, componentInstance: IComponent): IDirective {
   const directiveInjector = componentInstance.$privateInjector.fork();
   directiveInjector.setProviderAndInstance(ElementRef, ElementRef, new ElementRef(nativeElement));
-  const _directive: IDirective = NvInstanceFactory(DirectiveClass, directiveInjector);
+  const _directive: IDirective = NvInstanceFactory(DirectiveClass, null, directiveInjector);
 
   _directive.$saveInputs = inputs;
   _directive.$nativeElement = nativeElement;

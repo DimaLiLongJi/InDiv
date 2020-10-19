@@ -124,5 +124,5 @@ export function ModuleWithInjectorFactory(NM: Function, injector: Injector): INv
   buildImports(NM.prototype);
   buildDeclarations4Declarations(NM.prototype);
   buildExports(NM.prototype);
-  return NvInstanceFactory(NM, injector);
+  return NvInstanceFactory(NM, null, injector);
 }

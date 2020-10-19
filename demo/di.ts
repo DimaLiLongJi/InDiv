@@ -43,9 +43,12 @@ class TestService {
   // @Inject() public aaa2: TestService4;
   // @Inject() public aaab: AA;
   @Inject({ injector: otherInjector }) public testService5: TestService5;
+  constructor(private a: string) {
+    console.log('aaaa =>>', this.testService5);
+  }
 }
 
-const aaa = new TestService();
-const aaa2 = NvInstanceFactory(TestService);
-console.log(55555555, aaa);
-console.log(66666666, aaa2);
+// const aaa = new TestService();
+const aaa2 = NvInstanceFactory<TestService>(TestService, [1]);
+// console.log(55555555, aaa);
+console.log(66666666, aaa2, aaa2.testService5);

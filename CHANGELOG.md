@@ -1,3 +1,14 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/5.0.0) (2020-10-30)
+
+
+### Features
+
+* **package:@indiv/di** strip modules `@indiv/di` from `@indiv/core`
+* **package:@indiv/core** add `ErrorHandler` for handle global error in indiv
+
+
+
 <a name="4.2.0"></a>
 # [4.2.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.2.0) (2020-06-08)
 

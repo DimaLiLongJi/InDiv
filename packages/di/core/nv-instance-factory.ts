@@ -5,6 +5,7 @@ import {
     IProviderClass,
     TProviders,
     TInjectItem,
+    Type,
 } from '../types';
 import {
     metadataOfInjectable,
@@ -21,6 +22,13 @@ import {
 } from './metadata';
 import { resolveParameterInjectMap, resolvePropertyInjectMap } from './base-inject-factory';
 
+/**
+ * bind property for @Inject
+ *
+ * @param {Function} _constructor
+ * @param {*} factoryInstance
+ * @param {Injector} [injector]
+ */
 function bindProperty(_constructor: Function, factoryInstance: any, injector?: Injector) {
     // @Inject 属性注入
     const injectList: TInjectItem[] = Reflect.getMetadata(metadataOfPropInject, _constructor) || [];
@@ -88,8 +96,16 @@ function bindProperty(_constructor: Function, factoryInstance: any, injector?: I
     }
 }
 
+/**
+ * get service from Injector
+ *
+ * @param {Injector} [injector]
+ * @param {*} [key]
+ * @param {*} [_constructor]
+ * @param {(number | 'always')} [bubblingLayer='always']
+ * @returns
+ */
 function getService(injector?: Injector, key?: any, _constructor?: any, bubblingLayer: number | 'always' = 'always') {
-    console.log(3123123, injector, key);
     const findProvider: TInjectTokenProvider = injector.getProvider(key, bubblingLayer);
 
     if (findProvider) {
@@ -106,9 +122,9 @@ function getService(injector?: Injector, key?: any, _constructor?: any, bubbling
         const serviceInjector = serviceParentInjector.fork();
 
         if (findService.isSingletonMode === false) {
-            return NvInstanceFactory(findService, serviceInjector, findProvider.deps);
+            return NvInstanceFactory(findService, null, serviceInjector, findProvider.deps);
         } else {
-            const serviceInStance = NvInstanceFactory(findService, serviceInjector, findProvider.deps);
+            const serviceInStance = NvInstanceFactory(findService, null, serviceInjector, findProvider.deps);
             injector.setInstance(key, serviceInStance);
             return serviceInStance;
         }
@@ -135,15 +151,15 @@ export function providersFormater(providers: TProviders): TProviders {
 }
 
 /**
- * Create arguments for injectionCreator with injector and deps
+ * Create arguments for injectionCreator with injector and depsToken
  *
  * @param {Function} _constructor
  * @param {Injector} [injector]
- * @param {any[]} [deps]
+ * @param {any[]} [depsToken]
  * @returns {any[]}
  */
-function argumentsCreator(_constructor: Function, injector?: Injector, deps?: any[]): any[] {
-    if (!deps || (Array.isArray(deps) && deps.length === 0)) return [];
+function argumentsCreator(_constructor: Function, injector?: Injector, depsToken?: any[]): any[] {
+    if (!depsToken || (Array.isArray(depsToken) && depsToken.length === 0)) return [];
 
     const args: any[] = [];
     // 干预等级 @SkipSelf > @Self > @Host > @Optional
@@ -155,7 +171,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
     const injectTokenList: TInjectItem[] = Reflect.getMetadata(metadataOfInject, _constructor) || [];
 
     // find instance from provider
-    const needInjectedClassLength = deps.length;
+    const needInjectedClassLength = depsToken.length;
     for (let i = 0; i < needInjectedClassLength; i++) {
         // 构建冒泡层数
         let bubblingLayer: number | 'always' = 'always';
@@ -169,7 +185,7 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
         if (skipSelfList.indexOf(i) !== -1) findInjector = injector.parentInjector;
         if (findInjectToken && findInjectToken.injector) findInjector = findInjectToken.injector;
 
-        const key = (findInjectToken && findInjectToken.token) ? findInjectToken.token : deps[i];
+        const key = (findInjectToken && findInjectToken.token) ? findInjectToken.token : depsToken[i];
         const isOptional = optionalList.indexOf(i) !== -1;
 
         let findProvider = null;
@@ -205,7 +221,6 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
                 args.push(null);
                 continue;
             }
-            console.log(22223333, findInjectToken, deps[i]);
             findProvider = getService(findInjector, key, _constructor, bubblingLayer);
             args.push(findProvider);
             continue;
@@ -218,18 +233,18 @@ function argumentsCreator(_constructor: Function, injector?: Injector, deps?: an
 /**
  * use injector to create arguments for constructor
  * 
- * only building provider need deps
+ * only building providers which need depsToken
  *
  * @export
  * @param {Function} _constructor
  * @param {Injector} [injector]
- * @param {any[]} [deps]
+ * @param {any[]} [depsToken]
  * @returns {any[]}
  */
-export function injectionCreator(_constructor: Function, injector?: Injector, deps?: any[]): any[] {
-    let _deps: any[] = deps || [];
-    if ((_constructor as any).injectTokens) _deps = (_constructor as any).injectTokens;
-    else _deps = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
+export function injectionCreator(_constructor: Function, injector?: Injector, depsToken?: any[]): any[] {
+    let _depsToken: any[] = depsToken || [];
+    if ((_constructor as any).injectTokens) _depsToken = (_constructor as any).injectTokens;
+    else _depsToken = Reflect.getMetadata(metadataOfInjectable, _constructor) || [];
 
     // build $privateProviders into injector of @Component and @Directive
     if ((_constructor.prototype as IProviderClass).$privateProviders) {
@@ -241,27 +256,29 @@ export function injectionCreator(_constructor: Function, injector?: Injector, de
         }
     }
 
-    return argumentsCreator(_constructor, injector, _deps);
+    return argumentsCreator(_constructor, injector, _depsToken);
 }
 
 /**
  * create an instance with factory method
  * 
  * use injectionCreator to get arguments from Injector
- * only building provider need deps
+ * only building provider need depsToken
  *
  * @export
+ * @template T
  * @param {Function} _constructor
- * @param {Injector} [injector]
  * @param {any[]} [deps]
- * @returns {*}
+ * @param {Injector} [injector]
+ * @param {any[]} [depsToken]
+ * @returns {T}
  */
-export function NvInstanceFactory(_constructor: Function, injector?: Injector, deps?: any[]): any {
+export function NvInstanceFactory<T = any>(_constructor: Function, deps?: any[], injector?: Injector, depsToken?: any[]): T {
     let findInjector = injector;
     if (!injector) findInjector =  rootInjector;
-    const args = injectionCreator(_constructor, findInjector, deps);
-    const factoryInstance = new (_constructor as any)(...args);
-    factoryInstance.$privateInjector = findInjector;
+    const args = (deps && deps instanceof Array) ? deps : injectionCreator(_constructor, findInjector, depsToken);
+    const factoryInstance = (new (_constructor as any)(...args)) as T;
+    (factoryInstance as any).$privateInjector = findInjector;
     bindProperty(_constructor, factoryInstance, findInjector);
     return factoryInstance;
 }

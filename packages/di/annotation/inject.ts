@@ -54,7 +54,6 @@ export function Inject(options?: {
       const findToken: any = (options && options.token) ? options.token : (options && options.injector ? propertyType : options);
       const findInjector: any = (options && options.injector) ? options.injector : null;
       const metadata: TInjectItem[] = Reflect.getMetadata(metadataOfPropInject, target.constructor) || [];
-      console.log(2313, findToken);
       const data: TInjectItem = { property: propertyKey, token: findToken, injector: findInjector };
 
       metadata.push(data);
