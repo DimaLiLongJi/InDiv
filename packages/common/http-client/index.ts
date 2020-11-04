@@ -72,7 +72,9 @@ export interface HttpClientRequestInstance {
  * @export
  * @class HttpClient
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class HttpClient {
   /**
    * create a HttpClient Request and return Request Instance

@@ -24,8 +24,7 @@ export class RouterTo {
     const nvLocation = this.location.get();
     const currentUrl = `${nvLocation.path}${utils.buildQuery(nvLocation.query)}`;
     if (!this.to) {
-      console.error('Directive router-to on element', element, 'need a input');
-      return;
+      throw new Error('Directive router-to on element' + element + 'need a input');
     }
     if (this.from && currentUrl === this.from) this.location.set(this.to);
     if (!this.from) this.location.set(this.to);

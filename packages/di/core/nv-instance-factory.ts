@@ -105,20 +105,21 @@ function bindProperty(_constructor: Function, factoryInstance: any, injector?: I
  * @param {(number | 'always')} [bubblingLayer='always']
  * @returns
  */
-function getService(injector?: Injector, key?: any, _constructor?: any, bubblingLayer: number | 'always' = 'always') {
+export function getService(injector?: Injector, key?: any, _constructor?: any, bubblingLayer: number | 'always' = 'always') {
     const findProvider: TInjectTokenProvider = injector.getProvider(key, bubblingLayer);
 
     if (findProvider) {
         let findService: any;
-        if (findProvider.useClass) findService = findProvider.useClass;
-        else if (findProvider.useValue) {
+        if (findProvider.useClass) {
+            findService = findProvider.useClass;
+        } else if (findProvider.useValue) {
             return findProvider.useValue;
         } else if (findProvider.useFactory) {
             const factoryArgs = argumentsCreator(_constructor, injector, findProvider.deps);
             return findProvider.useFactory(...factoryArgs);
         } else findService = findProvider;
 
-        const serviceParentInjector = injector.getParentInjectorOfProvider(findService, bubblingLayer);
+        const serviceParentInjector = injector.getParentInjectorOfProvider(key, bubblingLayer);
         const serviceInjector = serviceParentInjector.fork();
 
         if (findService.isSingletonMode === false) {
@@ -144,9 +145,14 @@ export function providersFormater(providers: TProviders): TProviders {
     if (!providers) return [];
     return providers.map(provider => {
         if ((provider as TInjectTokenProvider).provide) {
-            if (!(provider as TInjectTokenProvider).useClass && !(provider as TInjectTokenProvider).useValue && !(provider as TInjectTokenProvider).useFactory) return { ...provider, useClass: (provider as TInjectTokenProvider).provide };
-            else return provider;
-        } else return { provide: provider as Function, useClass: provider as Function };
+            if (!(provider as TInjectTokenProvider).useClass && !(provider as TInjectTokenProvider).useValue && !(provider as TInjectTokenProvider).useFactory) {
+                return { ...provider, useClass: (provider as TInjectTokenProvider).provide };
+            } else {
+                return provider;
+            }
+        } else {
+            return { provide: provider as Function, useClass: provider as Function };
+        }
     });
 }
 
@@ -274,8 +280,7 @@ export function injectionCreator(_constructor: Function, injector?: Injector, de
  * @returns {T}
  */
 export function NvInstanceFactory<T = any>(_constructor: Function, deps?: any[], injector?: Injector, depsToken?: any[]): T {
-    let findInjector = injector;
-    if (!injector) findInjector =  rootInjector;
+    const findInjector =  injector || rootInjector;
     const args = (deps && deps instanceof Array) ? deps : injectionCreator(_constructor, findInjector, depsToken);
     const factoryInstance = (new (_constructor as any)(...args)) as T;
     (factoryInstance as any).$privateInjector = findInjector;

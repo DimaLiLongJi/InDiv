@@ -1,5 +1,5 @@
 import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
-import { Injector, Optional, Inject, Self } from '@indiv/di';
+import { Injector, Optional, Inject, Self, Injectable } from '@indiv/di';
 import { RouteChange, NvLocation, RouteModule, RouteCanActive } from '@indiv/router';
 import { PlatformBrowser } from '@indiv/platform-browser';
 import { HttpClient, HttpClientResponse } from '@indiv/common';
@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { SharedModule, TestDirective } from './share.module';
 import { HeroSearchService, HeroSearchService1, HeroSearchService2, TestService } from './service';
 import { PrivateService } from './private.service';
+import { ErrorHandler } from '@indiv/core/handler/error-handler';
 
 class ValueType { }
 
@@ -471,6 +472,7 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
 
   public nvRouteChange(lastRoute?: string, newRoute?: string) {
     console.log('nvRouteChange Container', lastRoute, newRoute);
+    throw new Error('111111');
   }
 
   public nvOnInit() {
@@ -602,6 +604,13 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
   }
 }
 
+@Injectable()
+class GlobalErrorHandler implements ErrorHandler {
+  public handleError(error: any): void {
+    console.log(3231313, error);
+  }
+}
+
 @NvModule({
   imports: [
     SharedModule,
@@ -652,6 +661,9 @@ class M2 {
   exports: [
     RouteModule,
   ],
+  providers: [
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+  ],
   bootstrap: Container,
 })
 class M1 {
@@ -660,7 +672,7 @@ class M1 {
     private indiv: InDiv,
     private m2: M2,
   ) {
-    console.log(999999888777, '来自注入的模块 M1', this.hsr, this.indiv, this.m2);
+    console.log(999999888777, '来自注入的模块 M1', this.hsr, this.indiv, this);
   }
 }
 

@@ -1,9 +1,10 @@
 import { INvModule, IComponent } from '../types';
-import { NvInstanceFactory, rootInjector, Type } from '@indiv/di';
+import { getService, NvInstanceFactory, rootInjector, Type } from '@indiv/di';
 import { NvModuleFactory } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';
 import { lifecycleCaller } from '../lifecycle';
+import { ErrorHandler } from '../handler/error-handler';
 
 export interface IPlugin {
   bootstrap(vm: InDiv): void;
@@ -61,6 +62,32 @@ export class InDiv {
   } = {}): Promise<InDiv> {
     if (!InDiv.globalApplication) InDiv.globalApplication = new InDiv();
     else return InDiv.globalApplication;
+
+    // 浏览器端增加下错误处理
+    if (window) {
+      let errorHandler: ErrorHandler = null;
+      // 同步错误
+      window.addEventListener('error', (ev) => {
+        if (!errorHandler) {
+          const injector = InDiv.globalApplication.rootModule.$privateInjector || rootInjector;
+          // TODO 在这里处理全局的handler
+          if (!injector.getProvider(ErrorHandler)) return;
+          errorHandler = getService(injector, ErrorHandler);
+        }
+        if (errorHandler) errorHandler.handleError(ev);
+      }, true);
+      // 异步错误
+      window.addEventListener("unhandledrejection", (ev) => {
+        if (!errorHandler) {
+          const injector = InDiv.globalApplication.rootModule.$privateInjector || rootInjector;
+          // TODO 在这里处理全局的handler
+          if (!injector.getProvider(ErrorHandler)) return;
+          errorHandler = getService(injector, ErrorHandler);
+        }
+        if (errorHandler) errorHandler.handleError(ev);
+      }, true);
+    }
+
     InDiv.globalApplication.bootstrapModule(Nvmodule);
     if (options.plugins) options.plugins.forEach(plugin => InDiv.globalApplication.use(plugin));
     if (options.ssrTemplateRootPath) InDiv.globalApplication.setTemplateRootPath(options.ssrTemplateRootPath);
@@ -237,8 +264,8 @@ export class InDiv {
    * @param {IComponent} component
    * @memberof InDiv
    */
-  public templateChecker(component: IComponent): void {}
-  
+  public templateChecker(component: IComponent): void { }
+
   /**
    * set templateChecker
    * 
@@ -257,13 +284,14 @@ export class InDiv {
    * if not use Route it will be used
    *
    * @param {Function} Nvmodule
-   * @returns {void}
+   * @returns {INvModule}
    * @memberof InDiv
    */
-  public bootstrapModule(Nvmodule: Function): void {
+  public bootstrapModule(Nvmodule: Function): INvModule {
     if (!Nvmodule) throw new Error('must send a root module');
     this.rootModule = NvModuleFactory(Nvmodule, true);
     this.declarations = [...this.rootModule.$declarations];
+    return this.rootModule;
   }
 
   /**

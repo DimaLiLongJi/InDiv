@@ -77,8 +77,11 @@ export class Injector {
   public setInstance(key: any, value: any): void {
     if (this.providerMap.has(key)) {
       if (!this.instanceMap.has(key)) this.instanceMap.set(key, value);
-    } else if (this.parentInjector) this.parentInjector.setInstance(key, value);
-    else console.error(`injector can'n set instance of provider: ${(key as any).name}`);
+    } else if (this.parentInjector) {
+      this.parentInjector.setInstance(key, value);
+    } else {
+      throw new Error(`injector can'n set instance of provider: ${(key as any).name}`);
+    }
   }
 
   /**
@@ -93,8 +96,11 @@ export class Injector {
     if (this.providerMap.has(key)) {
       if (this.instanceMap.has(key)) return this.instanceMap.get(key);
       else return undefined;
-    } else if (bubblingLayer !== 0 && this.parentInjector) return this.parentInjector.getInstance(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
-    else return undefined;
+    } else if (bubblingLayer !== 0 && this.parentInjector) {
+      return this.parentInjector.getInstance(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
+    } else {
+      return undefined;
+    }
   }
 
   /**
@@ -119,11 +125,12 @@ export class Injector {
    * @memberof Injector
    */
   public getParentInjectorOfProvider(key: any, bubblingLayer: number | 'always' = 'always'): Injector {
-    if (this.providerMap.has(key)) return this;
-    else if (bubblingLayer !== 0 && this.parentInjector) return this.parentInjector.getParentInjectorOfProvider(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
-    else {
-      console.error(`injector can't find parent injector of provider: ${(key as any).name}`);
-      return undefined;
+    if (this.providerMap.has(key)) {
+      return this;
+    } else if (bubblingLayer !== 0 && this.parentInjector) {
+      return this.parentInjector.getParentInjectorOfProvider(key, bubblingLayer === 'always' ? 'always' : (bubblingLayer - 1));
+    } else {
+      throw new Error(`injector can't find parent injector of provider: ${(key as any).name}`);
     }
   }
 
