@@ -10,6 +10,8 @@
 
 如果未使用`@Injectable()` 装饰器定义依赖提供商，该服务则无法注入其他服务，并且不会被当做单例服务创建。
 
+**`@Injectable()` 该注解v5.0.0之前来自包 `@indiv/core`，v5.0.0及之后已迁移至包`@indiv/di`**
+
 
 ## 装饰器`Injectable`
 
@@ -55,7 +57,7 @@ Injectable 符号，并且给服务类添加了 @Injectable() 装饰器。 它�
 > providers/test.service.ts
 
 ```typescript
-import { Injectable } from '@indiv/core';
+import { Injectable } from '@indiv/di';
 
 @Injectable()
 export class TestService {
@@ -271,7 +273,8 @@ export default class AppModule {}
 > app.component.ts
 
 ```typescript
-import { Component, StateSetter, SetState, Watch, Inject } from '@indiv/core';
+import { Component, StateSetter, SetState, Watch } from '@indiv/core';
+import { Inject } from '@indiv/di';
 import TestService from './provides/test.service';
 import { indivUrlToken } from './provides/url';
 

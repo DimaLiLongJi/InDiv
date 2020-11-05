@@ -149,7 +149,7 @@ export default class ChangeColorDirective implements ReceiveInputs {
     this.renderer.addEventListener(this.element.nativeElement, 'mouseout', this.removeColor);
   }
 
-  public ReceiveInputs(nextInputs: string) {
+  public nvReceiveInputs(nextInputs: string) {
     console.log('Directive ReceiveInputs', nextInputs);
   }
 
