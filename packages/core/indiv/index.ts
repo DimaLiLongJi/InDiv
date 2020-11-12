@@ -4,7 +4,6 @@ import { NvModuleFactory } from '../nv-module';
 import { Renderer, Vnode } from '../vnode';
 import { ElementRef } from '../component';
 import { lifecycleCaller } from '../lifecycle';
-import { ErrorHandler } from '../handler/error-handler';
 
 export interface IPlugin {
   bootstrap(vm: InDiv): void;
@@ -63,31 +62,6 @@ export class InDiv {
     if (!InDiv.globalApplication) InDiv.globalApplication = new InDiv();
     else return InDiv.globalApplication;
 
-    // 浏览器端增加下错误处理
-    if (window) {
-      let errorHandler: ErrorHandler = null;
-      // 同步错误
-      window.addEventListener('error', (ev) => {
-        if (!errorHandler) {
-          const injector = InDiv.globalApplication.rootModule.$privateInjector || rootInjector;
-          // TODO 在这里处理全局的handler
-          if (!injector.getProvider(ErrorHandler)) return;
-          errorHandler = getService(injector, ErrorHandler);
-        }
-        if (errorHandler) errorHandler.handleError(ev);
-      }, true);
-      // 异步错误
-      window.addEventListener("unhandledrejection", (ev) => {
-        if (!errorHandler) {
-          const injector = InDiv.globalApplication.rootModule.$privateInjector || rootInjector;
-          // TODO 在这里处理全局的handler
-          if (!injector.getProvider(ErrorHandler)) return;
-          errorHandler = getService(injector, ErrorHandler);
-        }
-        if (errorHandler) errorHandler.handleError(ev);
-      }, true);
-    }
-
     InDiv.globalApplication.bootstrapModule(Nvmodule);
     if (options.plugins) options.plugins.forEach(plugin => InDiv.globalApplication.use(plugin));
     if (options.ssrTemplateRootPath) InDiv.globalApplication.setTemplateRootPath(options.ssrTemplateRootPath);
@@ -121,6 +95,17 @@ export class InDiv {
       rootInjector.setProvider(Renderer, NewRenderer);
       rootInjector.setInstance(Renderer, this.renderer);
     } else throw new Error('Custom Renderer must extend class Renderer!');
+  }
+
+  /**
+   * get global application instance of InDiv
+   *
+   * @readonly
+   * @type {InDiv}
+   * @memberof InDiv
+   */
+  public get getGlobalApplication(): InDiv {
+    return InDiv.globalApplication;
   }
 
   /**

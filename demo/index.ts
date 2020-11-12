@@ -607,7 +607,7 @@ class Container implements OnInit, AfterMount, DoCheck, HasRender, RouteChange {
 @Injectable()
 class GlobalErrorHandler implements ErrorHandler {
   public handleError(error: any): void {
-    console.log(3231313, error);
+    console.warn('拦击到的报错 =>>', error);
   }
 }
 

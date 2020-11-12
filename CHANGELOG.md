@@ -1,11 +1,18 @@
 <a name="5.0.0"></a>
-# [5.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/5.0.0) (2020-10-30)
+# [5.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/5.0.0) (2020-11-30)
 
 
 ### Features
 
 * **package:@indiv/di** strip modules `@indiv/di` from `@indiv/core`
-* **package:@indiv/core** add `ErrorHandler` for handle global error in indiv
+* **package:@indiv/core** add `ErrorHandler` for handling global error in indiv application
+
+### Fix
+
+* **package:@indiv/platform-browser** fix `removeChild` when remove child must check that childNode is containted in parentNode firstly
+* **package:@indiv/platform-server** fix `removeChild` when remove child must check that childNode is containted in parentNode firstly
+* **package:@indiv/core** fix `patchVnode` when remove child must check that childNode is containted in parentNode firstly
+* **package:@indiv/route** fix router match, router like `/a/` can be matched now
 
 
 

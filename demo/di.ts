@@ -49,6 +49,6 @@ class TestService {
 }
 
 // const aaa = new TestService();
-const aaa2 = NvInstanceFactory<TestService>(TestService, [1]);
+const aaa2 = NvInstanceFactory<TestService>(TestService, ["1"]);
 // console.log(55555555, aaa);
 console.log(66666666, aaa2, aaa2.testService5);

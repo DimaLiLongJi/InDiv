@@ -275,15 +275,14 @@ export function injectionCreator(_constructor: Function, injector?: Injector, de
  * @template T
  * @param {Function} _constructor
  * @param {any[]} [deps]
- * @param {Injector} [injector]
+ * @param {Injector} [injector=rootInjector]
  * @param {any[]} [depsToken]
  * @returns {T}
  */
-export function NvInstanceFactory<T = any>(_constructor: Function, deps?: any[], injector?: Injector, depsToken?: any[]): T {
-    const findInjector =  injector || rootInjector;
-    const args = (deps && deps instanceof Array) ? deps : injectionCreator(_constructor, findInjector, depsToken);
+export function NvInstanceFactory<T = any>(_constructor: Function, deps?: any[], injector: Injector = rootInjector, depsToken?: any[]): T {
+    const args = (deps && deps instanceof Array) ? deps : injectionCreator(_constructor, injector, depsToken);
     const factoryInstance = (new (_constructor as any)(...args)) as T;
-    (factoryInstance as any).$privateInjector = findInjector;
-    bindProperty(_constructor, factoryInstance, findInjector);
+    (factoryInstance as any).$privateInjector = injector;
+    bindProperty(_constructor, factoryInstance, injector);
     return factoryInstance;
 }

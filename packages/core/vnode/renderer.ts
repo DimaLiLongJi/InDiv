@@ -2,9 +2,9 @@ import { Vnode } from './vnode';
 import { ParseOptions } from './parse';
 
 /**
- * Renderer in Indiv
+ * Renderer for Indiv
  * 
- * can rewrite your Render for different platform
+ * can rewrite your Render for different platforms
  * 
  * if you want to rewirte a renderer, please implements this abstract class
  *
@@ -14,7 +14,7 @@ import { ParseOptions } from './parse';
  */
 export abstract class Renderer {
   /**
-   * parse nativeElement to Vnode[]
+   * parse nativeElement to Vnode
    *
    * @abstract
    * @param {*} nativeElement
@@ -266,7 +266,7 @@ export abstract class Renderer {
   public abstract setStyle(element: any, name: string, value: any): void;
 
   /**
-   * remove a style to nativeElement
+   * remove a style from nativeElement
    *
    * @abstract
    * @param {*} element

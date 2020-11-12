@@ -7,9 +7,9 @@ import pkg from './package.json';
 const ts = require('typescript');
 
 export default {
-  input: 'packages/core/index.ts',
+  input: 'packages/di/index.ts',
   output: [{
-    file: 'packages/core/build/bundle.js',
+    file: 'packages/di/build/bundle.js',
     format: 'cjs',
   }],
   external: [
@@ -24,7 +24,7 @@ export default {
     typescript({
       typescript: ts,
       rollupCommonJSResolveHack: true,
-      tsconfig: 'packages/core/tsconfig.json',
+      tsconfig: 'packages/di/tsconfig.json',
     }),
     commonjs(),
   ],

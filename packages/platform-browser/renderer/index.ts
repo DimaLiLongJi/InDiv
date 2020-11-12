@@ -98,7 +98,9 @@ export class PlatfromBrowserRenderer extends Renderer {
   }
 
   public removeChild(parent: Element, child: Element): void {
-    (parent as Element).removeChild(child as Element);
+    if (parent.contains(child)) {
+      (parent as Element).removeChild(child as Element);
+    }
   }
 
   public appendChild(parent: Element, child: Element): void {

@@ -230,13 +230,13 @@ export class RouteModule {
     for (let index = 0; index < this.renderRouteList.length; index++) {
       const path = this.renderRouteList[index];
       if (index === 0) {
-        const rootRoute = this.routes.find(route => route.path === `${path}` || /^\/\:.+/.test(route.path));
+        const rootRoute = this.routes.find(route => route.path === `${path}` || `${path}/` || /^\/\:.+/.test(route.path));
         if (!rootRoute) throw new Error(`route error: wrong route instantiation in insertRenderRoutes: ${this.currentUrl}`);
         this.routesList.push(rootRoute);
       } else {
         const lastRoute = this.routesList[index - 1].children;
         if (!lastRoute || !(lastRoute instanceof Array)) throw new Error('route error: routes not exit or routes must be an array!');
-        const route = lastRoute.find((r: TRouter) => r.path === `/${path}` || /^\/\:.+/.test(r.path));
+        const route = lastRoute.find((r: TRouter) => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
         if (!route) throw new Error(`route error: wrong route instantiation: ${this.currentUrl}`);
         this.routesList.push(route);
       }
@@ -337,7 +337,7 @@ export class RouteModule {
     for (let index = 0; index < this.renderRouteList.length; index++) {
       const path = this.renderRouteList[index];
       if (index === 0) {
-        const rootRoute = this.routes.find(route => route.path === `${path}` || /^\/\:.+/.test(route.path));
+        const rootRoute = this.routes.find(route => route.path === `${path}` || `${path}/` || /^\/\:.+/.test(route.path));
         if (!rootRoute) throw new Error(`route error: wrong route instantiation in generalDistributeRoutes: ${this.currentUrl}`);
 
         if (/^\/\:.+/.test(rootRoute.path)) {
@@ -362,7 +362,8 @@ export class RouteModule {
       } else {
         const lastRoute = this.routesList[index - 1].children;
         if (!lastRoute || !(lastRoute instanceof Array)) throw new Error('route error: routes not exit or routes must be an array!');
-        const route = lastRoute.find(r => r.path === `/${path}` || /^\/\:.+/.test(r.path));
+        const route = lastRoute.find(r => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
+        console.warn(9999, route);
         if (!route) throw new Error(`route error: wrong route instantiation: ${this.currentUrl}`);
 
         const nativeElement = this.indivInstance.getRenderer.getElementsByTagName('router-render')[index - 1];

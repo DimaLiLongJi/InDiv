@@ -22,6 +22,13 @@ export const resolvePropertyInjectMap: Map<String, ((
   inject: PropertyInjectInfoType,
   injector: Injector) => any)> = new Map();
 
+/**
+ * need to extend for build a DI decorator
+ *
+ * @export
+ * @abstract
+ * @class InjectDecoratorFactory
+ */
 export abstract class InjectDecoratorFactory {
   public parameterName: String;
   public propertyName: String;
@@ -45,7 +52,7 @@ export abstract class InjectDecoratorFactory {
   }
 
   /**
-   *
+   * for implementing a parameter of method for an inject decorator
    *
    * @abstract
    * @param {ParameterInjectInfoType} injectInfo
@@ -59,6 +66,7 @@ export abstract class InjectDecoratorFactory {
   ): any;
 
   /**
+   * for implementing a property of instance for an inject decorator
    *
    *
    * @abstract
@@ -75,10 +83,10 @@ export abstract class InjectDecoratorFactory {
   /**
    * create decorator for inject
    *
-   * @returns
+   * @returns {(value?: any) => (target: Object, propertyKey: string, parameterIndex?: number) => void}
    * @memberof InjectDecoratorFactory
    */
-  public createInjectDecoratorFactory() {
+  public createInjectDecoratorFactory(): (value?: any) => (target: Object, propertyKey: string, parameterIndex?: number) => void {
     return (value?: any): ((target: Object, propertyKey: string, parameterIndex?: number) => void) => {
       return (target: Object, propertyKey: string, parameterIndex?: number) => {
         if (!parameterIndex && parameterIndex !== 0) {

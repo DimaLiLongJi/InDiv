@@ -72,6 +72,7 @@ export function createNativeElementAndChildrens(createdVnode: Vnode, renderer: R
  * @param {Renderer} renderer
  */
 export function patchVnode(patchList: IPatchList[], renderer: Renderer): void {
+  // 先排序，按照移除元素创建元素移动位置修改同一元素属性等，从0到9排序
   patchList.sort((a, b) => {
     if (a.type === b.type && a.newIndex && b.newIndex) return a.newIndex - b.newIndex;
     return a.type - b.type;
@@ -80,8 +81,10 @@ export function patchVnode(patchList: IPatchList[], renderer: Renderer): void {
     switch (patch.type) {
       case 0: {
         const removeNodeIndex = patch.parentVnode.childNodes.indexOf(patch.changedVnode);
+        if (renderer.isContainted(patch.parentVnode.nativeElement, patch.changedVnode.nativeElement)) {
+          renderer.removeChild(patch.parentVnode.nativeElement, patch.changedVnode.nativeElement);
+        }
         patch.parentVnode.childNodes.splice(removeNodeIndex, 1);
-        renderer.removeChild(patch.parentVnode.nativeElement, patch.changedVnode.nativeElement);
         break;
       }
       case 1: {
