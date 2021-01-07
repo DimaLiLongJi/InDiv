@@ -1,6 +1,7 @@
 import { getOptions } from 'loader-utils';
 import { loader } from 'webpack';
-import recast, { NodePath } from 'recast';
+import recast from 'recast';
+import { types } from 'recast';
 import { classDecoratorCompiler, classPropertyCompiler } from './compiler';
 
 /**
@@ -42,7 +43,7 @@ export default function indivLoader(source: string): string {
     if (!useTypeScript) ast = recast.parse(source, { parser: require('recast/parsers/babel') });
     recast.visit(ast, {
       // collect classDecorator with @Component and @Directive
-      visitClassDeclaration(this: any, path: NodePath<any, any>) {
+      visitClassDeclaration(this: any, path: any) {
         classDecoratorCompiler(rootPath, path.value, parseVnodeOptions, componentMap);
         this.traverse(path);
       },

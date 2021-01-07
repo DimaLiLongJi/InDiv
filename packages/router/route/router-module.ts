@@ -363,7 +363,7 @@ export class RouteModule {
         const lastRoute = this.routesList[index - 1].children;
         if (!lastRoute || !(lastRoute instanceof Array)) throw new Error('route error: routes not exit or routes must be an array!');
         const route = lastRoute.find(r => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
-        console.warn(9999, route);
+
         if (!route) throw new Error(`route error: wrong route instantiation: ${this.currentUrl}`);
 
         const nativeElement = this.indivInstance.getRenderer.getElementsByTagName('router-render')[index - 1];

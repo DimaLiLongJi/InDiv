@@ -230,7 +230,7 @@ export async function componentCompiler(nativeElement: any, componentInstance: I
   }
 
   // for save saveVnode in componentInstance
-  componentInstance.$saveVnode = saveVnode;
+  componentInstance.$saveVnode = [...saveVnode];
   let componentAndDirectives: TComAndDir = { components: [], directives: [] };
   // 定义一个来自 <nv-content> 的 Vnode 栈
   let contentComponentStack: Vnode[] = [];

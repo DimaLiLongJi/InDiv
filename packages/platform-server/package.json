@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
   "dependencies": {
-    "jsdom": "^13.1.0"
+    "jsdom": "^16.4.0"
   },
   "devDependencies": {
     "@types/jsdom": "^12.2.1"
