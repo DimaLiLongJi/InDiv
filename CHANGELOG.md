@@ -6,6 +6,8 @@
 
 * **package:@indiv/di** strip modules `@indiv/di` from `@indiv/core`
 * **package:@indiv/core** add `ErrorHandler` for handling global error in indiv application
+* **package:@indiv/core** add `nv-if-not`
+
 
 ### Fix
 

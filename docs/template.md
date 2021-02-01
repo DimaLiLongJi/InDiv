@@ -36,7 +36,8 @@
 
 结构指令主要用于改变 DOM 的结构
 
-* if 指令：`<input nv-if="e"/>` `<input nv-if="returnValue(e)"/>`。如果被绑定的值被 Boolean() 判定为 true/false，将分别在DOM树中显示或移除。
+* if 指令：`<input nv-if="e"/>` `<input nv-if="returnValue(e)"/>`。如果被绑定的值被 `Boolean()` 判定为 `true/false`，将分别在DOM树中显示或移除。
+* **v5.0.0新增** if-not 指令：`<input nv-if-not="e"/>` `<input nv-if-not="returnValue(e)"/>`。与`nv-if`指令正相反，如果被绑定的值被 `Boolean()` 判定为 f`alse/false`，将分别在DOM树中显示或移除。
 * repeat 指令：
 
   1. repeat 是一个重复器指令 —— 自定义数据显示的一种方式。你的目标是展示一个由多个条目组成的列表。

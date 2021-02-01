@@ -99,6 +99,10 @@ export class CompileUtil {
           this.ifUpdater(vnode, value);
           break;
         }
+        case 'if-not': {
+          this.ifNotUpdater(vnode, value);
+          break;
+        }
         case 'class': {
           this.classUpdater(vnode, value);
           break;
@@ -208,6 +212,22 @@ export class CompileUtil {
     if (!valueOfBoolean && vnode.parentVnode.childNodes.indexOf(vnode) !== -1) vnode.parentVnode.childNodes.splice(vnode.parentVnode.childNodes.indexOf(vnode), 1);
     if (valueOfBoolean) {
       const findAttribute = vnode.attributes.find(attr => attr.name === 'nv-if');
+      findAttribute.nvValue = valueOfBoolean;
+    }
+  }
+
+  /**
+   * remove or show for nv-if-not
+   *
+   * @param {Vnode} vnode
+   * @param {*} value
+   * @memberof CompileUtil
+   */
+  public ifNotUpdater(vnode: Vnode, value: any): void {
+    const valueOfBoolean = !Boolean(value);
+    if (!valueOfBoolean && vnode.parentVnode.childNodes.indexOf(vnode) !== -1) vnode.parentVnode.childNodes.splice(vnode.parentVnode.childNodes.indexOf(vnode), 1);
+    if (valueOfBoolean) {
+      const findAttribute = vnode.attributes.find(attr => attr.name === 'nv-if-not');
       findAttribute.nvValue = valueOfBoolean;
     }
   }
