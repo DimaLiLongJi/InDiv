@@ -1,3 +1,4 @@
+import { InDiv } from '../indiv';
 import { parseTag } from './parse-tag';
 import { Vnode } from './vnode';
 
@@ -60,13 +61,13 @@ export function parseTemplateToVnode(template: string, options: ParseOptions = {
         inComponent = true;
         componentStack.push(current);
       }
-
-      if (!current.voidElement && nextChar && nextChar !== '<' && !/^\s*$/.test(template.slice(start, template.indexOf('<', start)))) {
+      const testNodeValue = template.slice(start, template.indexOf('<', start));
+      if (!current.voidElement && nextChar && nextChar !== '<' && !/^\s*$/.test(testNodeValue)) {
         current.childNodes.push({
           type: 'text',
-          nodeValue: template.slice(start, template.indexOf('<', start)),
+          nodeValue: testNodeValue,
           parentVnode: current,
-          template: template.slice(start, template.indexOf('<', start)),
+          template: testNodeValue,
           voidElement: true,
           inComponent,
         });
@@ -79,8 +80,8 @@ export function parseTemplateToVnode(template: string, options: ParseOptions = {
 
       parent = arr[level - 1];
 
-      // protect route tag <router-rende> to be pure
-      if (parent && parent.tagName !== 'router-render') {
+      // protect route tag <router-render> to be pure
+      if (parent && parent.tagName !== (InDiv.globalApplication.getRouteDOMKey || 'router-render')) {
         current.parentVnode = parent;
         parent.childNodes.push(current);
       }
@@ -109,7 +110,7 @@ export function parseTemplateToVnode(template: string, options: ParseOptions = {
           voidElement: true,
           inComponent,
         });
-        if (!/^\s*$/.test(nodeValue) && parent && parent.tagName !== 'router-render') arr[level].childNodes.push({
+        if (!/^\s*$/.test(nodeValue) && parent && parent.tagName !== (InDiv.globalApplication.getRouteDOMKey || 'router-render')) arr[level].childNodes.push({
           type: 'text',
           nodeValue: nodeValue,
           parentVnode: parent,

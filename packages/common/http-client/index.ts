@@ -1,9 +1,4 @@
 import axios, {
-  AxiosTransformer,
-  AxiosAdapter,
-  AxiosBasicCredentials,
-  AxiosProxyConfig,
-  CancelToken,
   AxiosPromise,
   AxiosInterceptorManager,
   AxiosRequestConfig,

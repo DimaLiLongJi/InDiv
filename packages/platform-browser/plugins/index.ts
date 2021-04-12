@@ -1,5 +1,4 @@
-import { InDiv, IPlugin, utils } from '@indiv/core';
-import { ErrorHandler } from '@indiv/core/handler/error-handler';
+import { InDiv, IPlugin, utils, ErrorHandler } from '@indiv/core';
 import { getService, rootInjector } from '@indiv/di';
 import { PlatfromBrowserRenderer } from '../renderer';
 
@@ -21,8 +20,10 @@ export class PlatformBrowser implements IPlugin {
     // 浏览器端增加下错误处理
     if (utils.hasWindowAndDocument()) {
       let errorHandler: ErrorHandler = null;
+      const rootElement: Element = application.getRootElement;
+      if (!rootElement) return;
       // 同步错误
-      window.addEventListener('error', (ev) => {
+      rootElement.addEventListener('error', (ev) => {
         if (!errorHandler && application.getRootModule) {
           const injector = application.getRootModule.$privateInjector || rootInjector;
           // 在这里处理全局的handler
@@ -32,7 +33,7 @@ export class PlatformBrowser implements IPlugin {
         if (errorHandler) errorHandler.handleError(ev);
       }, true);
       // 异步错误
-      window.addEventListener("unhandledrejection", (ev) => {
+      rootElement.addEventListener("unhandledrejection", (ev) => {
         if (!errorHandler && application.getRootModule) {
           const injector = application.getRootModule.$privateInjector || rootInjector;
           // 在这里处理全局的handler

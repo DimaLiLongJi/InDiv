@@ -8,4 +8,6 @@ export * from './nv-module';
 export * from './types';
 export * from './utils';
 export * from './vnode';
+export * from './pipe';
+export * from './handler';
 export { Type } from '@indiv/di';

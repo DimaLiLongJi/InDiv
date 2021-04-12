@@ -1,4 +1,4 @@
-import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck } from '@indiv/core';
+import { InDiv, Component, Utils, NvModule, OnInit, DoCheck, BeforeMount, AfterMount, ReceiveInputs, SetState, OnDestory, ElementRef, HasRender, Input, ViewChild, ViewChildren, StateSetter, Watch, ContentChildren, ContentChild, ChangeDetectionStrategy, MarkForCheck, TMarkForCheck, Pipe, PipeTransform } from '@indiv/core';
 import { Injector, Optional, Inject, Self, Injectable } from '@indiv/di';
 import { RouteChange, NvLocation, RouteModule, RouteCanActive } from '@indiv/router';
 import { PlatformBrowser } from '@indiv/platform-browser';
@@ -243,13 +243,25 @@ class R2 implements OnInit, BeforeMount, AfterMount, DoCheck, RouteChange, OnDes
   }
 }
 
+@Pipe({
+  name: 'test-pipe',
+})
+class TestPipe implements PipeTransform {
+  transform(value: any, ...args: any[]) {
+    // console.error('pipe value =>>>>>', value, args);
+    return args[0];
+  }
+  
+}
+
 @Component({
   selector: 'test-component',
   template: (`
     <div>
       <p nv-on:click="click()">测试repeat组件: {{manName}}</p>
     </div>
-    <div nv-repeat='num in repeatData'>
+    <div class="22" nv-repeat='num in repeatData'>
+      <p nv-on:click="click()">测试repeat组件: {{num}}</p>
       <nv-content></nv-content>
     </div>
     <nv-content></nv-content>
@@ -345,22 +357,22 @@ class TestComponent implements OnDestory, ReceiveInputs, AfterMount, HasRender {
     <div>
       <p>性别：{{countState(man.sex, $index)}}</p>
     </div>
-    <!-- <a nv-href="countState(man.sex, $index)">a {{man.sex}}</a>
+    <a nv-href="countState(man.sex, $index)">a {{man.sex}}</a>
       <img nv-src="man.sex" nv-alt="man.sex" />
       <test-component nv-key="man.name" manName="{countState2(man.name, bd)}"  nv-repeat="bd in testArray2"></test-component>
       <p nv-key="man.name" nv-class="man.name" nv-id="bd" nv-repeat="bd in testArray2">{{bd}}</p>
-      <input nv-on:click="show(_b, $index)" nv-repeat="_b in testArray2" nv-model="_b"  nv-class="_b" />
+      <input nv-on:click="show(_b, $index)" nv-repeat="_b in testArray2" nv-model="man.name"  nv-class="_b" />
       <input nv-model="test.a"/>
       <div class="fuck" nv-class="man.name" nv-repeat="c in man.job" nv-key="c.id">
          <input nv-on:click="show(c, $index)" nv-model="c.name" nv-class="c.id" />
-         <p test-directive="{'123'}" nv-key="man.name" nv-class="man.name" nv-id="c.name">{{man.name}}</p>
+         <p test-directive="{'123'}" nv-key="man.name" nv-class="man.name | test-pipe:testNumber | test-pipe:man.name" nv-id="c.name">{{man.name | test-pipe:man.name}}</p>
          <div nv-repeat="_bb in man.job">
           <p nv-class="man.name" nv-repeat="_test in testArray2">
-            {{_test}}: {{man.name}} is {{_bb.name}}
-            <a nv-class="_bbc" nv-repeat="_bbc in testArray2">{{man.name}} {{_bb.name}}</a>
+            1
+            <a nv-class="_bbc" nv-repeat="_bbc in testArray2">{{man.name | test-pipe:_bb.id}} {{_bb.name}}</a>
           </p>
          </div>
-      </div> -->
+      </div>
   </div>
   <router-render></router-render>
 </div>
@@ -652,6 +664,7 @@ class M2 {
     M2,
   ],
   declarations: [
+    TestPipe,
     TestContentComponent,
     Container,
     PComponent,

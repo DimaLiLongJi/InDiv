@@ -61,13 +61,13 @@ export function argumentsIsReady(exp: string, vnode: Vnode, vm: any): boolean {
 export function valueIsReady(exp: string, vnode: Vnode, vm: any): boolean {
   if (/^.*\(.*((\))|(\)\}))$/.test(exp)) return true;
   else {
-    let _exp: string;
-    if (/^[^\s]+\sin\s[^\s]+$/.test(exp)) { // is nv-repeat
-      const _value = exp.split(' in ')[1];
-      if (!_value) throw new Error(`directive nv-repeat 's expression ${exp} is wrong!`);
+    let _exp: string = exp.split('|').map(v => v.trim())[0];
+    if (/^[^\s]+\sin\s[^\s]+$/.test(_exp)) { // is nv-repeat
+      const _value = _exp.split(' in ')[1];
+      if (!_value) throw new Error(`directive nv-repeat 's expression ${_exp} is wrong!`);
       const value = _value.replace(/\s*/g, '');
       _exp = value.replace(/\(.*\)/, '').split('.')[0];
-    } else _exp = exp.split('.')[0]; // is common dirctive
+    } else _exp = _exp.split('.')[0]; // is common dirctive
 
     if (_exp === '') return true;
     if (_exp === '$event') return true;

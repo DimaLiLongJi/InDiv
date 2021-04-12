@@ -54,6 +54,7 @@ export function Component(options: TComponentOptions): (_constructor: Function) 
     vm.$componentList = [];
     // for Directive
     vm.$directiveList = [];
+    vm.$pipeMap = new Map();
 
     vm.watchData = function (): void {
       // call templateChecker,when env is ssr,will render $templateUrl to $template first

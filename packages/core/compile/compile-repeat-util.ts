@@ -1,7 +1,8 @@
 import { IComponent } from '../types';
 import { Vnode, TAttributes } from "../vnode";
-import { isFromVM, buildProps, argumentsIsReady, getVMFunctionArguments, getValueByValue, getVMVal, getVMFunction, setVMVal } from './utils';
+import { isFromVM, buildProps, argumentsIsReady, getVMFunctionArguments, getValueByValue, getVMVal, getVMFunction, setVMVal, valueIsReady } from './utils';
 import { ChangeDetectionStrategy } from '../component';
+import { buildPipeScope } from './compiler-utils';
 
 /**
  * compile util for nv-repeat DOM
@@ -81,40 +82,47 @@ export class CompileRepeatUtil {
   public bind(vnode: Vnode, key?: string, dir?: string, exp?: string, index?: number, vm?: any, watchValue?: any, val?: any): void {
     const repeatValue = vnode.repeatData[key];
     let value;
-    if (/^.*\(.*\)$/.test(exp)) {
-      if (dir === 'model') throw new Error(`directive: nv-model can't use ${exp} as value`);
+    const needCompileStringList = exp.split('|').map(v => v.trim());
+    const needCompileValue = needCompileStringList[0];
+    if (/^.*\(.*\)$/.test(needCompileValue)) {
+      if (dir === 'model') throw new Error(`directive: nv-model can't use ${needCompileValue} as value`);
       // if Function() need function return value
-      const fn = getVMFunction(vm, exp);
-      const argsList = getVMFunctionArguments(vm, exp, vnode);
-      value = fn.apply(vm, argsList);
+      const fn = getVMFunction(vm, needCompileValue);
+      const argsList = getVMFunctionArguments(vm, needCompileValue, vnode);
+      value = this.pipeHandler(exp, fn.apply(vm, argsList), needCompileStringList, vm, vnode);
       // repeat value
-    } else if (exp === key || exp.indexOf(`${key}.`) === 0) value = this._getVMRepeatVal(repeatValue, exp, key);
+    } else if (needCompileValue === key || needCompileValue.indexOf(`${key}.`) === 0) {
+      value = this.pipeHandler(exp, this._getVMRepeatVal(repeatValue, needCompileValue, key), needCompileStringList, vm, vnode);
+    }
     // normal value
-    else if (isFromVM(vm, exp)) value = getVMVal(vm, exp);
-    else if (exp === '$index') value = index;
-    else if (/^\'.*\'$/.test(exp)) value = exp.match(/^\'(.*)\'$/)[1];
-    else if (/^\".*\"$/.test(exp)) value = exp.match(/^\"(.*)\"$/)[1];
-    else if (!/^\'.*\'$/.test(exp) && !/^\".*\"$/.test(exp) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/g.test(exp)) value = Number(exp);
-    else if (exp === 'true' || exp === 'false') value = (exp === 'true');
-    else if (exp === 'null') value = null;
-    else if (exp === 'undefined') value = undefined;
+    else if (isFromVM(vm, needCompileValue)) value = this.pipeHandler(exp, getVMVal(vm, needCompileValue), needCompileStringList, vm, vnode);
+    else if (needCompileValue === '$index') value = index;
+    else if (/^\'.*\'$/.test(needCompileValue)) value = this.pipeHandler(exp, needCompileValue.match(/^\'(.*)\'$/)[1], needCompileStringList, vm, vnode);
+    else if (/^\".*\"$/.test(needCompileValue)) value = this.pipeHandler(exp, needCompileValue.match(/^\"(.*)\"$/)[1], needCompileStringList, vm, vnode);
+    else if (!/^\'.*\'$/.test(needCompileValue) && !/^\".*\"$/.test(needCompileValue) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/g.test(needCompileValue)) value = this.pipeHandler(exp, Number(needCompileValue), needCompileStringList, vm, vnode);
+    else if (needCompileValue === 'true' || needCompileValue === 'false') value = this.pipeHandler(exp, (needCompileValue === 'true'), needCompileStringList, vm, vnode);
+    else if (needCompileValue === 'null') value = this.pipeHandler(exp, null, needCompileStringList, vm, vnode);
+    else if (needCompileValue === 'undefined') value = this.pipeHandler(exp, undefined, needCompileStringList, vm, vnode);
     else if (vnode.repeatData) {
       Object.keys(vnode.repeatData).forEach(data => {
-        if (exp === data || exp.indexOf(`${data}.`) === 0) value = getValueByValue(vnode.repeatData[data], exp, data);
+        if (needCompileValue === data || needCompileValue.indexOf(`${data}.`) === 0) value = this.pipeHandler(exp, getValueByValue(vnode.repeatData[data], needCompileValue, data), needCompileStringList, vm, vnode);
       });
-    } else throw new Error(`directive: nv-${dir} can't use recognize this value ${exp}`);
+    } else throw new Error(`directive: nv-${dir} can't use recognize this value ${needCompileValue}`);
 
     if (!vnode.childNodes || vnode.childNodes.length === 0) this.templateUpdater(vnode, repeatValue, key, vm);
 
     switch (dir) {
       case 'model': {
         let watchData;
-        if (exp === key || exp.indexOf(`${key}.`) === 0) {
+        // 如果观察数据来自当前要渲染的重复key
+        if (needCompileValue === key || needCompileValue.indexOf(`${key}.`) === 0) {
           watchData = watchValue;
-        } else {
-          watchData = getVMVal(vm, exp);
+          this.modelUpdater(vnode, value, needCompileValue, key, index, watchData, vm);
+          // 如果观察数据来自当前要组件实例
+        } else if (isFromVM(vm, needCompileValue)) {
+          watchData = this.pipeHandler(exp, getVMVal(vm, needCompileValue), needCompileStringList, vm, vnode);
+          this.modelUpdater(vnode, value, needCompileValue, key, index, watchData, vm);
         }
-        this.modelUpdater(vnode, value, exp, key, index, watchData, vm);
         break;
       }
       case 'text': {
@@ -162,17 +170,28 @@ export class CompileRepeatUtil {
       if (textList && textList.length > 0) {
         for (let i = 0; i < textList.length; i++) {
           const exp = textList[i].replace('{{', '').replace('}}', '');
-          if (/^.*\(.*\)$/.test(exp) && argumentsIsReady(exp, vnode, vm)) {
-            const fn = getVMFunction(vm, exp);
-            const argsList = getVMFunctionArguments(vm, exp, vnode);
-            vnode.nodeValue = vnode.nodeValue.replace(textList[i], fn.apply(vm, argsList));
-          } else if (exp === key || exp.indexOf(`${key}.`) === 0) vnode.nodeValue = vnode.nodeValue.replace(textList[i], this._getVMRepeatVal(val, exp, key));
-          else if (isFromVM(vm, exp)) vnode.nodeValue = vnode.nodeValue.replace(textList[i], getVMVal(vm, exp));
-          else if (vnode.repeatData) {
+          const needCompileStringList = exp.split('|').map(v => v.trim());
+          const needCompileValue = needCompileStringList[0];
+
+          if (/^.*\(.*\)$/.test(needCompileValue) && argumentsIsReady(needCompileValue, vnode, vm)) {
+            const fn = getVMFunction(vm, needCompileValue);
+            const argsList = getVMFunctionArguments(vm, needCompileValue, vnode);
+            const fromVmValue = this.pipeHandler(textList[i], fn.apply(vm, argsList), needCompileStringList, vm, vnode);
+            vnode.nodeValue = vnode.nodeValue.replace(textList[i], fromVmValue);
+          } else if (needCompileValue === key || needCompileValue.indexOf(`${key}.`) === 0) {
+            const fromVmValue = this.pipeHandler(textList[i], this._getVMRepeatVal(val, needCompileValue, key), needCompileStringList, vm, vnode);
+            vnode.nodeValue = vnode.nodeValue.replace(textList[i], fromVmValue);
+          } else if (isFromVM(vm, needCompileValue)) {
+            const fromVmValue = this.pipeHandler(textList[i], getVMVal(vm, needCompileValue), needCompileStringList, vm, vnode);
+            vnode.nodeValue = vnode.nodeValue.replace(textList[i], fromVmValue);
+          } else if (vnode.repeatData) {
             Object.keys(vnode.repeatData).forEach(data => {
-              if (exp === data || exp.indexOf(`${data}.`) === 0) vnode.nodeValue = vnode.nodeValue.replace(textList[i], getValueByValue(vnode.repeatData[data], exp, data));
+              if (needCompileValue === data || needCompileValue.indexOf(`${data}.`) === 0) {
+                const fromVmValue = this.pipeHandler(textList[i], getValueByValue(vnode.repeatData[data], needCompileValue, data), needCompileStringList, vm, vnode);
+                vnode.nodeValue = vnode.nodeValue.replace(textList[i], fromVmValue);
+              }
             });
-          } else throw new Error(`directive: {{${exp}}} can\'t use recognize ${exp}`);
+          } else throw new Error(`directive: {{${needCompileValue}}} can\'t use recognize ${needCompileValue}`);
         }
       }
     }
@@ -479,5 +498,58 @@ export class CompileRepeatUtil {
         return;
       }
     }
+  }
+
+
+   public pipeHandler(oldExp: string, value: any, needCompileStringList: string[], vm: any, vnode: Vnode): any {
+    let canCompileFlag = true;
+    let fromVmValue = value;
+    if (needCompileStringList.length > 1) {
+      needCompileStringList.forEach((need, index) => {
+        if (index !== 0) {
+          const pipeArgusList: string[] = [];
+          let pipeName = '';
+          // need： test-pipe: 1:2 分离管道名和参数
+          need.split(':').forEach((v, i) => {
+            if (i === 0) pipeName = v.trim();
+            else pipeArgusList.push(v.trim());
+          });
+          const argList: any[] = [];
+          pipeArgusList.forEach(pipeArgu => {
+            // 参数没准备好，不允许编译
+            if (!valueIsReady(pipeArgu, vnode, vm)) {
+              canCompileFlag = false;
+              return;
+            }
+            let pipeArguValue = null;
+            if (isFromVM(vm, pipeArgu)) pipeArguValue = getVMVal(vm, pipeArgu);
+            else if (/^\'.*\'$/.test(pipeArgu)) pipeArguValue = pipeArgu.match(/^\'(.*)\'$/)[1];
+            else if (/^\".*\"$/.test(pipeArgu)) pipeArguValue = pipeArgu.match(/^\"(.*)\"$/)[1];
+            else if (!/^\'.*\'$/.test(pipeArgu) && !/^\".*\"$/.test(pipeArgu) && /(^[-,+]?\d+$)|(^[-, +]?\d+\.\d+$)/g.test(pipeArgu)) pipeArguValue = Number(pipeArgu);
+            else if (pipeArgu === 'true' || pipeArgu === 'false') pipeArguValue = (pipeArgu === 'true');
+            else if (pipeArgu === 'null') pipeArguValue = null;
+            else if (pipeArgu === 'undefined') pipeArguValue = undefined;
+            else if (vnode.repeatData) {
+              Object.keys(vnode.repeatData).forEach(data => {
+                if (pipeArgu === data || pipeArgu.indexOf(`${data}.`) === 0) pipeArguValue = getValueByValue(vnode.repeatData[data], pipeArgu, data);
+              });
+            }
+            argList.push(pipeArguValue);
+          })
+          // 如果管道参数可以渲染则获取管道结果
+          if (canCompileFlag) {
+            // 通过组件中的$declarationMap获取管道实例
+            const PipeClass = vm.$declarationMap.get(pipeName);
+            // 获取管道实例
+            const pipeInstance =  buildPipeScope(PipeClass, vm.$nativeElement, vm);
+            // 调用管道的transform方法
+            if (!pipeInstance.transform) throw Error(`Pipe ${pipeName} don't implement the method 'transform'`);
+            fromVmValue = pipeInstance.transform(value, ...argList);
+          }
+        }
+      });
+    }
+    if (canCompileFlag) return fromVmValue;
+    else return oldExp;
   }
 }

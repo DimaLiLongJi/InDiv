@@ -15,7 +15,7 @@ export interface IPlugin {
  * @class InDiv
  */
 export class InDiv {
-  private static globalApplication: InDiv;
+  public static globalApplication: InDiv;
 
   private readonly pluginList: IPlugin[] = [];
   private rootElement: any;

@@ -61,7 +61,7 @@ export async function generalDistributeRoutes(routeConfig: RouteCongfig, routesL
       const route = lastRoute.find(r => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
       if (!route) throw new Error(`route error: wrong route instantiation: ${routeConfig.path}`);
 
-      const nativeElement = indiv.getRenderer.getElementsByTagName('router-render')[index - 1];
+      const nativeElement = indiv.getRenderer.getElementsByTagName((InDiv.globalApplication.getRouteDOMKey || 'router-render'))[index - 1];
 
       let FindComponent = null;
       let component: IComponentWithRoute = null;
