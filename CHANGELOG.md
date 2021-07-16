@@ -15,6 +15,8 @@
 * **package:@indiv/platform-server** fix `removeChild` when remove child must check that childNode is containted in parentNode firstly
 * **package:@indiv/core** fix `patchVnode` when remove child must check that childNode is containted in parentNode firstly
 * **package:@indiv/route** fix router match, router like `/a/` can be matched now
+* **package:@indiv/common** update `axios` version
+
 
 
 

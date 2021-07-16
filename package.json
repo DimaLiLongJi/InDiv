@@ -93,7 +93,7 @@
     "webpack-cli": "^3.3.0"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": ">=0.21.1",
     "jsdom": "^16.4.0",
     "loader-utils": "^2.0.0",
     "recast": "^0.20.4",

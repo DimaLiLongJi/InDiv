@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": ">=0.21.1"
   },
   "peerDependencies": {
     "@indiv/di": "5.0.0",
