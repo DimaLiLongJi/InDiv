@@ -28,12 +28,13 @@ $ npm i --save @indiv/core @indiv/common @indiv/platform-browser @indiv/router
 
 关于新的包：
 
-  1. `@indiv/core` InDiv 核心，包括 compile 与 vnode 等几乎所有核心都来自该包的导出
+  1. `@indiv/core` InDiv 核心，包括 compile 与 vnode 等几乎所有核心都来自该包的导出，**v5.0.0以后**将不提供 `@Inject @Injectable @Injected` 等依赖注入相关
   2. `@indiv/common` InDiv 提供的一些普通组件指令服务模块等，目前仅含有 `HttpClient`
-  3. `@indiv/platform-browser` InDiv 的 render 方法，compile类及一些浏览器平台核心特性，`InDiv`实例需要使用该包的 `PlatformBrowser` 插件完成一个浏览器应用的初始化
+  3. `@indiv/platform-browser` InDiv 的 render 方法，compile类及一些浏览器平台核心特性，`InDiv` 实例需要使用该包的 `PlatformBrowser` 插件完成一个浏览器应用的初始化
   4. `@indiv/router` InDiv 路由，提供基础的 `RouteModule`模块，`NvLocation`服务，和其他一些组件指令
   5. `@indiv/platform-server` InDiv 的 render 方法，compile类及一些浏览器平台核心特性的 Node 平台实现
   6. `@indiv/indiv-loader` InDiv 的 webpack loader，用来编译组件 `templateUrl` 视图模板
+  7. `@indiv/di` **v5.0.0以后**，所有关于依赖注入的依赖（例如 `@Inject @Injectable @Injected` 等）都已抽离到该包
 
 由于使用了 TypeScript 或是 其他 JavaScript 最新的特性，你需要先为教程配置一个编译工具。
 

@@ -1,11 +1,6 @@
-import { Injector } from '../di';
+import { Injector, TProviders } from '@indiv/di';
 import { InDiv } from '../indiv';
-import { TProviders } from './nv-module';
 
-export interface Type<T = any> extends Function {
-    [key: string]: any;
-    new(...args: any[]): T;
-  }
 
 export type DirectiveList = {
     nativeElement: any;

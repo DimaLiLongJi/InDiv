@@ -23,8 +23,8 @@
     "easier-cookie": "^1.1.1",
     "highlight.js": "^9.12.0",
     "indiv": "^1.2.1",
-    "jsdom": "^13.1.0",
-    "rxjs": "^6.3.2"
+    "jsdom": "^16.4.0",
+    "rxjs": "^6.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

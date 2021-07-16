@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
   "dependencies": {
-    "axios": "^0.18.0"
+    "axios": ">=0.21.1"
   },
   "peerDependencies": {
-    "@indiv/core": "4.2.0",
+    "@indiv/di": "5.0.0",
     "rxjs": "^6.3.3"
   }
 }

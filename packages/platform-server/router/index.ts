@@ -38,7 +38,7 @@ export async function generalDistributeRoutes(routeConfig: RouteCongfig, routesL
   for (let index = 0; index < renderRouteList.length; index++) {
     const path = renderRouteList[index];
     if (index === 0) {
-      const rootRoute = routeConfig.routes.find(route => route.path === `${path}` || /^\/\:.+/.test(route.path));
+      const rootRoute = routeConfig.routes.find(route => route.path === `${path}` || `${path}/` || /^\/\:.+/.test(route.path));
       if (!rootRoute) throw new Error(`route error: wrong route instantiation in generalDistributeRoutes: ${routeConfig.path}`);
 
       if (/^\/\:.+/.test(rootRoute.path)) {
@@ -58,10 +58,10 @@ export async function generalDistributeRoutes(routeConfig: RouteCongfig, routesL
     } else {
       const lastRoute = routesList[index - 1].children;
       if (!lastRoute || !(lastRoute instanceof Array)) throw new Error('route error: routes not exit or routes must be an array!');
-      const route = lastRoute.find(r => r.path === `/${path}` || /^\/\:.+/.test(r.path));
+      const route = lastRoute.find(r => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
       if (!route) throw new Error(`route error: wrong route instantiation: ${routeConfig.path}`);
 
-      const nativeElement = indiv.getRenderer.getElementsByTagName('router-render')[index - 1];
+      const nativeElement = indiv.getRenderer.getElementsByTagName((InDiv.globalApplication.getRouteDOMKey || 'router-render'))[index - 1];
 
       let FindComponent = null;
       let component: IComponentWithRoute = null;

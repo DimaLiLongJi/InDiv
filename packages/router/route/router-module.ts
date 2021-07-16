@@ -1,6 +1,7 @@
-import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, NvModuleFactory, Type } from '@indiv/core';
+import { IComponent, INvModule, ComponentList, DirectiveList, NvModule, InDiv, Vnode, utils, IDirective, lifecycleCaller, NvModuleFactory, Type, ErrorHandler } from '@indiv/core';
 import { nvRouteStatus, NvLocation } from './location';
 import { RouterTo, RouterFrom } from './directives';
+import { getService, rootInjector } from '@indiv/di';
 
 export type TChildModule = () => Promise<Type<INvModule>>;
 
@@ -230,13 +231,13 @@ export class RouteModule {
     for (let index = 0; index < this.renderRouteList.length; index++) {
       const path = this.renderRouteList[index];
       if (index === 0) {
-        const rootRoute = this.routes.find(route => route.path === `${path}` || /^\/\:.+/.test(route.path));
+        const rootRoute = this.routes.find(route => route.path === `${path}` || `${path}/` || /^\/\:.+/.test(route.path));
         if (!rootRoute) throw new Error(`route error: wrong route instantiation in insertRenderRoutes: ${this.currentUrl}`);
         this.routesList.push(rootRoute);
       } else {
         const lastRoute = this.routesList[index - 1].children;
         if (!lastRoute || !(lastRoute instanceof Array)) throw new Error('route error: routes not exit or routes must be an array!');
-        const route = lastRoute.find((r: TRouter) => r.path === `/${path}` || /^\/\:.+/.test(r.path));
+        const route = lastRoute.find((r: TRouter) => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
         if (!route) throw new Error(`route error: wrong route instantiation: ${this.currentUrl}`);
         this.routesList.push(route);
       }
@@ -286,7 +287,7 @@ export class RouteModule {
             if (component.nvRouteCanActive && !component.nvRouteCanActive(this.lastRoute, this.currentUrl)) break;
             await this.runRender(component, nativeElement, initVnode);
             if (this.hasRenderComponentList[index]) this.hasRenderComponentList.splice(index, 0, component);
-            if (!this.hasRenderComponentList[index]) this.hasRenderComponentList[index] = component;
+            else this.hasRenderComponentList[index] = component;
           } else {
             throw new Error(`route error: path ${needRenderRoute.path} need a component`);
           }
@@ -337,7 +338,7 @@ export class RouteModule {
     for (let index = 0; index < this.renderRouteList.length; index++) {
       const path = this.renderRouteList[index];
       if (index === 0) {
-        const rootRoute = this.routes.find(route => route.path === `${path}` || /^\/\:.+/.test(route.path));
+        const rootRoute = this.routes.find(route => route.path === `${path}` || `${path}/` || /^\/\:.+/.test(route.path));
         if (!rootRoute) throw new Error(`route error: wrong route instantiation in generalDistributeRoutes: ${this.currentUrl}`);
 
         if (/^\/\:.+/.test(rootRoute.path)) {
@@ -362,7 +363,8 @@ export class RouteModule {
       } else {
         const lastRoute = this.routesList[index - 1].children;
         if (!lastRoute || !(lastRoute instanceof Array)) throw new Error('route error: routes not exit or routes must be an array!');
-        const route = lastRoute.find(r => r.path === `/${path}` || /^\/\:.+/.test(r.path));
+        const route = lastRoute.find(r => r.path === `/${path}` || `/${path}/` || /^\/\:.+/.test(r.path));
+
         if (!route) throw new Error(`route error: wrong route instantiation: ${this.currentUrl}`);
 
         const nativeElement = this.indivInstance.getRenderer.getElementsByTagName('router-render')[index - 1];
@@ -425,17 +427,31 @@ export class RouteModule {
    * @memberof Router
    */
   private routerChangeEvent(index: number): void {
-    this.hasRenderComponentList.forEach((component, i) => {
-      if (component.nvRouteChange) component.nvRouteChange(this.lastRoute, this.currentUrl);
-      this.emitDirectiveEvent(component.$directiveList, 'nvRouteChange');
-      this.emitComponentEvent(component.$componentList, 'nvRouteChange');
-      if (i >= index + 1) {
-        this.emitDirectiveEvent(component.$directiveList, 'nvOnDestory');
-        this.emitComponentEvent(component.$componentList, 'nvOnDestory');
-        lifecycleCaller(component, 'nvOnDestory');
+    try {
+      this.hasRenderComponentList.forEach((component, i) => {
+        if (component.nvRouteChange) component.nvRouteChange(this.lastRoute, this.currentUrl);
+        this.emitDirectiveEvent(component.$directiveList, 'nvRouteChange');
+        this.emitComponentEvent(component.$componentList, 'nvRouteChange');
+        if (i >= index + 1) {
+          this.emitDirectiveEvent(component.$directiveList, 'nvOnDestory');
+          this.emitComponentEvent(component.$componentList, 'nvOnDestory');
+          lifecycleCaller(component, 'nvOnDestory');
+        }
+      });
+    } catch (e) {
+      // 增加下错误处理，使用ErrorHandler
+      let errorHandler: ErrorHandler = null;
+      if (!errorHandler && this.indivInstance.getRootModule) {
+        const injector = this.indivInstance.getRootModule.$privateInjector || rootInjector;
+        // 在这里处理全局的handler
+        if (!injector.getProvider(ErrorHandler)) return;
+        errorHandler = getService(injector, ErrorHandler);
       }
-    });
-    this.hasRenderComponentList.length = index + 1;
+      if (errorHandler) errorHandler.handleError(e);
+      else console.error('route error: call route event: ', e);
+    } finally {
+      this.hasRenderComponentList.length = index + 1;
+    }
   }
 
   /**

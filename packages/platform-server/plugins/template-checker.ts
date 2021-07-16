@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { IComponent, InDiv } from '@indiv/core';
+import { IComponent } from '@indiv/core';
 
 /**
  * replace templateChecher for SSR

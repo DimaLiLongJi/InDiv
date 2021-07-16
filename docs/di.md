@@ -18,6 +18,8 @@
 
 本章节介绍了 DI 在 InDiv 中的工作原理。
 
+**v5.0.0开始 `@Inject()` `@SkipSelf()` `@Self()` `@Host()` `@Optional()` 等迁移至包 `@indiv/di`**
+
 
 ## 构造器注入与属性注入
 
@@ -191,6 +193,8 @@ class TestComponent {
 
 **v3.0.0新增**
 
+**v5.0.0开始 `@Inject()` `@SkipSelf()` `@Self()` `@Host()` `@Optional()` 等迁移至包 `@indiv/di`**
+
 indiv 模仿 angular 提供了4种可以**干预注入器冒泡优先级**的**构造函数参数装饰器**：
 
 1. `@SkipSelf()` ：寻找被注解的依赖时将**跳过本组件的注入器容器**，直接像父级请求依赖
@@ -207,7 +211,8 @@ indiv 模仿 angular 提供了4种可以**干预注入器冒泡优先级**的**�
 > components/test-component/test-component.component.ts
 
 ```typescript
-import { Component, SkipSelf, Host, Optional } from '@indiv/core';
+import { Component } from '@indiv/core';
+import { SkipSelf, Host, Optional } from '@indiv/di';
 import { PrivateService } from '../../services/private.services';
 
 @Component({

@@ -1,5 +1,5 @@
-import { INvModule, TInjectTokenProvider } from '../types';
-import { NvInstanceFactory, rootInjector, Injector } from '../di';
+import { INvModule } from '../types';
+import { NvInstanceFactory, rootInjector, Injector, TInjectTokenProvider } from '@indiv/di';
 
 /**
  * build NvModule instance
@@ -56,7 +56,9 @@ function buildImports(moduleInstance: INvModule): void {
       const exportsLength = moduleImport.$exportsList.length;
       for (let i = 0; i < exportsLength; i++) {
         const exportFromModule = moduleImport.$exportsList[i];
-        if (moduleInstance.$declarations && !moduleInstance.$declarations.find((declaration: any) => declaration.selector === (exportFromModule as any).selector)) moduleInstance.$declarations.push(exportFromModule);
+        if (moduleInstance.$declarations && !moduleInstance.$declarations.find((declaration: any) => declaration.selector === (exportFromModule as any).selector)) {
+          moduleInstance.$declarations.push(exportFromModule);
+        }
       }
     }
   }
@@ -124,5 +126,5 @@ export function ModuleWithInjectorFactory(NM: Function, injector: Injector): INv
   buildImports(NM.prototype);
   buildDeclarations4Declarations(NM.prototype);
   buildExports(NM.prototype);
-  return NvInstanceFactory(NM, injector);
+  return NvInstanceFactory(NM, null, injector);
 }

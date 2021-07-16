@@ -1,3 +1,25 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/5.0.0) (2020-11-30)
+
+
+### Features
+
+* **package:@indiv/di** strip modules `@indiv/di` from `@indiv/core`
+* **package:@indiv/core** add `ErrorHandler` for handling global error in indiv application
+* **package:@indiv/core** add `nv-if-not`
+
+
+### Fix
+
+* **package:@indiv/platform-browser** fix `removeChild` when remove child must check that childNode is containted in parentNode firstly
+* **package:@indiv/platform-server** fix `removeChild` when remove child must check that childNode is containted in parentNode firstly
+* **package:@indiv/core** fix `patchVnode` when remove child must check that childNode is containted in parentNode firstly
+* **package:@indiv/route** fix router match, router like `/a/` can be matched now
+* **package:@indiv/common** update `axios` version
+
+
+
+
 <a name="4.2.0"></a>
 # [4.2.0](https://github.com/DimaLiLongJi/InDiv/releases/tag/4.2.0) (2020-06-08)
 

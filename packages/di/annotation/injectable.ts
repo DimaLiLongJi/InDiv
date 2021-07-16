@@ -1,10 +1,11 @@
-import { INvModule, Type } from '../types';
+import { IProviderClass, Type } from '../types';
 import { injected } from './injected';
-import { rootInjector } from './injector';
+import { Injector, rootInjector } from '../core';
 
 export type TInjectableOptions = {
   isSingletonMode?: boolean;
   providedIn?: Type<any> | 'root' | null;
+  injector?: Injector;
 };
 
 /**
@@ -27,9 +28,12 @@ export function Injectable(options?: TInjectableOptions): (_constructor: Functio
       // isSingletonMode defalut value is true.
       (_constructor as any).isSingletonMode = true;
       if (options && options.isSingletonMode === false) (_constructor as any).isSingletonMode = false;
-      if (options && options.providedIn === 'root') rootInjector.setProvider(_constructor, _constructor);
-      if (options && options.providedIn && (options.providedIn as any).nvType === 'nvModule') {
-        ((options.providedIn as any).prototype as INvModule).$providers.push({provide: _constructor, useClass: _constructor});
+
+      if (options && options.providedIn && options.providedIn === 'root') rootInjector.setProvider(_constructor, _constructor);
+      else if (options && options.providedIn && (options.providedIn as any).nvType === 'nvModule') {
+        ((options.providedIn as any).prototype as IProviderClass).$providers.push({provide: _constructor, useClass: _constructor});
+      } else if (options && options.injector && options.injector instanceof Injector) {
+        options.injector.setProvider(_constructor, _constructor);
       }
   };
 }

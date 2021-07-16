@@ -1,4 +1,5 @@
-import { Injectable, utils, InDiv } from '@indiv/core';
+import { utils, InDiv } from '@indiv/core';
+import { Injectable } from '@indiv/di';
 
 export type NvRouteObject = {
   path: string;

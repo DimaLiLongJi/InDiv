@@ -46,3 +46,5 @@
 17. `async runComponentRenderer<R = Element>(component: IComponent, nativeElement: R, initVnode?: Vnode[]): Promise<IComponent>` 异步渲染组件，`BeforeMount HasRender AfterMount`
 
 18. v4.0.0新增静态方法：`public static bootstrap(Nvmodule: Type<INvModule>, bootstrapOptions: { plugins?: Type<IPlugin>[], } = {}): Promise<IComponent>` 初始化 InDiv 应用，挂在根模块和插件
+
+19. v5.0.0新增：`public get getGlobalApplication(): InDiv` 获取全局唯一的当前应用实例

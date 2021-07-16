@@ -12,14 +12,14 @@ import { templateChecker } from './template-checker';
  * @implements {IPlugin}
  */
 export class PlatformServer implements IPlugin {
-  public bootstrap(indivInstance: InDiv): void {
+  public bootstrap(application: InDiv): void {
     const rootElement = _document.createElement('div');
     rootElement.id = 'root';
     _document.documentElement.appendChild(rootElement);
-    indivInstance.setIndivEnv('server', true);
-    indivInstance.setRootElement(_document.getElementById('root'));
-    indivInstance.setRenderer(PlatfromServerRenderer);
+    application.setIndivEnv('server', true);
+    application.setRootElement(_document.getElementById('root'));
+    application.setRenderer(PlatfromServerRenderer);
     // 设置服务端模板编译检查，用于编译HTML
-    indivInstance.setTemplateChecker(templateChecker);
+    application.setTemplateChecker(templateChecker);
   }
 }

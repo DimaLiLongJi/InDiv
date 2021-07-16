@@ -1,4 +1,5 @@
-import { Injectable, InDiv } from '@indiv/core';
+import { InDiv } from '@indiv/core';
+import { Injectable } from '@indiv/di';
 // import { Injectable, InDiv } from '../build/core';
 
 @Injectable()

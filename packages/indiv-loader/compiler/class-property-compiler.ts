@@ -1,4 +1,4 @@
-import types from 'recast/lib/types';
+import { types } from 'recast';
 
 /**
  * add template in class

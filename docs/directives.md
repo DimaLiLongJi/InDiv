@@ -149,7 +149,7 @@ export default class ChangeColorDirective implements ReceiveInputs {
     this.renderer.addEventListener(this.element.nativeElement, 'mouseout', this.removeColor);
   }
 
-  public ReceiveInputs(nextInputs: string) {
+  public nvReceiveInputs(nextInputs: string) {
     console.log('Directive ReceiveInputs', nextInputs);
   }
 
@@ -350,7 +350,7 @@ export default class ChangeColorDirective implements ReceiveInputs {
 * **v3.0.0新增** `nvBeforeMount(): void;` 在 nvOnInit 之后，指令挂载页面之前被触发，在指令第一次挂载页前会被触发
 * `nvHasRender(): void;` 在 nvAfterMount 之后，渲染完成后被触发，每次触发渲染页面（render）都会被触发
 * **v3.0.0新增** `nvAfterMount(): void;` 在 nvBeforeMount 之后和首次 nvHasRender 之后，指令挂载页面完毕之后被触发，只有指令第一次挂在页面后，挂载指令实例到DOM上后会被触发**推荐在此做异步拉取数据**
-* `nvOnDestory(): void;` 仅仅在路由决定销毁此组件时,或是被`nv-if`销毁组件时被触发
+* `nvOnDestory(): void;` 仅仅在路由决定销毁此组件时,或是被`nv-if`或`nv-if-not`销毁组件时被触发
 * `nvReceiveInputs(nextInputs: any): void;` 监听 inputs 变化，当 inputs 即将被更改时（更改前）触发
 * (原生)`getter`: 当监听 inputs 时，getter 会先于 nvReceiveInputs 被触发
 * (原生)`setter`: 当监听 属性 时，setter 会晚于 nvDoCheck 被触发

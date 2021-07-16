@@ -1,4 +1,4 @@
-import { Injectable } from '@indiv/core';
+import { Injectable } from '@indiv/di';
 // import { Injectable } from '../build/core';
 import { SharedModule } from '../modules/share.module';
 

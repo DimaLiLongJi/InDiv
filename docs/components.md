@@ -573,7 +573,7 @@ export default class ShowAgeComponent implements nvReceiveInputs, AfterMount {
 * `nvAfterMount(): void;` 在 nvBeforeMount 之后和首次 nvHasRender 之后，template 挂载页面完毕之后被触发，只有组件第一次渲染页面（render）后挂载实例到DOM上后会被触发**推荐在此做异步拉取数据**
 * `nvDoCheck(): void;` 监听被监听的属性变化，当被监听的属性被更改后触发，可以在此步做 diff**尽量不要在此更改数据，会导致爆栈**
 * `nvReceiveInputs(nextInputs: any): void;` 监听 inputs 变化，当 inputs 即将被更改前触发
-* `nvOnDestory(): void;` 仅仅在路由决定销毁此组件时,或是被`nv-if`销毁组件时被触发
+* `nvOnDestory(): void;` 仅仅在路由决定销毁此组件时,或是被`nv-if`或`nv-if-not`销毁组件时被触发
 * (原生)`getter`: 当监听 inputs 时，getter 会先于 nvReceiveInputs 被触发
 * (原生)`setter`: 当监听 属性 时，setter 会晚于 nvDoCheck 被触发
 

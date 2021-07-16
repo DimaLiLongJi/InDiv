@@ -19,5 +19,3 @@ export const metadataOfPropSkipSelf = 'nvMetadataOfPropSkipSelf';
 export const metadataOfInject = 'nvMetadataOfInject';
 
 export const metadataOfPropInject = 'nvMetadataOfPropInject';
-
-export const metadataOfAttribute = 'nvMetadataOfAttribute';

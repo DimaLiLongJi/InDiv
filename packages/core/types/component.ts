@@ -2,6 +2,7 @@ import { DirectiveList, IDirective } from './directive';
 import { Vnode, ParseOptions } from '../vnode';
 import { Compile } from '../compile';
 import { ChangeDetectionStrategy } from '../component';
+import { IPipe } from './pipe';
 
 export type TComAndDir = {
   components: {
@@ -42,6 +43,8 @@ export interface IComponent extends IDirective {
   $templateVnode?: Vnode[];
   $saveVnode?: Vnode[];
   $nvContent?: Vnode[];
+
+  $pipeMap?: Map<Function, IPipe>;
 
   watchData?(): void;
   render?(): Promise<IComponent>;

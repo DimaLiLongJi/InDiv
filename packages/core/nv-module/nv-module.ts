@@ -1,5 +1,5 @@
-import { INvModule, TProviders } from '../types';
-import { injected, rootInjector, providersFormater } from '../di';
+import { INvModule } from '../types';
+import { injected, rootInjector, providersFormater, TProviders } from '@indiv/di';
 
 export type TNvModuleOptions = {
   imports?: Function[];

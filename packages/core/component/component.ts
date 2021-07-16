@@ -1,7 +1,7 @@
-import { IComponent, TProviders } from '../types';
+import { IComponent } from '../types';
 
 import { WatcherDependences } from './watch';
-import { injected, providersFormater } from '../di';
+import { injected, providersFormater, TProviders } from '@indiv/di';
 import { collectDependencesFromViewModel } from './utils';
 import { componentCompiler } from '../compile';
 import { ChangeDetectionStrategy } from './change-detection';
@@ -54,6 +54,7 @@ export function Component(options: TComponentOptions): (_constructor: Function) 
     vm.$componentList = [];
     // for Directive
     vm.$directiveList = [];
+    vm.$pipeMap = new Map();
 
     vm.watchData = function (): void {
       // call templateChecker,when env is ssr,will render $templateUrl to $template first

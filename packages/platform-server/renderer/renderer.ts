@@ -99,7 +99,9 @@ export class PlatfromServerRenderer extends Renderer {
   }
 
   public removeChild(parent: Element, child: Element): void {
-    (parent as Element).removeChild(child as Element);
+    if (parent.contains(child)) {
+      (parent as Element).removeChild(child as Element);
+    }
   }
 
   public appendChild(parent: Element, child: Element): void {
@@ -131,7 +133,7 @@ export class PlatfromServerRenderer extends Renderer {
   }
 
   public setNvAttribute(element: Element, name: string, value: any): void {
-    const blackListAttr = ['nv-text', 'nv-if', 'nv-repeat', 'nv-model', 'nv-key'];
+    const blackListAttr = ['nv-text', 'nv-if', 'nv-if-not', 'nv-repeat', 'nv-model', 'nv-key'];
     if (blackListAttr.indexOf(name) !== -1) return;
     switch (name) {
       case 'nv-html': {
@@ -155,7 +157,7 @@ export class PlatfromServerRenderer extends Renderer {
   }
 
   public removeNvAttribute(element: Element, name: string, value?: any): void {
-    const blackListAttr = ['nv-text', 'nv-if', 'nv-repeat', 'nv-model', 'nv-key'];
+    const blackListAttr = ['nv-text', 'nv-if', 'nv-if-not', 'nv-repeat', 'nv-model', 'nv-key'];
     if (blackListAttr.indexOf(name) !== -1) return;
     switch (name) {
       case 'nv-html': {

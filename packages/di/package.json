@@ -1,0 +1,33 @@
+{
+  "name": "@indiv/di",
+  "version": "4.2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "A dependency injection library for typescript and javascript.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
+  "keywords": [
+    "DI",
+    "Dependency Injection",
+    "IOC",
+    "Inversion of Control",
+    "@indiv"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DimaLiLongJi/InDiv.git"
+  },
+  "author": "DimaLiLongJi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DimaLiLongJi/InDiv/issues"
+  },
+  "homepage": "https://github.com/DimaLiLongJi/InDiv#readme",
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.13"
+  }
+}
